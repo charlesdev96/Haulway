@@ -15,12 +15,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendEmail = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const utils_1 = require("../utils");
+const dotenv_1 = require("dotenv");
+(0, dotenv_1.config)();
 const transporter = nodemailer_1.default.createTransport({
     host: "smtp.ethereal.email",
     port: 587,
     auth: {
-        user: "marco.jerde@ethereal.email",
-        pass: "A19G3ZZZyby9emAd8A",
+        user: "nella.konopelski82@ethereal.email",
+        pass: "CYtS9qvMEF7pqmGZj9",
     },
 });
 function sendEmail(payload) {
