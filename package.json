@@ -2,7 +2,7 @@
 	"name": "haulway",
 	"version": "1.0.0",
 	"description": "",
-	"main": "index.js",
+	"main": "src/app.ts",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"dev": "ts-node-dev --respawn --transpile-only src/app.ts",
@@ -10,7 +10,8 @@
 		"format": "prettier --write .",
 		"prepare": "husky install",
 		"lint": "eslint . --max-warnings 0",
-		"lint:fix": "npm run lint -- --fix"
+		"lint:fix": "npm run lint -- --fix",
+		"start": "node dist/app.js"
 	},
 	"keywords": [],
 	"author": "",
