@@ -3,14 +3,12 @@ import { log } from "../utils";
 import { config } from "dotenv";
 config();
 
-const pass = process.env.PASS;
-
 const transporter = nodemailer.createTransport({
-	host: "smtp-relay.brevo.com",
+	host: "smtp.ethereal.email",
 	port: 587,
 	auth: {
-		user: "ogonnayanc@gmail.com",
-		pass: pass,
+		user: "nella.konopelski82@ethereal.email",
+		pass: "CYtS9qvMEF7pqmGZj9",
 	},
 });
 
