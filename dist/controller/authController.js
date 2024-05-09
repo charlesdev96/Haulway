@@ -49,8 +49,15 @@ class authController {
                     subject: "Verify your email/account",
                     html: `<h4> Hello, ${body.fullName} </h4> ${message}`,
                 });
+                const payload = {
+                    userId: user._id,
+                    email: user.email,
+                    role: user.role,
+                };
+                const token = (0, utils_1.createJWT)({ payload });
                 res.status(http_status_codes_1.StatusCodes.CREATED).json({
                     message: "User successfully registered, please check your mail to verify your account.",
+                    token,
                 });
             }
             catch (error) {
