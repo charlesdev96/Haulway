@@ -17,7 +17,7 @@ class authRoute {
         //resend verification email
         this.router.post("/resend-email", middleware_1.authorizeUser, this.userAuthentication.resendVerificationEmail.bind(this.userAuthentication));
         //verify user
-        this.router.get("/verify-user", (0, middleware_1.validateInputs)(schema_1.verifyUserSchema), this.userAuthentication.verifyUserAccount.bind(this.userAuthentication));
+        this.router.get("/verify-email", (0, middleware_1.validateInputs)(schema_1.verifyUserSchema), this.userAuthentication.verifyUserAccount.bind(this.userAuthentication));
     }
     getAuthRouter() {
         return this.router;

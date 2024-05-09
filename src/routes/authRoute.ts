@@ -28,7 +28,7 @@ export class authRoute {
 		);
 		//verify user
 		this.router.get(
-			"/verify-user",
+			"/verify-email",
 			validateInputs(verifyUserSchema),
 			this.userAuthentication.verifyUserAccount.bind(this.userAuthentication),
 		);
