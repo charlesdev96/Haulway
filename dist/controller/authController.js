@@ -64,9 +64,13 @@ class authController {
     }
     resendVerificationEmail(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
-                const id = req.params.id;
-                const user = yield (0, services_1.findUserById)(id);
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).send("Unauthorized");
+                }
+                const user = yield (0, services_1.findUserById)(userId);
                 if (!user) {
                     return res
                         .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
@@ -98,6 +102,48 @@ class authController {
                 res
                     .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
                     .json({ message: "Unable to resend email user" });
+            }
+        });
+    }
+    verifyUserAccount(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { id, verificationCode } = req.params;
+                // find the user by id
+                const user = yield (0, services_1.findUserById)(id);
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                        .json({ message: "Could not verify user" });
+                }
+                // check to see if they are already verified
+                if (user.verified) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.OK)
+                        .json({ message: "User is already verified" });
+                }
+                // check to see if the verificationCode matches
+                if (user.verificationCode === verificationCode) {
+                    user.verified = true;
+                    user.verificationCode = null;
+                    yield user.save();
+                    return res
+                        .status(http_status_codes_1.StatusCodes.OK)
+                        .json({ message: "User successfully verified" });
+                }
+                //if conditions not certified
+                return res
+                    .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                    .json({ message: "Could not verify user" });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                if (error.message.indexOf("Cast to ObjectId failed") !== -1) {
+                    return res.json({ message: "Wrong Id format" });
+                }
+                res
+                    .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
+                    .json({ message: "Could not verify user" });
             }
         });
     }

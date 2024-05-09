@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
-import { registerUserInputs, resendEmailInputs } from "../schema";
-import { registerUser, existingUser, findUserById } from "../services";
+import { registerUserInputs, verifyUserInputs } from "../schema";
+import {
+	registerUser,
+	existingUser,
+	findUserById,
+	CustomRequest,
+} from "../services";
 import { log, createJWT, sendEmail } from "../utils";
 import { nanoid } from "nanoid";
 import { StatusCodes } from "http-status-codes";
@@ -50,13 +55,13 @@ export class authController {
 		}
 	}
 
-	public async resendVerificationEmail(
-		req: Request<resendEmailInputs, {}, {}>,
-		res: Response,
-	) {
+	public async resendVerificationEmail(req: CustomRequest, res: Response) {
 		try {
-			const id = req.params.id;
-			const user = await findUserById(id);
+			const userId: string | undefined = req.user?.userId;
+			if (!userId) {
+				return res.status(StatusCodes.UNAUTHORIZED).send("Unauthorized");
+			}
+			const user = await findUserById(userId);
 			if (!user) {
 				return res
 					.status(StatusCodes.BAD_REQUEST)
@@ -87,6 +92,53 @@ export class authController {
 			res
 				.status(StatusCodes.INTERNAL_SERVER_ERROR)
 				.json({ message: "Unable to resend email user" });
+		}
+	}
+
+	public async verifyUserAccount(
+		req: Request<verifyUserInputs, {}, {}>,
+		res: Response,
+	) {
+		try {
+			const { id, verificationCode } = req.params as verifyUserInputs;
+
+			// find the user by id
+			const user = await findUserById(id);
+
+			if (!user) {
+				return res
+					.status(StatusCodes.BAD_REQUEST)
+					.json({ message: "Could not verify user" });
+			}
+
+			// check to see if they are already verified
+			if (user.verified) {
+				return res
+					.status(StatusCodes.OK)
+					.json({ message: "User is already verified" });
+			}
+
+			// check to see if the verificationCode matches
+			if (user.verificationCode === verificationCode) {
+				user.verified = true;
+				user.verificationCode = null;
+				await user.save();
+				return res
+					.status(StatusCodes.OK)
+					.json({ message: "User successfully verified" });
+			}
+			//if conditions not certified
+			return res
+				.status(StatusCodes.BAD_REQUEST)
+				.json({ message: "Could not verify user" });
+		} catch (error: any) {
+			log.info(error);
+			if (error.message.indexOf("Cast to ObjectId failed") !== -1) {
+				return res.json({ message: "Wrong Id format" });
+			}
+			res
+				.status(StatusCodes.INTERNAL_SERVER_ERROR)
+				.json({ message: "Could not verify user" });
 		}
 	}
 }

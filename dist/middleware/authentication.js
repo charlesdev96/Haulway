@@ -28,6 +28,7 @@ const authorizeUser = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         req.user = {
             userId: payload.userId,
             email: payload.email,
+            role: payload.role,
         };
         next();
     }

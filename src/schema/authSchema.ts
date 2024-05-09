@@ -36,12 +36,6 @@ export const verifyUserSchema = z.object({
 	}),
 });
 
-export const resendEmailSchema = z.object({
-	params: z.object({
-		id: z.string(),
-	}),
-});
-
 export const loginSchema = z.object({
 	body: z.object({
 		email: z
@@ -94,8 +88,6 @@ export type registerUserInputs = z.infer<typeof registerUserSchema>["body"];
 export type verifyUserInputs = z.infer<typeof verifyUserSchema>["params"];
 
 export type loginInputs = z.infer<typeof loginSchema>["body"];
-
-export type resendEmailInputs = z.infer<typeof resendEmailSchema>["params"];
 
 export type forgotPasswordInputs = z.infer<typeof forgotPasswordSchema>["body"];
 

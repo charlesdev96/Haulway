@@ -1,5 +1,6 @@
 import { UserDocument, UserInputs, UserModel } from "../model";
 import { omit } from "lodash";
+import { Request } from "express";
 
 export const registerUser = async (input: UserInputs) => {
 	try {
@@ -17,3 +18,11 @@ export const existingUser = async (email: string) => {
 export const findUserById = async (userId: string) => {
 	return await UserModel.findOne({ _id: userId });
 };
+
+export interface CustomRequest extends Request {
+	user?: {
+		userId?: string;
+		email?: string;
+		role?: string;
+	};
+}

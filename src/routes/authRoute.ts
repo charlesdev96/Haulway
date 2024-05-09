@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authController } from "../controller/authController";
 import { registerUserSchema, verifyUserSchema } from "../schema";
-import { validateInputs } from "../middleware";
+import { validateInputs, authorizeUser } from "../middleware";
 
 export class authRoute {
 	private router: Router;
@@ -21,10 +21,16 @@ export class authRoute {
 		//resend verification email
 		this.router.post(
 			"/resend-email",
-			validateInputs(verifyUserSchema),
+			authorizeUser,
 			this.userAuthentication.resendVerificationEmail.bind(
 				this.userAuthentication,
 			),
+		);
+		//verify user
+		this.router.get(
+			"/verify-user",
+			validateInputs(verifyUserSchema),
+			this.userAuthentication.verifyUserAccount.bind(this.userAuthentication),
 		);
 	}
 

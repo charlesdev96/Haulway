@@ -5,12 +5,14 @@ import { StatusCodes } from "http-status-codes";
 interface TokenPayLoad {
 	userId: string;
 	email: string;
+	role: string;
 }
 
 interface CustomRequest extends Request {
 	user?: {
 		userId: string;
 		email: string;
+		role: string;
 	};
 }
 
@@ -35,6 +37,7 @@ export const authorizeUser = async (
 		req.user = {
 			userId: payload.userId,
 			email: payload.email,
+			role: payload.role,
 		};
 		next();
 	} catch (error: any) {
