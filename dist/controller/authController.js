@@ -236,6 +236,7 @@ class authController {
                     subject: "Verify your email/account",
                     html: `<h4> Hello, ${user.fullName} </h4> ${emailMesaage}`,
                 });
+                utils_1.log.info(`id: ${user._id}, passwordCode: ${passwordResetCode}`);
                 res.status(http_status_codes_1.StatusCodes.OK).json({ success: true, message: message });
             }
             catch (error) {
