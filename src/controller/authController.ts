@@ -1,12 +1,14 @@
 import { config } from "dotenv";
 config();
 import { Request, Response } from "express";
-import { registerUserInputs, verifyUserInputs } from "../schema";
+import { registerUserInputs, verifyUserInputs, loginInputs } from "../schema";
 import {
 	registerUser,
 	existingUser,
 	findUserById,
 	CustomRequest,
+	validatePassword,
+	userProfile,
 } from "../services";
 import { log, createJWT, sendEmail } from "../utils";
 import { StatusCodes } from "http-status-codes";
@@ -51,6 +53,7 @@ export class authController {
 
 			const token = createJWT({ payload });
 			res.status(StatusCodes.CREATED).json({
+				success: true,
 				message:
 					"User successfully registered, please check your mail to verify your account.",
 				token,
@@ -60,7 +63,7 @@ export class authController {
 			log.info("Unable to create user");
 			res
 				.status(StatusCodes.INTERNAL_SERVER_ERROR)
-				.json({ message: "Unable to resend email user" });
+				.json({ success: false, message: "Unable to resend email user" });
 		}
 	}
 
@@ -92,15 +95,16 @@ export class authController {
 				subject: "Verify your email/account",
 				html: `<h4> Hello, ${user.fullName} </h4> ${message}`,
 			});
-			res
-				.status(StatusCodes.OK)
-				.json({ message: "Verification email resent successfully" });
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "Verification email resent successfully",
+			});
 		} catch (error: any) {
 			log.info(error);
 			log.info("Unable to register user");
 			res
 				.status(StatusCodes.INTERNAL_SERVER_ERROR)
-				.json({ message: "Unable to register user" });
+				.json({ success: false, message: "Unable to register user" });
 		}
 	}
 
@@ -117,14 +121,14 @@ export class authController {
 			if (!user) {
 				return res
 					.status(StatusCodes.BAD_REQUEST)
-					.json({ message: "Could not verify user" });
+					.json({ success: false, message: "Could not verify user" });
 			}
 
 			// check to see if they are already verified
 			if (user.verified) {
 				return res
 					.status(StatusCodes.OK)
-					.json({ message: "User is already verified" });
+					.json({ success: false, message: "User is already verified" });
 			}
 
 			// check to see if the verificationCode matches
@@ -134,12 +138,12 @@ export class authController {
 				await user.save();
 				return res
 					.status(StatusCodes.OK)
-					.json({ message: "User successfully verified" });
+					.json({ success: true, message: "User successfully verified" });
 			}
 			//if conditions not certified
 			return res
 				.status(StatusCodes.BAD_REQUEST)
-				.json({ message: "Could not verify user" });
+				.json({ success: false, message: "Could not verify user" });
 		} catch (error: any) {
 			log.info(error);
 			if (error.message.indexOf("Cast to ObjectId failed") !== -1) {
@@ -147,7 +151,55 @@ export class authController {
 			}
 			res
 				.status(StatusCodes.INTERNAL_SERVER_ERROR)
-				.json({ message: "Could not verify user" });
+				.json({ success: false, message: "Could not verify user" });
+		}
+	}
+
+	public async login(req: Request<{}, {}, loginInputs>, res: Response) {
+		try {
+			const body = req.body as loginInputs;
+			const message = "Invalid email or password";
+			const user = await existingUser(body.email);
+			if (!user) {
+				return res.status(StatusCodes.BAD_REQUEST).json({ message: message });
+			}
+			if (!user.verified) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ success: false, message: "Please verify your email" });
+			}
+			//check user password
+			const { password, ...userData } = user as { password: string };
+			const checkPassword: boolean = await validatePassword(
+				body.password,
+				password,
+			);
+			if (!checkPassword) {
+				return res
+					.status(StatusCodes.BAD_REQUEST)
+					.json({ success: false, message });
+			}
+
+			//token payload
+			const payload: object = {
+				userId: user._id,
+				email: user.email,
+				role: user.role,
+			};
+
+			const token = createJWT({ payload });
+			const data = await userProfile(body.email);
+			res.status(200).json({
+				success: true,
+				message: `Welcome back ${user.fullName} to Haulway App.`,
+				data: data,
+				token,
+			});
+		} catch (error: any) {
+			log.info(error);
+			res
+				.status(StatusCodes.INTERNAL_SERVER_ERROR)
+				.json({ success: false, message: "Unable to login user", error });
 		}
 	}
 }

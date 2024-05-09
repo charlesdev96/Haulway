@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authController } from "../controller/authController";
-import { registerUserSchema, verifyUserSchema } from "../schema";
+import { registerUserSchema, verifyUserSchema, loginSchema } from "../schema";
 import { validateInputs, authorizeUser } from "../middleware";
 
 export class authRoute {
@@ -31,6 +31,12 @@ export class authRoute {
 			"/verify-account/:id/:verificationCode",
 			validateInputs(verifyUserSchema),
 			this.userAuthentication.verifyUserAccount.bind(this.userAuthentication),
+		);
+		//login router
+		this.router.post(
+			"/login",
+			validateInputs(loginSchema),
+			this.userAuthentication.login.bind(this.userAuthentication),
 		);
 	}
 

@@ -18,6 +18,8 @@ class authRoute {
         this.router.post("/resend-email", middleware_1.authorizeUser, this.userAuthentication.resendVerificationEmail.bind(this.userAuthentication));
         //verify user
         this.router.get("/verify-account/:id/:verificationCode", (0, middleware_1.validateInputs)(schema_1.verifyUserSchema), this.userAuthentication.verifyUserAccount.bind(this.userAuthentication));
+        //login router
+        this.router.post("/login", (0, middleware_1.validateInputs)(schema_1.loginSchema), this.userAuthentication.login.bind(this.userAuthentication));
     }
     getAuthRouter() {
         return this.router;

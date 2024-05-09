@@ -9,10 +9,12 @@ export interface UserInputs {
 	email?: string;
 	profilePic?: string;
 	verified?: boolean;
+	deviceType?: "android" | "ios";
 	verificationCode?: string | null;
 	passwordResetCode?: string | null;
 	role?: "user" | "influencer" | "vendor" | "admin" | "tutor";
 	posts?: string[];
+	address?: string[];
 	numOfFollowers?: number;
 	numOfFollowings?: number;
 	followers?: string[];
@@ -59,6 +61,11 @@ const UserSchema = new mongoose.Schema({
 		type: Boolean,
 		default: false,
 	},
+	deviceType: {
+		type: String,
+		enum: ["android", "ios"],
+		default: "android",
+	},
 	verificationCode: {
 		type: String,
 		default: nanoid(),
@@ -68,6 +75,7 @@ const UserSchema = new mongoose.Schema({
 		default: null,
 	},
 	posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
+	address: [{ type: mongoose.Schema.Types.ObjectId, ref: "Address" }],
 	numOfFollowers: {
 		type: Number,
 		default: 0,
@@ -81,27 +89,11 @@ const UserSchema = new mongoose.Schema({
 	carts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Cart" }],
 });
 
-// Virtual field to derive userName from fullName
-// UserSchema.virtual("userName").get(function (this: any) {
-// 	if (this.fullName) {
-// 		return `@${this.fullName}`;
-// 	} else {
-// 		return "";
-// 	}
-// });
-
 UserSchema.pre("save", async function (next) {
 	if (!this.isModified("password")) return;
 	const salt = await genSalt(10);
 	this.password = await hashSync(this.password, salt);
 	next();
 });
-
-UserSchema.methods.comparePassword = async function (
-	canditatePassword: string,
-): Promise<boolean> {
-	const isMatch = await compare(canditatePassword, this.password);
-	return isMatch;
-};
 
 export const UserModel = mongoose.model<UserDocument>("User", UserSchema);

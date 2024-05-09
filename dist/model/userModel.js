@@ -49,6 +49,11 @@ const UserSchema = new mongoose_1.default.Schema({
         type: Boolean,
         default: false,
     },
+    deviceType: {
+        type: String,
+        enum: ["android", "ios"],
+        default: "android",
+    },
     verificationCode: {
         type: String,
         default: (0, nanoid_1.nanoid)(),
@@ -58,6 +63,7 @@ const UserSchema = new mongoose_1.default.Schema({
         default: null,
     },
     posts: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Post" }],
+    address: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Address" }],
     numOfFollowers: {
         type: Number,
         default: 0,
@@ -70,14 +76,6 @@ const UserSchema = new mongoose_1.default.Schema({
     followings: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" }],
     carts: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Cart" }],
 });
-// Virtual field to derive userName from fullName
-// UserSchema.virtual("userName").get(function (this: any) {
-// 	if (this.fullName) {
-// 		return `@${this.fullName}`;
-// 	} else {
-// 		return "";
-// 	}
-// });
 UserSchema.pre("save", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!this.isModified("password"))
@@ -87,10 +85,4 @@ UserSchema.pre("save", function (next) {
         next();
     });
 });
-UserSchema.methods.comparePassword = function (canditatePassword) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const isMatch = yield (0, bcryptjs_1.compare)(canditatePassword, this.password);
-        return isMatch;
-    });
-};
 exports.UserModel = mongoose_1.default.model("User", UserSchema);

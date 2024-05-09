@@ -58,6 +58,7 @@ class authController {
                 };
                 const token = (0, utils_1.createJWT)({ payload });
                 res.status(http_status_codes_1.StatusCodes.CREATED).json({
+                    success: true,
                     message: "User successfully registered, please check your mail to verify your account.",
                     token,
                 });
@@ -67,7 +68,7 @@ class authController {
                 utils_1.log.info("Unable to create user");
                 res
                     .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
-                    .json({ message: "Unable to resend email user" });
+                    .json({ success: false, message: "Unable to resend email user" });
             }
         });
     }
@@ -101,16 +102,17 @@ class authController {
                     subject: "Verify your email/account",
                     html: `<h4> Hello, ${user.fullName} </h4> ${message}`,
                 });
-                res
-                    .status(http_status_codes_1.StatusCodes.OK)
-                    .json({ message: "Verification email resent successfully" });
+                res.status(http_status_codes_1.StatusCodes.OK).json({
+                    success: true,
+                    message: "Verification email resent successfully",
+                });
             }
             catch (error) {
                 utils_1.log.info(error);
                 utils_1.log.info("Unable to register user");
                 res
                     .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
-                    .json({ message: "Unable to register user" });
+                    .json({ success: false, message: "Unable to register user" });
             }
         });
     }
@@ -123,13 +125,13 @@ class authController {
                 if (!user) {
                     return res
                         .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
-                        .json({ message: "Could not verify user" });
+                        .json({ success: false, message: "Could not verify user" });
                 }
                 // check to see if they are already verified
                 if (user.verified) {
                     return res
                         .status(http_status_codes_1.StatusCodes.OK)
-                        .json({ message: "User is already verified" });
+                        .json({ success: false, message: "User is already verified" });
                 }
                 // check to see if the verificationCode matches
                 if (user.verificationCode === verificationCode) {
@@ -138,12 +140,12 @@ class authController {
                     yield user.save();
                     return res
                         .status(http_status_codes_1.StatusCodes.OK)
-                        .json({ message: "User successfully verified" });
+                        .json({ success: true, message: "User successfully verified" });
                 }
                 //if conditions not certified
                 return res
                     .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
-                    .json({ message: "Could not verify user" });
+                    .json({ success: false, message: "Could not verify user" });
             }
             catch (error) {
                 utils_1.log.info(error);
@@ -152,7 +154,52 @@ class authController {
                 }
                 res
                     .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
-                    .json({ message: "Could not verify user" });
+                    .json({ success: false, message: "Could not verify user" });
+            }
+        });
+    }
+    login(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const body = req.body;
+                const message = "Invalid email or password";
+                const user = yield (0, services_1.existingUser)(body.email);
+                if (!user) {
+                    return res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({ message: message });
+                }
+                if (!user.verified) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ success: false, message: "Please verify your email" });
+                }
+                //check user password
+                const _a = user, { password } = _a, userData = __rest(_a, ["password"]);
+                const checkPassword = yield (0, services_1.validatePassword)(body.password, password);
+                if (!checkPassword) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                        .json({ success: false, message });
+                }
+                //token payload
+                const payload = {
+                    userId: user._id,
+                    email: user.email,
+                    role: user.role,
+                };
+                const token = (0, utils_1.createJWT)({ payload });
+                const data = yield (0, services_1.userProfile)(body.email);
+                res.status(200).json({
+                    success: true,
+                    message: `Welcome back ${user.fullName} to Haulway App.`,
+                    data: data,
+                    token,
+                });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                res
+                    .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
+                    .json({ success: false, message: "Unable to login user", error });
             }
         });
     }
