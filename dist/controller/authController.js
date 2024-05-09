@@ -40,11 +40,14 @@ class authController {
                 const user = yield (0, services_1.registerUser)(body);
                 //send email with verification code
                 const _a = user, { verificationCode, _id, email } = _a, userDAta = __rest(_a, ["verificationCode", "_id", "email"]);
+                const origin = "https://haulway-icj2.onrender.com/api/v1";
+                const verifyEmail = `${origin}/auth/verify-email/${_id}/${verificationCode}`;
+                const message = `<p>Please confirm your email by clicking on the following link: <a href="${verifyEmail}">Verify Email</a> </p>`;
                 yield (0, utils_1.sendEmail)({
                     to: email,
                     from: "test@example.com",
                     subject: "Verify your email/account",
-                    text: `verification code: ${verificationCode} and your Id is: ${_id}`,
+                    html: `<h4> Hello, ${body.fullName} </h4> ${message}`,
                 });
                 res.status(http_status_codes_1.StatusCodes.CREATED).json({
                     message: "User successfully registered, please check your mail to verify your account.",
@@ -53,6 +56,39 @@ class authController {
             catch (error) {
                 utils_1.log.info(error);
                 utils_1.log.info("Unable to create user");
+            }
+        });
+    }
+    resendVerificationEmail(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const id = req.params.id;
+                const user = yield (0, services_1.findUserById)(id);
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                        .json({ message: "Sorry, can not re-send verification code" });
+                }
+                // check to see if they are already verified
+                if (user.verified) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.OK)
+                        .json({ message: "User is already verified" });
+                }
+                const email = user.email;
+                yield (0, utils_1.sendEmail)({
+                    to: email === null || email === void 0 ? void 0 : email.toString(),
+                    from: "test@example.com",
+                    subject: "Verify your email/account",
+                    text: `<p> verification code: ${user.verificationCode} and your Id is: ${id}, using this link: <a</p>`,
+                });
+                res
+                    .status(http_status_codes_1.StatusCodes.OK)
+                    .json({ message: "Verification email resent successfully" });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                utils_1.log.info("Unable to resend email user");
             }
         });
     }
