@@ -21,6 +21,8 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authController = void 0;
+const dotenv_1 = require("dotenv");
+(0, dotenv_1.config)();
 const services_1 = require("../services");
 const utils_1 = require("../utils");
 const http_status_codes_1 = require("http-status-codes");
@@ -40,8 +42,8 @@ class authController {
                 const user = yield (0, services_1.registerUser)(body);
                 //send email with verification code
                 const _a = user, { verificationCode, _id, email } = _a, userDAta = __rest(_a, ["verificationCode", "_id", "email"]);
-                const origin = "https://haulway-icj2.onrender.com/api/v1";
-                const verifyEmail = `${origin}/auth/verify-email/${_id}/${verificationCode}`;
+                const origin = process.env.ORIGIN;
+                const verifyEmail = `${origin}/auth/verify-account/${_id}/${verificationCode}`;
                 const message = `<p>Please confirm your email by clicking on the following link: <a href="${verifyEmail}">Verify Email</a> </p>`;
                 yield (0, utils_1.sendEmail)({
                     to: email,
@@ -90,8 +92,8 @@ class authController {
                         .json({ message: "User is already verified" });
                 }
                 const email = user.email;
-                const origin = "https://haulway-icj2.onrender.com/api/v1";
-                const verifyEmail = `${origin}/auth/verify-email/${user._id}/${user.verificationCode}`;
+                const origin = process.env.ORIGIN;
+                const verifyEmail = `${origin}/auth/verify-account/${user._id}/${user.verificationCode}`;
                 const message = `<p>Please confirm your email by clicking on the following link: <a href="${verifyEmail}">Verify Email</a> </p>`;
                 yield (0, utils_1.sendEmail)({
                     to: email === null || email === void 0 ? void 0 : email.toString(),
@@ -105,10 +107,10 @@ class authController {
             }
             catch (error) {
                 utils_1.log.info(error);
-                utils_1.log.info("Unable to resend email user");
+                utils_1.log.info("Unable to register user");
                 res
                     .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
-                    .json({ message: "Unable to resend email user" });
+                    .json({ message: "Unable to register user" });
             }
         });
     }

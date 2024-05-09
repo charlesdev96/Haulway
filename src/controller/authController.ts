@@ -1,3 +1,5 @@
+import { config } from "dotenv";
+config();
 import { Request, Response } from "express";
 import { registerUserInputs, verifyUserInputs } from "../schema";
 import {
@@ -7,7 +9,6 @@ import {
 	CustomRequest,
 } from "../services";
 import { log, createJWT, sendEmail } from "../utils";
-import { nanoid } from "nanoid";
 import { StatusCodes } from "http-status-codes";
 
 export class authController {
@@ -33,8 +34,8 @@ export class authController {
 				_id: string;
 				email: string;
 			};
-			const origin: string = "https://haulway-icj2.onrender.com/api/v1";
-			const verifyEmail = `${origin}/auth/verify-email/${_id}/${verificationCode}`;
+			const origin = process.env.ORIGIN;
+			const verifyEmail = `${origin}/auth/verify-account/${_id}/${verificationCode}`;
 			const message = `<p>Please confirm your email by clicking on the following link: <a href="${verifyEmail}">Verify Email</a> </p>`;
 			await sendEmail({
 				to: email,
@@ -82,8 +83,8 @@ export class authController {
 					.json({ message: "User is already verified" });
 			}
 			const email = user.email;
-			const origin: string = "https://haulway-icj2.onrender.com/api/v1";
-			const verifyEmail = `${origin}/auth/verify-email/${user._id}/${user.verificationCode}`;
+			const origin = process.env.ORIGIN;
+			const verifyEmail = `${origin}/auth/verify-account/${user._id}/${user.verificationCode}`;
 			const message = `<p>Please confirm your email by clicking on the following link: <a href="${verifyEmail}">Verify Email</a> </p>`;
 			await sendEmail({
 				to: email?.toString(),
@@ -96,10 +97,10 @@ export class authController {
 				.json({ message: "Verification email resent successfully" });
 		} catch (error: any) {
 			log.info(error);
-			log.info("Unable to resend email user");
+			log.info("Unable to register user");
 			res
 				.status(StatusCodes.INTERNAL_SERVER_ERROR)
-				.json({ message: "Unable to resend email user" });
+				.json({ message: "Unable to register user" });
 		}
 	}
 
