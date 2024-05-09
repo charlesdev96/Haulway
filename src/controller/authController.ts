@@ -245,16 +245,8 @@ export class authController {
 				subject: "Verify your email/account",
 				html: `<h4> Hello, ${user.fullName} </h4> ${emailMesaage}`,
 			});
-			const payload: object = {
-				userId: user._id,
-				email: user.email,
-				role: user.role,
-			};
 
-			const token = createJWT({ payload });
-			res
-				.status(StatusCodes.OK)
-				.json({ success: true, message: message, token });
+			res.status(StatusCodes.OK).json({ success: true, message: message });
 		} catch (error: any) {
 			log.info(error.message);
 			res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
