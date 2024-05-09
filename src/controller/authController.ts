@@ -44,6 +44,9 @@ export class authController {
 		} catch (error: any) {
 			log.info(error);
 			log.info("Unable to create user");
+			res
+				.status(StatusCodes.INTERNAL_SERVER_ERROR)
+				.json({ message: "Unable to resend email user" });
 		}
 	}
 
@@ -66,11 +69,14 @@ export class authController {
 					.json({ message: "User is already verified" });
 			}
 			const email = user.email;
+			const origin: string = "https://haulway-icj2.onrender.com/api/v1";
+			const verifyEmail = `${origin}/auth/verify-email/${user._id}/${user.verificationCode}`;
+			const message = `<p>Please confirm your email by clicking on the following link: <a href="${verifyEmail}">Verify Email</a> </p>`;
 			await sendEmail({
 				to: email?.toString(),
 				from: "test@example.com",
 				subject: "Verify your email/account",
-				text: `<p> verification code: ${user.verificationCode} and your Id is: ${id}, using this link: <a</p>`,
+				html: `<h4> Hello, ${user.fullName} </h4> ${message}`,
 			});
 			res
 				.status(StatusCodes.OK)
@@ -78,6 +84,9 @@ export class authController {
 		} catch (error: any) {
 			log.info(error);
 			log.info("Unable to resend email user");
+			res
+				.status(StatusCodes.INTERNAL_SERVER_ERROR)
+				.json({ message: "Unable to resend email user" });
 		}
 	}
 }
