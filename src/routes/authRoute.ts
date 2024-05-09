@@ -20,7 +20,7 @@ export class authRoute {
 		);
 		//resend verification email
 		this.router.post(
-			"/register",
+			"/resend-email",
 			validateInputs(verifyUserSchema),
 			this.userAuthentication.resendVerificationEmail.bind(
 				this.userAuthentication,
