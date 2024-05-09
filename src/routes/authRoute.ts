@@ -51,7 +51,7 @@ export class authRoute {
 			this.userAuthentication.forgotPassword.bind(this.userAuthentication),
 		);
 		//reset password
-		this.router.post(
+		this.router.get(
 			"/reset-password",
 			validateInputs(verifyresetPasswordSchema),
 			this.userAuthentication.resetPassword.bind(this.userAuthentication),

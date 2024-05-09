@@ -23,7 +23,7 @@ class authRoute {
         //forgot password
         this.router.post("/forgot-password", (0, middleware_1.validateInputs)(schema_1.forgotPasswordSchema), this.userAuthentication.forgotPassword.bind(this.userAuthentication));
         //reset password
-        this.router.post("/reset-password", (0, middleware_1.validateInputs)(schema_1.verifyresetPasswordSchema), this.userAuthentication.resetPassword.bind(this.userAuthentication));
+        this.router.get("/reset-password", (0, middleware_1.validateInputs)(schema_1.verifyresetPasswordSchema), this.userAuthentication.resetPassword.bind(this.userAuthentication));
     }
     getAuthRouter() {
         return this.router;
