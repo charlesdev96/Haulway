@@ -1,7 +1,13 @@
 import { config } from "dotenv";
 config();
 import { Request, Response } from "express";
-import { registerUserInputs, verifyUserInputs, loginInputs } from "../schema";
+import {
+	registerUserInputs,
+	verifyUserInputs,
+	loginInputs,
+	forgotPasswordInputs,
+	resetPasswordInputs,
+} from "../schema";
 import {
 	registerUser,
 	existingUser,
@@ -12,6 +18,7 @@ import {
 } from "../services";
 import { log, createJWT, sendEmail } from "../utils";
 import { StatusCodes } from "http-status-codes";
+import { nanoid } from "nanoid";
 
 export class authController {
 	public async register(
@@ -200,6 +207,57 @@ export class authController {
 			res
 				.status(StatusCodes.INTERNAL_SERVER_ERROR)
 				.json({ success: false, message: "Unable to login user", error });
+		}
+	}
+
+	public async forgotPassword(
+		req: Request<{}, {}, forgotPasswordInputs>,
+		res: Response,
+	) {
+		try {
+			const body = req.body as forgotPasswordInputs;
+			const message: string =
+				"If a user with that email is registered you will receive a password reset email";
+			//check if user exist
+			const user = await existingUser(body.email);
+			if (!user) {
+				log.info(`User with email: ${body.email} does not exist`);
+				return res.status(StatusCodes.OK).json({ success: true, message });
+			}
+			if (!user.verified) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ success: false, message: "User not verified" });
+			}
+			const passwordResetCode = nanoid();
+			user.passwordResetCode = passwordResetCode;
+			await user.save();
+			const origin = process.env.ORIGIN;
+			const resetPassword = `${origin}/auth/reset-password?id=${user._id}&passwordCode=${passwordResetCode}&password=${body.password}&email=${body.email}`;
+			const emailMesaage = `<p>Please confirm your email by clicking on the following link: <a href="${resetPassword}">Reset password email</a> </p>`;
+			await sendEmail({
+				to: body.email,
+				from: "test@example.com",
+				subject: "Verify your email/account",
+				html: `<h4> Hello, ${user.fullName} </h4> ${emailMesaage}`,
+			});
+			const payload: object = {
+				userId: user._id,
+				email: user.email,
+				role: user.role,
+			};
+
+			const token = createJWT({ payload });
+			res
+				.status(StatusCodes.OK)
+				.json({ success: true, message: message, token });
+		} catch (error: any) {
+			log.info(error.message);
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+				success: false,
+				message: "Unable to send message",
+				error: error.message,
+			});
 		}
 	}
 }

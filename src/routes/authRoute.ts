@@ -1,6 +1,11 @@
 import { Router } from "express";
 import { authController } from "../controller/authController";
-import { registerUserSchema, verifyUserSchema, loginSchema } from "../schema";
+import {
+	registerUserSchema,
+	verifyUserSchema,
+	loginSchema,
+	forgotPasswordSchema,
+} from "../schema";
 import { validateInputs, authorizeUser } from "../middleware";
 
 export class authRoute {
@@ -37,6 +42,12 @@ export class authRoute {
 			"/login",
 			validateInputs(loginSchema),
 			this.userAuthentication.login.bind(this.userAuthentication),
+		);
+		//forgot password
+		this.router.post(
+			"/forgot-password",
+			validateInputs(forgotPasswordSchema),
+			this.userAuthentication.forgotPassword.bind(this.userAuthentication),
 		);
 	}
 

@@ -26,6 +26,7 @@ const dotenv_1 = require("dotenv");
 const services_1 = require("../services");
 const utils_1 = require("../utils");
 const http_status_codes_1 = require("http-status-codes");
+const nanoid_1 = require("nanoid");
 class authController {
     register(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -200,6 +201,54 @@ class authController {
                 res
                     .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
                     .json({ success: false, message: "Unable to login user", error });
+            }
+        });
+    }
+    forgotPassword(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const body = req.body;
+                const message = "If a user with that email is registered you will receive a password reset email";
+                //check if user exist
+                const user = yield (0, services_1.existingUser)(body.email);
+                if (!user) {
+                    utils_1.log.info(`User with email: ${body.email} does not exist`);
+                    return res.status(http_status_codes_1.StatusCodes.OK).json({ success: true, message });
+                }
+                if (!user.verified) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ success: false, message: "User not verified" });
+                }
+                const passwordResetCode = (0, nanoid_1.nanoid)();
+                user.passwordResetCode = passwordResetCode;
+                yield user.save();
+                const origin = process.env.ORIGIN;
+                const resetPassword = `${origin}/auth/reset-password?id=${user._id}&passwordCode=${passwordResetCode}&password=${body.password}&email=${body.email}`;
+                const emailMesaage = `<p>Please confirm your email by clicking on the following link: <a href="${resetPassword}">Reset password email</a> </p>`;
+                yield (0, utils_1.sendEmail)({
+                    to: body.email,
+                    from: "test@example.com",
+                    subject: "Verify your email/account",
+                    html: `<h4> Hello, ${user.fullName} </h4> ${emailMesaage}`,
+                });
+                const payload = {
+                    userId: user._id,
+                    email: user.email,
+                    role: user.role,
+                };
+                const token = (0, utils_1.createJWT)({ payload });
+                res
+                    .status(http_status_codes_1.StatusCodes.OK)
+                    .json({ success: true, message: message, token });
+            }
+            catch (error) {
+                utils_1.log.info(error.message);
+                res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).send({
+                    success: false,
+                    message: "Unable to send message",
+                    error: error.message,
+                });
             }
         });
     }

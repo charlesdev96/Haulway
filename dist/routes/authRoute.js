@@ -20,6 +20,8 @@ class authRoute {
         this.router.get("/verify-account/:id/:verificationCode", (0, middleware_1.validateInputs)(schema_1.verifyUserSchema), this.userAuthentication.verifyUserAccount.bind(this.userAuthentication));
         //login router
         this.router.post("/login", (0, middleware_1.validateInputs)(schema_1.loginSchema), this.userAuthentication.login.bind(this.userAuthentication));
+        //forgot password
+        this.router.post("/forgot-password", (0, middleware_1.validateInputs)(schema_1.forgotPasswordSchema), this.userAuthentication.forgotPassword.bind(this.userAuthentication));
     }
     getAuthRouter() {
         return this.router;

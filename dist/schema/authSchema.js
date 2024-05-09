@@ -51,32 +51,32 @@ exports.loginSchema = zod_1.z.object({
     }),
 });
 exports.forgotPasswordSchema = zod_1.z.object({
-    body: zod_1.z.object({
+    body: zod_1.z
+        .object({
         email: zod_1.z
             .string({
             required_error: "Email is required",
         })
             .email({ message: "Invalid email address" }),
-    }),
-});
-exports.verifyresetPasswordSchema = zod_1.z.object({
-    params: zod_1.z.object({
-        id: zod_1.z.string(),
-        passwordCode: zod_1.z.string(),
-    }),
-    body: zod_1.z
-        .object({
-        newPassword: zod_1.z
+        password: zod_1.z
             .string({
             required_error: "Password is required",
         })
-            .min(6, { message: "Password too short - should be 6 chars minimum" }),
+            .min(6, "Invalid email or password"),
         confirmPassword: zod_1.z.string({
-            required_error: "passwordConfirmation is required",
+            required_error: "confirmPassowrd is required",
         }),
     })
-        .refine((data) => data.newPassword === data.confirmPassword, {
+        .refine((data) => data.password === data.confirmPassword, {
         message: "Passwords do not match",
-        path: ["passwordConfirmation"],
+        path: ["confirmPassword"],
+    }),
+});
+exports.verifyresetPasswordSchema = zod_1.z.object({
+    query: zod_1.z.object({
+        id: zod_1.z.string(),
+        passwordCode: zod_1.z.string(),
+        password: zod_1.z.string(),
+        email: zod_1.z.string(),
     }),
 });

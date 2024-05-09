@@ -1,3 +1,4 @@
+import { query } from "express";
 import { z } from "zod";
 
 export const registerUserSchema = z.object({
@@ -52,35 +53,35 @@ export const loginSchema = z.object({
 });
 
 export const forgotPasswordSchema = z.object({
-	body: z.object({
-		email: z
-			.string({
-				required_error: "Email is required",
-			})
-			.email({ message: "Invalid email address" }),
-	}),
-});
-
-export const verifyresetPasswordSchema = z.object({
-	params: z.object({
-		id: z.string(),
-		passwordCode: z.string(),
-	}),
 	body: z
 		.object({
-			newPassword: z
+			email: z
+				.string({
+					required_error: "Email is required",
+				})
+				.email({ message: "Invalid email address" }),
+			password: z
 				.string({
 					required_error: "Password is required",
 				})
-				.min(6, { message: "Password too short - should be 6 chars minimum" }),
+				.min(6, "Invalid email or password"),
 			confirmPassword: z.string({
-				required_error: "passwordConfirmation is required",
+				required_error: "confirmPassowrd is required",
 			}),
 		})
-		.refine((data) => data.newPassword === data.confirmPassword, {
+		.refine((data) => data.password === data.confirmPassword, {
 			message: "Passwords do not match",
-			path: ["passwordConfirmation"],
+			path: ["confirmPassword"],
 		}),
+});
+
+export const verifyresetPasswordSchema = z.object({
+	query: z.object({
+		id: z.string(),
+		passwordCode: z.string(),
+		password: z.string(),
+		email: z.string(),
+	}),
 });
 
 export type registerUserInputs = z.infer<typeof registerUserSchema>["body"];
@@ -91,4 +92,6 @@ export type loginInputs = z.infer<typeof loginSchema>["body"];
 
 export type forgotPasswordInputs = z.infer<typeof forgotPasswordSchema>["body"];
 
-export type resetPasswordInputs = z.infer<typeof verifyresetPasswordSchema>;
+export type resetPasswordInputs = z.infer<
+	typeof verifyresetPasswordSchema
+>["query"];
