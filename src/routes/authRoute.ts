@@ -5,6 +5,7 @@ import {
 	verifyUserSchema,
 	loginSchema,
 	forgotPasswordSchema,
+	verifyresetPasswordSchema,
 } from "../schema";
 import { validateInputs, authorizeUser } from "../middleware";
 
@@ -48,6 +49,12 @@ export class authRoute {
 			"/forgot-password",
 			validateInputs(forgotPasswordSchema),
 			this.userAuthentication.forgotPassword.bind(this.userAuthentication),
+		);
+		//reset password
+		this.router.post(
+			"/reset-password",
+			validateInputs(verifyresetPasswordSchema),
+			this.userAuthentication.resetPassword.bind(this.userAuthentication),
 		);
 	}
 

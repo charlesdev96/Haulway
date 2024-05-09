@@ -79,7 +79,9 @@ class authController {
             try {
                 const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
                 if (!userId) {
-                    return res.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).send("Unauthorized");
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
                 }
                 const user = yield (0, services_1.findUserById)(userId);
                 if (!user) {
@@ -213,7 +215,9 @@ class authController {
                 const user = yield (0, services_1.existingUser)(body.email);
                 if (!user) {
                     utils_1.log.info(`User with email: ${body.email} does not exist`);
-                    return res.status(http_status_codes_1.StatusCodes.OK).json({ success: true, message });
+                    return res
+                        .status(http_status_codes_1.StatusCodes.OK)
+                        .json({ success: true, message, token: "" });
                 }
                 if (!user.verified) {
                     return res
@@ -225,7 +229,7 @@ class authController {
                 yield user.save();
                 const origin = process.env.ORIGIN;
                 const resetPassword = `${origin}/auth/reset-password?id=${user._id}&passwordCode=${passwordResetCode}&password=${body.password}&email=${body.email}`;
-                const emailMesaage = `<p>Please confirm your email by clicking on the following link: <a href="${resetPassword}">Reset password email</a> </p>`;
+                const emailMesaage = `<p>Please confirm your password reset by clicking on the following link: <a href="${resetPassword}">Reset password email</a> </p>`;
                 yield (0, utils_1.sendEmail)({
                     to: body.email,
                     from: "test@example.com",
@@ -247,6 +251,37 @@ class authController {
                 res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).send({
                     success: false,
                     message: "Unable to send message",
+                    error: error.message,
+                });
+            }
+        });
+    }
+    resetPassword(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const query = req.query;
+                const user = yield (0, services_1.existingUser)(query.email);
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                        .json({ success: false, message: "Unable to change password" });
+                }
+                if (user.email !== query.email ||
+                    user.passwordResetCode !== query.passwordCode) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                        .json({ sucess: false, message: "Invalid query parameters" });
+                }
+                user.password = query.password;
+                user.passwordResetCode = null;
+                yield user.save();
+                res
+                    .status(http_status_codes_1.StatusCodes.OK)
+                    .json({ success: true, message: "Successfully updated password" });
+            }
+            catch (error) {
+                res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).send({
+                    message: "Unable to verify password reset code",
                     error: error.message,
                 });
             }

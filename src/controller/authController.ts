@@ -78,7 +78,9 @@ export class authController {
 		try {
 			const userId: string | undefined = req.user?.userId;
 			if (!userId) {
-				return res.status(StatusCodes.UNAUTHORIZED).send("Unauthorized");
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
 			}
 			const user = await findUserById(userId);
 			if (!user) {
@@ -222,7 +224,9 @@ export class authController {
 			const user = await existingUser(body.email);
 			if (!user) {
 				log.info(`User with email: ${body.email} does not exist`);
-				return res.status(StatusCodes.OK).json({ success: true, message });
+				return res
+					.status(StatusCodes.OK)
+					.json({ success: true, message, token: "" });
 			}
 			if (!user.verified) {
 				return res
@@ -234,7 +238,7 @@ export class authController {
 			await user.save();
 			const origin = process.env.ORIGIN;
 			const resetPassword = `${origin}/auth/reset-password?id=${user._id}&passwordCode=${passwordResetCode}&password=${body.password}&email=${body.email}`;
-			const emailMesaage = `<p>Please confirm your email by clicking on the following link: <a href="${resetPassword}">Reset password email</a> </p>`;
+			const emailMesaage = `<p>Please confirm your password reset by clicking on the following link: <a href="${resetPassword}">Reset password email</a> </p>`;
 			await sendEmail({
 				to: body.email,
 				from: "test@example.com",
@@ -256,6 +260,40 @@ export class authController {
 			res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
 				success: false,
 				message: "Unable to send message",
+				error: error.message,
+			});
+		}
+	}
+
+	public async resetPassword(
+		req: Request<{}, {}, {}, resetPasswordInputs>,
+		res: Response,
+	) {
+		try {
+			const query = req.query as resetPasswordInputs;
+			const user = await existingUser(query.email);
+			if (!user) {
+				return res
+					.status(StatusCodes.BAD_REQUEST)
+					.json({ success: false, message: "Unable to change password" });
+			}
+			if (
+				user.email !== query.email ||
+				user.passwordResetCode !== query.passwordCode
+			) {
+				return res
+					.status(StatusCodes.BAD_REQUEST)
+					.json({ sucess: false, message: "Invalid query parameters" });
+			}
+			user.password = query.password;
+			user.passwordResetCode = null;
+			await user.save();
+			res
+				.status(StatusCodes.OK)
+				.json({ success: true, message: "Successfully updated password" });
+		} catch (error: any) {
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+				message: "Unable to verify password reset code",
 				error: error.message,
 			});
 		}
