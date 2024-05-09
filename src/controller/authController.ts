@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { registerUserInputs } from "../schema";
-import { registerUser, existingUser } from "../services";
+import { registerUserInputs, resendEmailInputs } from "../schema";
+import { registerUser, existingUser, findUserById } from "../services";
 import { log, createJWT, sendEmail } from "../utils";
 import { nanoid } from "nanoid";
 import { StatusCodes } from "http-status-codes";
@@ -28,11 +28,14 @@ export class authController {
 				_id: string;
 				email: string;
 			};
+			const origin: string = "https://haulway-icj2.onrender.com/api/v1";
+			const verifyEmail = `${origin}/auth/verify-email/${_id}/${verificationCode}`;
+			const message = `<p>Please confirm your email by clicking on the following link: <a href="${verifyEmail}">Verify Email</a> </p>`;
 			await sendEmail({
 				to: email,
 				from: "test@example.com",
 				subject: "Verify your email/account",
-				text: `verification code: ${verificationCode} and your Id is: ${_id}`,
+				html: `<h4> Hello, ${body.fullName} </h4> ${message}`,
 			});
 			res.status(StatusCodes.CREATED).json({
 				message:
@@ -41,6 +44,40 @@ export class authController {
 		} catch (error: any) {
 			log.info(error);
 			log.info("Unable to create user");
+		}
+	}
+
+	public async resendVerificationEmail(
+		req: Request<resendEmailInputs, {}, {}>,
+		res: Response,
+	) {
+		try {
+			const id = req.params.id;
+			const user = await findUserById(id);
+			if (!user) {
+				return res
+					.status(StatusCodes.BAD_REQUEST)
+					.json({ message: "Sorry, can not re-send verification code" });
+			}
+			// check to see if they are already verified
+			if (user.verified) {
+				return res
+					.status(StatusCodes.OK)
+					.json({ message: "User is already verified" });
+			}
+			const email = user.email;
+			await sendEmail({
+				to: email?.toString(),
+				from: "test@example.com",
+				subject: "Verify your email/account",
+				text: `<p> verification code: ${user.verificationCode} and your Id is: ${id}, using this link: <a</p>`,
+			});
+			res
+				.status(StatusCodes.OK)
+				.json({ message: "Verification email resent successfully" });
+		} catch (error: any) {
+			log.info(error);
+			log.info("Unable to resend email user");
 		}
 	}
 }
