@@ -60,10 +60,11 @@ export class profiles {
 				updateUser.profilePic = body.profilePic;
 			}
 			if (body.password && body.oldPassword) {
+				const { password, ...userData } = updateUser as { password: string };
 				//check if oldpassword matches current password
-				const isPasswordCorrect = await validatePassword(
-					body.password,
+				const isPasswordCorrect: boolean = await validatePassword(
 					body.oldPassword,
+					password,
 				);
 				if (!isPasswordCorrect) {
 					return res
@@ -74,7 +75,17 @@ export class profiles {
 			}
 			if (body.userName) {
 				//check if username exist
-				await userNameExist(body.userName, res);
+				const existingUsername = await userNameExist(body.userName);
+				if (existingUsername) {
+					const message = `Oops! Username ${body.userName} already taken. Please choose a different one.`;
+					log.info(message);
+					return res
+						.status(StatusCodes.BAD_REQUEST)
+						.json({ success: false, message: message });
+				} else {
+					const message = `The chosen username ${body.userName} is available.`;
+					log.info(message);
+				}
 				updateUser.userName = body.userName;
 			}
 			//save the updated user

@@ -28,19 +28,10 @@ export const userProfile = async (email: string) => {
 	);
 };
 
-export const userNameExist = async (userName: string, res: Response) => {
-	const user = await UserModel.findOne({ userName: userName }).select(
+export const userNameExist = async (userName: string) => {
+	return await UserModel.findOne({ userName: userName }).select(
 		"-password -verificationCode -passwordResetCode",
 	);
-	if (user) {
-		return res.status(StatusCodes.BAD_REQUEST).json({
-			success: false,
-			message: `Oops! Username ${userName} already taken. Please choose a different one.`,
-		});
-	} else {
-		const message = `The chosen username ${userName} is available.`;
-		log.info(message);
-	}
 };
 
 export const validatePassword = async (
