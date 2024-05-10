@@ -64,6 +64,8 @@ const UserSchema = new mongoose_1.default.Schema({
     },
     posts: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Post" }],
     address: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Address" }],
+    products: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Product" }],
+    store: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Store" }],
     numOfFollowers: {
         type: Number,
         default: 0,
