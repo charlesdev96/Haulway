@@ -14,7 +14,7 @@ export class profileRoute {
 	private initializeRoutes() {
 		//user profile
 		this.router.get(
-			"/profile",
+			"/user-profile",
 			authorizeUser,
 			this.profileController.userProfile.bind(this.profileController),
 		);

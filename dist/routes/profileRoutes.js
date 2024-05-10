@@ -12,7 +12,7 @@ class profileRoute {
     }
     initializeRoutes() {
         //user profile
-        this.router.get("/profile", middleware_1.authorizeUser, this.profileController.userProfile.bind(this.profileController));
+        this.router.get("/user-profile", middleware_1.authorizeUser, this.profileController.userProfile.bind(this.profileController));
     }
     getProfileRoutes() {
         return this.router;
