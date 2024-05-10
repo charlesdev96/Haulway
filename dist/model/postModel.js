@@ -15,6 +15,7 @@ const PostSchema = new mongoose_1.default.Schema({
     desc: {
         type: String,
     },
+    postedBy: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" },
     views: {
         type: Number,
         default: 0,

@@ -1,9 +1,7 @@
 import { UserDocument, UserInputs, UserModel } from "../model";
 import { omit } from "lodash";
-import { Request, Response } from "express";
+import { Request } from "express";
 import { compare } from "bcryptjs";
-import { StatusCodes } from "http-status-codes";
-import { log } from "../utils";
 
 export const registerUser = async (input: UserInputs) => {
 	try {

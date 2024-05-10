@@ -2,6 +2,7 @@ import { Router } from "express";
 import { authRoute } from "./authRoute";
 import { profileRoute } from "./profileRoutes";
 import { FilesUploadRouter } from "./filesRoutes";
+import { PostRouter } from "./postController";
 
 class RouterConfig {
 	private router: Router;
@@ -23,6 +24,9 @@ class RouterConfig {
 
 		//files upload
 		this.router.use(`${baseUrl}`, new FilesUploadRouter().getFiles());
+
+		//post routes
+		this.router.use(`${baseUrl}/post`, new PostRouter().getPostRouter());
 	}
 
 	public getRouter(): Router {

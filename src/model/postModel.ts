@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
 
 export interface PostInputs {
-	content: string[];
-	desc: string;
-	views: number;
-	numOfLikes: number;
-	numOfComments: number;
-	comments: string[];
+	content?: string[];
+	desc?: string;
+	postedBy?: string;
+	views?: number;
+	numOfLikes?: number;
+	numOfComments?: number;
+	comments?: string[];
 }
 
 export interface PostDocument extends PostInputs, mongoose.Document {
@@ -26,6 +27,7 @@ const PostSchema = new mongoose.Schema(
 		desc: {
 			type: String,
 		},
+		postedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 		views: {
 			type: Number,
 			default: 0,
