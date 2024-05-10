@@ -18,11 +18,17 @@ const express_1 = __importDefault(require("express"));
 const utils_1 = require("./utils");
 const middleware_1 = require("./middleware");
 const routes_1 = __importDefault(require("./routes/routes"));
+const helmet_1 = __importDefault(require("helmet"));
+const cors_1 = __importDefault(require("cors"));
+const express_fileupload_1 = __importDefault(require("express-fileupload"));
 const app = (0, express_1.default)();
 const router = new routes_1.default();
 //use middleware
+app.use((0, helmet_1.default)());
+app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
+app.use((0, express_fileupload_1.default)({ useTempFiles: true, createParentPath: true }));
 //use router here
 app.use(router.getRouter());
 //not found middleware

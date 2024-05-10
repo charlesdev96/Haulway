@@ -4,13 +4,19 @@ import express, { Request, Response, Express } from "express";
 import { connectDB, log } from "./utils";
 import { notFound } from "./middleware";
 import RouterConfig from "./routes/routes";
+import helmet from "helmet";
+import cors from "cors";
+import expressFileUpload from "express-fileupload";
 
 const app: Express = express();
 const router = new RouterConfig();
 
 //use middleware
+app.use(helmet());
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(expressFileUpload({ useTempFiles: true, createParentPath: true }));
 
 //use router here
 app.use(router.getRouter());

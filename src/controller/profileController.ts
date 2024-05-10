@@ -55,9 +55,27 @@ export class profiles {
 			//update properties individually
 			if (body.fullName) {
 				updateUser.fullName = body.fullName;
+				await updateUser.save();
+				return res.status(StatusCodes.OK).json({
+					success: true,
+					message: `Profile information updated. Your full name is now ${body.fullName}`,
+				});
+			}
+			if (body.role) {
+				updateUser.role = body.role;
+				await updateUser.save();
+				return res.status(StatusCodes.OK).json({
+					success: true,
+					message: `Profile information updated. Your role is now ${body.role}`,
+				});
 			}
 			if (body.profilePic) {
 				updateUser.profilePic = body.profilePic;
+				await updateUser.save();
+				return res.status(StatusCodes.OK).json({
+					success: true,
+					message: `Profile picture have been updated successfully`,
+				});
 			}
 			if (body.password && body.oldPassword) {
 				const { password, ...userData } = updateUser as { password: string };
@@ -72,6 +90,11 @@ export class profiles {
 						.json({ error: "old password must match current password" });
 				}
 				updateUser.password = body.password;
+				await updateUser.save();
+				return res.status(StatusCodes.OK).json({
+					success: true,
+					message: "User password updated successfully",
+				});
 			}
 			if (body.userName) {
 				//check if username exist
@@ -87,12 +110,16 @@ export class profiles {
 					log.info(message);
 				}
 				updateUser.userName = body.userName;
+				await updateUser.save();
+				return res.status(StatusCodes.OK).json({
+					success: true,
+					message: `The chosen username ${body.userName} is available and assigned to you.`,
+				});
 			}
-			//save the updated user
-			await updateUser.save();
-			res.status(StatusCodes.OK).json({
+
+			return res.status(StatusCodes.BAD_REQUEST).json({
 				success: true,
-				message: "User account updated successfully",
+				message: "User account was not updated",
 			});
 		} catch (error: any) {
 			log.info(error);

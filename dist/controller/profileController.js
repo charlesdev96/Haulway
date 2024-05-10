@@ -73,9 +73,27 @@ class profiles {
                 //update properties individually
                 if (body.fullName) {
                     updateUser.fullName = body.fullName;
+                    yield updateUser.save();
+                    return res.status(http_status_codes_1.StatusCodes.OK).json({
+                        success: true,
+                        message: `Profile information updated. Your full name is now ${body.fullName}`,
+                    });
+                }
+                if (body.role) {
+                    updateUser.role = body.role;
+                    yield updateUser.save();
+                    return res.status(http_status_codes_1.StatusCodes.OK).json({
+                        success: true,
+                        message: `Profile information updated. Your role is now ${body.role}`,
+                    });
                 }
                 if (body.profilePic) {
                     updateUser.profilePic = body.profilePic;
+                    yield updateUser.save();
+                    return res.status(http_status_codes_1.StatusCodes.OK).json({
+                        success: true,
+                        message: `Profile picture have been updated successfully`,
+                    });
                 }
                 if (body.password && body.oldPassword) {
                     const _b = updateUser, { password } = _b, userData = __rest(_b, ["password"]);
@@ -87,6 +105,11 @@ class profiles {
                             .json({ error: "old password must match current password" });
                     }
                     updateUser.password = body.password;
+                    yield updateUser.save();
+                    return res.status(http_status_codes_1.StatusCodes.OK).json({
+                        success: true,
+                        message: "User password updated successfully",
+                    });
                 }
                 if (body.userName) {
                     //check if username exist
@@ -103,12 +126,15 @@ class profiles {
                         utils_1.log.info(message);
                     }
                     updateUser.userName = body.userName;
+                    yield updateUser.save();
+                    return res.status(http_status_codes_1.StatusCodes.OK).json({
+                        success: true,
+                        message: `The chosen username ${body.userName} is available and assigned to you.`,
+                    });
                 }
-                //save the updated user
-                yield updateUser.save();
-                res.status(http_status_codes_1.StatusCodes.OK).json({
+                return res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({
                     success: true,
-                    message: "User account updated successfully",
+                    message: "User account was not updated",
                 });
             }
             catch (error) {

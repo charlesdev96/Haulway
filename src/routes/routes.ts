@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authRoute } from "./authRoute";
 import { profileRoute } from "./profileRoutes";
+import { FilesUploadRouter } from "./filesRoutes";
 
 class RouterConfig {
 	private router: Router;
@@ -19,6 +20,9 @@ class RouterConfig {
 			`${baseUrl}/profile`,
 			new profileRoute().getProfileRoutes(),
 		);
+
+		//files upload
+		this.router.use(`${baseUrl}`, new FilesUploadRouter().getFiles());
 	}
 
 	public getRouter(): Router {

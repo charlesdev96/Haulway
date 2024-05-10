@@ -31,72 +31,75 @@ export interface UserDocument extends UserInputs, mongoose.Document {
 	updatedAt: Date;
 }
 
-const UserSchema = new mongoose.Schema({
-	profilePic: {
-		type: String,
-		default: "",
+const UserSchema = new mongoose.Schema(
+	{
+		profilePic: {
+			type: String,
+			default: "",
+		},
+		fullName: {
+			type: String,
+			required: [true, "Please provide full name"],
+		},
+		userName: {
+			type: String,
+			unique: true,
+			default: "",
+		},
+		password: {
+			type: String,
+			required: [true, "Please provide full name"],
+			min: 6,
+		},
+		email: {
+			type: String,
+			required: [true, "Please provide email address"],
+			unique: true,
+		},
+		role: {
+			type: String,
+			enum: ["user", "influencer", "vendor", "admin", "tutor"],
+			default: "user",
+		},
+		verified: {
+			type: Boolean,
+			default: false,
+		},
+		numOfPosts: {
+			type: Number,
+			default: 0,
+		},
+		deviceType: {
+			type: String,
+			enum: ["android", "ios"],
+			default: "android",
+		},
+		verificationCode: {
+			type: String,
+			default: nanoid(),
+		},
+		passwordResetCode: {
+			type: String,
+			default: null,
+		},
+		posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
+		address: [{ type: mongoose.Schema.Types.ObjectId, ref: "Address" }],
+		products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+		store: [{ type: mongoose.Schema.Types.ObjectId, ref: "Store" }],
+		numOfFollowers: {
+			type: Number,
+			default: 0,
+		},
+		numOfFollowings: {
+			type: Number,
+			default: 0,
+		},
+		followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+		followings: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+		carts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Cart" }],
 	},
-	fullName: {
-		type: String,
-		required: [true, "Please provide full name"],
-	},
-	userName: {
-		type: String,
-		unique: true,
-		default: "",
-	},
-	password: {
-		type: String,
-		required: [true, "Please provide full name"],
-		min: 6,
-	},
-	email: {
-		type: String,
-		required: [true, "Please provide email address"],
-		unique: true,
-	},
-	role: {
-		type: String,
-		enum: ["user", "influencer", "vendor", "admin", "tutor"],
-		default: "user",
-	},
-	verified: {
-		type: Boolean,
-		default: false,
-	},
-	numOfPosts: {
-		type: Number,
-		default: 0,
-	},
-	deviceType: {
-		type: String,
-		enum: ["android", "ios"],
-		default: "android",
-	},
-	verificationCode: {
-		type: String,
-		default: nanoid(),
-	},
-	passwordResetCode: {
-		type: String,
-		default: null,
-	},
-	posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
-	address: [{ type: mongoose.Schema.Types.ObjectId, ref: "Address" }],
-	products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
-	store: [{ type: mongoose.Schema.Types.ObjectId, ref: "Store" }],
-	numOfFollowers: {
-		type: Number,
-		default: 0,
-	},
-	numOfFollowings: {
-		type: Number,
-		default: 0,
-	},
-	followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-	followings: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-	carts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Cart" }],
-});
+	{ timestamps: true },
+);
 
 UserSchema.pre("save", async function (next) {
 	if (!this.isModified("password")) return;

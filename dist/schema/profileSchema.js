@@ -8,6 +8,9 @@ exports.updateProfileSchema = zod_1.z.object({
         fullName: zod_1.z.string().optional(),
         userName: zod_1.z.string().optional(),
         profilePic: zod_1.z.string().optional(),
+        role: zod_1.z
+            .enum(["admin", "influencer", "user", "vendor", "tutor"])
+            .optional(),
         password: zod_1.z.string().optional(),
         confirmPassword: zod_1.z.string().optional(),
         oldPassword: zod_1.z.string().optional(),

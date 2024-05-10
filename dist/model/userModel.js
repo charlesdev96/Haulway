@@ -81,7 +81,7 @@ const UserSchema = new mongoose_1.default.Schema({
     followers: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" }],
     followings: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" }],
     carts: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Cart" }],
-});
+}, { timestamps: true });
 UserSchema.pre("save", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!this.isModified("password"))

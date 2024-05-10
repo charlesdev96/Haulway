@@ -6,6 +6,9 @@ export const updateProfileSchema = z.object({
 			fullName: z.string().optional(),
 			userName: z.string().optional(),
 			profilePic: z.string().optional(),
+			role: z
+				.enum(["admin", "influencer", "user", "vendor", "tutor"])
+				.optional(),
 			password: z.string().optional(),
 			confirmPassword: z.string().optional(),
 			oldPassword: z.string().optional(),
