@@ -9,6 +9,7 @@ export interface UserInputs {
 	email?: string;
 	profilePic?: string;
 	verified?: boolean;
+	numOfPosts?: number;
 	deviceType?: "android" | "ios";
 	verificationCode?: string | null;
 	passwordResetCode?: string | null;
@@ -62,6 +63,10 @@ const UserSchema = new mongoose.Schema({
 	verified: {
 		type: Boolean,
 		default: false,
+	},
+	numOfPosts: {
+		type: Number,
+		default: 0,
 	},
 	deviceType: {
 		type: String,

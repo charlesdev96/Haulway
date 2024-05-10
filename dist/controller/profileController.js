@@ -25,9 +25,7 @@ class profiles {
                         .json({ message: "Unauthorized: Missing authentication token." });
                 }
                 const user = yield (0, services_1.userProfile)(email);
-                res
-                    .status(http_status_codes_1.StatusCodes.OK)
-                    .json({
+                res.status(http_status_codes_1.StatusCodes.OK).json({
                     success: true,
                     message: "User profile retrieved successfully.",
                     data: user,
@@ -39,6 +37,63 @@ class profiles {
                     success: false,
                     message: "Unable to display user profile",
                     error: error,
+                });
+            }
+        });
+    }
+    updateProfile(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                const body = req.body;
+                const user = yield (0, services_1.findUserById)(userId);
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found." });
+                }
+                const updateUser = user;
+                //update properties individually
+                if (body.fullName) {
+                    updateUser.fullName = body.fullName;
+                }
+                if (body.profilePic) {
+                    updateUser.profilePic = body.profilePic;
+                }
+                if (body.password && body.oldPassword) {
+                    //check if oldpassword matches current password
+                    const isPasswordCorrect = yield (0, services_1.validatePassword)(body.password, body.oldPassword);
+                    if (!isPasswordCorrect) {
+                        return res
+                            .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                            .json({ error: "old password must match current password" });
+                    }
+                    updateUser.password = body.password;
+                }
+                if (body.userName) {
+                    //check if username exist
+                    yield (0, services_1.userNameExist)(body.userName, res);
+                    updateUser.userName = body.userName;
+                }
+                //save the updated user
+                yield updateUser.save();
+                res.status(http_status_codes_1.StatusCodes.OK).json({
+                    success: true,
+                    message: "User account updated successfully",
+                });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                    success: false,
+                    error: error,
+                    message: "Unable to update account.",
                 });
             }
         });

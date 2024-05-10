@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { authorizeUser } from "../middleware";
+import { authorizeUser, validateInputs } from "../middleware";
 import { profiles } from "../controller/profileController";
+import { updateProfileSchema } from "../schema";
 
 export class profileRoute {
 	private router: Router;
@@ -17,6 +18,13 @@ export class profileRoute {
 			"/user-profile",
 			authorizeUser,
 			this.profileController.userProfile.bind(this.profileController),
+		);
+		//update profile
+		this.router.patch(
+			"/update-profile",
+			authorizeUser,
+			validateInputs(updateProfileSchema),
+			this.profileController.updateProfile.bind(this.profileController),
 		);
 	}
 	public getProfileRoutes() {

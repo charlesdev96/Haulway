@@ -49,6 +49,10 @@ const UserSchema = new mongoose_1.default.Schema({
         type: Boolean,
         default: false,
     },
+    numOfPosts: {
+        type: Number,
+        default: 0,
+    },
     deviceType: {
         type: String,
         enum: ["android", "ios"],

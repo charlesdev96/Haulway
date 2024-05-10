@@ -32,12 +32,6 @@ export class authRoute {
 				this.userAuthentication,
 			),
 		);
-		//verify user
-		this.router.get(
-			"/verify-account/:id/:verificationCode",
-			validateInputs(verifyUserSchema),
-			this.userAuthentication.verifyUserAccount.bind(this.userAuthentication),
-		);
 		//login router
 		this.router.post(
 			"/login",
@@ -55,6 +49,12 @@ export class authRoute {
 			"/reset-password",
 			validateInputs(verifyresetPasswordSchema),
 			this.userAuthentication.resetPassword.bind(this.userAuthentication),
+		);
+		//verify user
+		this.router.get(
+			"/verify-account/:id/:verificationCode",
+			validateInputs(verifyUserSchema),
+			this.userAuthentication.verifyUserAccount.bind(this.userAuthentication),
 		);
 	}
 

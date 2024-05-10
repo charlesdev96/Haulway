@@ -16,14 +16,14 @@ class authRoute {
         this.router.post("/register", (0, middleware_1.validateInputs)(schema_1.registerUserSchema), this.userAuthentication.register.bind(this.userAuthentication));
         //resend verification email
         this.router.post("/resend-email", middleware_1.authorizeUser, this.userAuthentication.resendVerificationEmail.bind(this.userAuthentication));
-        //verify user
-        this.router.get("/verify-account/:id/:verificationCode", (0, middleware_1.validateInputs)(schema_1.verifyUserSchema), this.userAuthentication.verifyUserAccount.bind(this.userAuthentication));
         //login router
         this.router.post("/login", (0, middleware_1.validateInputs)(schema_1.loginSchema), this.userAuthentication.login.bind(this.userAuthentication));
         //forgot password
         this.router.post("/forgot-password", (0, middleware_1.validateInputs)(schema_1.forgotPasswordSchema), this.userAuthentication.forgotPassword.bind(this.userAuthentication));
         //reset password
         this.router.get("/reset-password", (0, middleware_1.validateInputs)(schema_1.verifyresetPasswordSchema), this.userAuthentication.resetPassword.bind(this.userAuthentication));
+        //verify user
+        this.router.get("/verify-account/:id/:verificationCode", (0, middleware_1.validateInputs)(schema_1.verifyUserSchema), this.userAuthentication.verifyUserAccount.bind(this.userAuthentication));
     }
     getAuthRouter() {
         return this.router;
