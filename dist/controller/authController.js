@@ -66,7 +66,7 @@ class authController {
             }
             catch (error) {
                 utils_1.log.info(error.message);
-                if (error.code === 11000) {
+                if (error && error.code === 11000) {
                     // Duplicate key error
                     return res
                         .status(http_status_codes_1.StatusCodes.BAD_REQUEST)

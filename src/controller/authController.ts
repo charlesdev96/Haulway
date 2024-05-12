@@ -67,7 +67,7 @@ export class authController {
 			});
 		} catch (error: any) {
 			log.info(error.message);
-			if (error.code === 11000) {
+			if (error && error.code === 11000) {
 				// Duplicate key error
 				return res
 					.status(StatusCodes.BAD_REQUEST)
