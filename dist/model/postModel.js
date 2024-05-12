@@ -20,6 +20,11 @@ const PostSchema = new mongoose_1.default.Schema({
         type: Number,
         default: 0,
     },
+    followingStatus: {
+        type: String,
+        enum: ["owner", "following", "follow"],
+        default: "owner",
+    },
     numOfLikes: {
         type: Number,
         default: 0,

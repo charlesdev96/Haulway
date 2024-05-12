@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { PostController } from "../controller/postController";
 import { authorizeUser, validateInputs } from "../middleware";
-import { createPostSchema } from "../schema";
+import { createPostSchema, updatePostSchema } from "../schema";
 
 export class PostRouter {
 	private router: Router;
@@ -18,6 +18,13 @@ export class PostRouter {
 			authorizeUser,
 			validateInputs(createPostSchema),
 			this.postController.createPost.bind(this.postController),
+		);
+		//update post
+		this.router.patch(
+			"/update-post/:postId",
+			authorizeUser,
+			validateInputs(updatePostSchema),
+			this.postController.updatePost.bind(this.postController),
 		);
 	}
 

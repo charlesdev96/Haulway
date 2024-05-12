@@ -14,6 +14,8 @@ class PostRouter {
     initializeRoutes() {
         //create post
         this.router.post("/create-post", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.createPostSchema), this.postController.createPost.bind(this.postController));
+        //update post
+        this.router.patch("/update-post/:postId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.updatePostSchema), this.postController.updatePost.bind(this.postController));
     }
     getPostRouter() {
         return this.router;

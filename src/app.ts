@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 config();
-import express, { Request, Response, Express } from "express";
+import express, { Request, Response, Express, NextFunction } from "express";
 import { connectDB, log } from "./utils";
 import { notFound } from "./middleware";
 import RouterConfig from "./routes/routes";

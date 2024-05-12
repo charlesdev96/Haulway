@@ -50,5 +50,54 @@ class PostController {
             }
         });
     }
+    updatePost(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
+            try {
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                const { postId } = req.params;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                const body = req.body;
+                const post = yield (0, services_1.findPostById)(postId);
+                //check if post exist
+                if (!post) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ error: "Post not found" });
+                }
+                //check if post belongs to user
+                if (userId.toString() !== ((_b = post.postedBy) === null || _b === void 0 ? void 0 : _b.toString())) {
+                    return res.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).json({
+                        message: "Oops! It looks like you can't edit this post. Only the author can make changes.",
+                    });
+                }
+                //then procceds to update the post
+                if (body.content)
+                    post.content = body.content;
+                if (body.desc)
+                    post.desc = body.desc;
+                //save updated post
+                post.save();
+                res
+                    .status(http_status_codes_1.StatusCodes.OK)
+                    .json({ suceess: true, message: "Your post has been updated." });
+            }
+            catch (error) {
+                utils_1.log.info(error.message);
+                if (error.message.indexOf("Cast to ObjectId failed") !== -1) {
+                    return res.json({ message: "Wrong Id format" });
+                }
+                res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                    success: false,
+                    error: error.message,
+                    message: "Unable to update post.",
+                });
+            }
+        });
+    }
 }
 exports.PostController = PostController;

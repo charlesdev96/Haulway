@@ -5,6 +5,7 @@ export interface PostInputs {
 	desc?: string;
 	postedBy?: string;
 	views?: number;
+	followingStatus?: "following" | "follow" | "owner";
 	numOfLikes?: number;
 	numOfComments?: number;
 	comments?: string[];
@@ -31,6 +32,11 @@ const PostSchema = new mongoose.Schema(
 		views: {
 			type: Number,
 			default: 0,
+		},
+		followingStatus: {
+			type: String,
+			enum: ["owner", "following", "follow"],
+			default: "owner",
 		},
 		numOfLikes: {
 			type: Number,
