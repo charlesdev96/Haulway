@@ -43,7 +43,7 @@ class PostController {
                 });
             }
             catch (error) {
-                utils_1.log.info(error);
+                utils_1.log.info(error.message);
                 res
                     .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
                     .json({ success: false, message: "Unable to create post" });

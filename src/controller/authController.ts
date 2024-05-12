@@ -66,7 +66,13 @@ export class authController {
 				token,
 			});
 		} catch (error: any) {
-			log.info(error);
+			log.info(error.message);
+			if (error.code === 11000) {
+				// Duplicate key error
+				return res
+					.status(StatusCodes.BAD_REQUEST)
+					.json({ message: "Username already exists" });
+			}
 			log.info("Unable to create user");
 			res
 				.status(StatusCodes.INTERNAL_SERVER_ERROR)

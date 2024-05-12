@@ -65,7 +65,13 @@ class authController {
                 });
             }
             catch (error) {
-                utils_1.log.info(error);
+                utils_1.log.info(error.message);
+                if (error.code === 11000) {
+                    // Duplicate key error
+                    return res
+                        .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                        .json({ message: "Username already exists" });
+                }
                 utils_1.log.info("Unable to create user");
                 res
                     .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)

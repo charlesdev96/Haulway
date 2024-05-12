@@ -27,7 +27,6 @@ const UserSchema = new mongoose_1.default.Schema({
     },
     userName: {
         type: String,
-        unique: true,
         default: "",
     },
     password: {

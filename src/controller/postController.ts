@@ -38,7 +38,7 @@ export class PostController {
 				data: post,
 			});
 		} catch (error: any) {
-			log.info(error);
+			log.info(error.message);
 			res
 				.status(StatusCodes.INTERNAL_SERVER_ERROR)
 				.json({ success: false, message: "Unable to create post" });
