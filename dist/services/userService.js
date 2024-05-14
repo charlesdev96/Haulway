@@ -32,11 +32,11 @@ const findUserById = (userId) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.findUserById = findUserById;
 const userProfile = (email) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield model_1.UserModel.findOne({ email: email }).select("-password -verificationCode -passwordResetCode");
+    return yield model_1.UserModel.findOne({ email: email }).select("-password -verificationCode -passwordResetCode -otp");
 });
 exports.userProfile = userProfile;
 const userNameExist = (userName) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield model_1.UserModel.findOne({ userName: userName }).select("-password -verificationCode -passwordResetCode");
+    return yield model_1.UserModel.findOne({ userName: userName }).select("-password -verificationCode -passwordResetCode -otp");
 });
 exports.userNameExist = userNameExist;
 const validatePassword = (userPassword, canditatePassword) => __awaiter(void 0, void 0, void 0, function* () {

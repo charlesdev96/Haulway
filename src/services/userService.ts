@@ -22,13 +22,13 @@ export const findUserById = async (userId: string) => {
 
 export const userProfile = async (email: string) => {
 	return await UserModel.findOne({ email: email }).select(
-		"-password -verificationCode -passwordResetCode",
+		"-password -verificationCode -passwordResetCode -otp",
 	);
 };
 
 export const userNameExist = async (userName: string) => {
 	return await UserModel.findOne({ userName: userName }).select(
-		"-password -verificationCode -passwordResetCode",
+		"-password -verificationCode -passwordResetCode -otp",
 	);
 };
 
