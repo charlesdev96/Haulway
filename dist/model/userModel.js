@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserModel = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const bcryptjs_1 = require("bcryptjs");
-const nanoid_1 = require("nanoid");
 const UserSchema = new mongoose_1.default.Schema({
     profilePic: {
         type: String,
@@ -57,13 +56,11 @@ const UserSchema = new mongoose_1.default.Schema({
         enum: ["android", "ios"],
         default: "android",
     },
-    verificationCode: {
-        type: String,
-        default: (0, nanoid_1.nanoid)(),
+    otp: {
+        type: Number,
     },
-    passwordResetCode: {
-        type: String,
-        default: null,
+    otpExpirationDate: {
+        type: Date,
     },
     posts: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Post" }],
     address: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Address" }],

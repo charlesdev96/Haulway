@@ -17,4 +17,4 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./logger"), exports);
 __exportStar(require("./connectDB"), exports);
 __exportStar(require("./jwt"), exports);
-__exportStar(require("./mailer"), exports);
+__exportStar(require("./sendEmail"), exports);

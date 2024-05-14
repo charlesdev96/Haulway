@@ -5,7 +5,8 @@ import {
 	verifyUserSchema,
 	loginSchema,
 	forgotPasswordSchema,
-	verifyresetPasswordSchema,
+	verifyPasswordOtpSchema,
+	resetPasswordSchema,
 } from "../schema";
 import { validateInputs, authorizeUser } from "../middleware";
 
@@ -32,6 +33,13 @@ export class authRoute {
 				this.userAuthentication,
 			),
 		);
+		//verify user
+		this.router.post(
+			"/verify-account",
+			authorizeUser,
+			validateInputs(verifyUserSchema),
+			this.userAuthentication.verifyUserAccount.bind(this.userAuthentication),
+		);
 		//login router
 		this.router.post(
 			"/login",
@@ -44,17 +52,27 @@ export class authRoute {
 			validateInputs(forgotPasswordSchema),
 			this.userAuthentication.forgotPassword.bind(this.userAuthentication),
 		);
-		//reset password
-		this.router.get(
-			"/reset-password",
-			validateInputs(verifyresetPasswordSchema),
-			this.userAuthentication.resetPassword.bind(this.userAuthentication),
+		//resend password otp
+		this.router.post(
+			"/resend-forgot-password",
+			authorizeUser,
+			this.userAuthentication.resendForgotPassword.bind(
+				this.userAuthentication,
+			),
 		);
-		//verify user
-		this.router.get(
-			"/verify-account/:id/:verificationCode",
-			validateInputs(verifyUserSchema),
-			this.userAuthentication.verifyUserAccount.bind(this.userAuthentication),
+		//verify otp
+		this.router.post(
+			"/verify-otp",
+			authorizeUser,
+			validateInputs(verifyPasswordOtpSchema),
+			this.userAuthentication.verifyPasswordOtp.bind(this.userAuthentication),
+		);
+		//reset password
+		this.router.post(
+			"/reset-password",
+			authorizeUser,
+			validateInputs(resetPasswordSchema),
+			this.userAuthentication.resetPassword.bind(this.userAuthentication),
 		);
 	}
 

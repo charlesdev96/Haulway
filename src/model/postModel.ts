@@ -9,6 +9,23 @@ export interface PostInputs {
 	numOfLikes?: number;
 	numOfComments?: number;
 	comments?: string[];
+	tagPeople?: string[];
+	addLocation?: string;
+	addMusic?: string;
+	addCategory?:
+		| "dinner"
+		| "office"
+		| "wedding"
+		| "pyjamas"
+		| "beach"
+		| "casual"
+		| "sport"
+		| "grwm"
+		| "lookbook"
+		| "hauls"
+		| "featured"
+		| "jewelry"
+		| "cosmetics";
 }
 
 export interface PostDocument extends PostInputs, mongoose.Document {

@@ -1,6 +1,5 @@
 import mongoose, { Date } from "mongoose";
 import { hashSync, genSalt, compare } from "bcryptjs";
-import { nanoid } from "nanoid";
 
 export interface UserInputs {
 	fullName?: string;
@@ -11,8 +10,7 @@ export interface UserInputs {
 	verified?: boolean;
 	numOfPosts?: number;
 	deviceType?: "android" | "ios";
-	verificationCode?: string | null;
-	passwordResetCode?: string | null;
+	otp?: number | null;
 	role?: "user" | "influencer" | "vendor" | "admin" | "tutor";
 	posts?: string[];
 	address?: string[];
@@ -27,6 +25,7 @@ export interface UserInputs {
 
 export interface UserDocument extends UserInputs, mongoose.Document {
 	_id?: string;
+	otpExpirationDate?: Date;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -73,13 +72,11 @@ const UserSchema = new mongoose.Schema(
 			enum: ["android", "ios"],
 			default: "android",
 		},
-		verificationCode: {
-			type: String,
-			default: nanoid(),
+		otp: {
+			type: Number,
 		},
-		passwordResetCode: {
-			type: String,
-			default: null,
+		otpExpirationDate: {
+			type: Date,
 		},
 		posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
 		address: [{ type: mongoose.Schema.Types.ObjectId, ref: "Address" }],

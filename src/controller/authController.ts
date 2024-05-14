@@ -7,6 +7,7 @@ import {
 	loginInputs,
 	forgotPasswordInputs,
 	resetPasswordInputs,
+	verifyPasswordOtpInputs,
 } from "../schema";
 import {
 	registerUser,
@@ -16,9 +17,16 @@ import {
 	validatePassword,
 	userProfile,
 } from "../services";
-import { log, createJWT, sendEmail } from "../utils";
+import { log, createJWT, sendMail } from "../utils";
 import { StatusCodes } from "http-status-codes";
-import { nanoid } from "nanoid";
+import { customAlphabet } from "nanoid";
+
+//generate token
+function generateToken() {
+	const numericAlphabet = "0123456789";
+	const token = customAlphabet("0123456789", 5);
+	return token();
+}
 
 export class authController {
 	public async register(
@@ -35,23 +43,18 @@ export class authController {
 					.json({ message: "User already exist" });
 			}
 			//create user if user does not exist
+			const otp: number = Number(generateToken());
+			body.otp = otp;
 			const user = await registerUser(body);
 
 			//send email with verification code
-			const { verificationCode, _id, email, ...userDAta } = user as {
-				verificationCode: string;
+			const { _id, email, ...userDAta } = user as {
 				_id: string;
 				email: string;
 			};
-			const origin = process.env.ORIGIN;
-			const verifyEmail = `${origin}/auth/verify-account/${_id}/${verificationCode}`;
-			const message = `<p>Please confirm your email by clicking on the following link: <a href="${verifyEmail}">Verify Email</a> </p>`;
-			await sendEmail({
-				to: email,
-				from: "test@example.com",
-				subject: "Verify your email/account",
-				html: `<h4> Hello, ${body.fullName} </h4> ${message}`,
-			});
+
+			//send email with otp
+			await sendMail(body.email, otp);
 			const payload: object = {
 				userId: user._id,
 				email: user.email,
@@ -83,7 +86,8 @@ export class authController {
 	public async resendVerificationEmail(req: CustomRequest, res: Response) {
 		try {
 			const userId: string | undefined = req.user?.userId;
-			if (!userId) {
+			const email: string | undefined = req.user?.email;
+			if (!userId || !email) {
 				return res
 					.status(StatusCodes.UNAUTHORIZED)
 					.json({ message: "Unauthorized: Missing authentication token." });
@@ -100,16 +104,14 @@ export class authController {
 					.status(StatusCodes.OK)
 					.json({ message: "User is already verified" });
 			}
-			const email = user.email;
-			const origin = process.env.ORIGIN;
-			const verifyEmail = `${origin}/auth/verify-account/${user._id}/${user.verificationCode}`;
-			const message = `<p>Please confirm your email by clicking on the following link: <a href="${verifyEmail}">Verify Email</a> </p>`;
-			await sendEmail({
-				to: email?.toString(),
-				from: "test@example.com",
-				subject: "Verify your email/account",
-				html: `<h4> Hello, ${user.fullName} </h4> ${message}`,
-			});
+			const otp = user?.otp;
+			if (!otp) {
+				return res
+					.status(StatusCodes.BAD_REQUEST)
+					.json({ message: "Missing otp" });
+			}
+			//resend email
+			await sendMail(email, otp);
 			res.status(StatusCodes.OK).json({
 				success: true,
 				message: "Verification email resent successfully",
@@ -123,20 +125,22 @@ export class authController {
 		}
 	}
 
-	public async verifyUserAccount(
-		req: Request<verifyUserInputs, {}, {}>,
-		res: Response,
-	) {
+	public async verifyUserAccount(req: CustomRequest, res: Response) {
 		try {
-			const { id, verificationCode } = req.params as verifyUserInputs;
+			const { otp } = req.body as verifyUserInputs;
 
 			// find the user by id
-			const user = await findUserById(id);
-
+			const userId: string | undefined = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const user = await findUserById(userId);
 			if (!user) {
 				return res
 					.status(StatusCodes.BAD_REQUEST)
-					.json({ success: false, message: "Could not verify user" });
+					.json({ message: "Sorry, can not re-send verification code" });
 			}
 
 			// check to see if they are already verified
@@ -147,18 +151,18 @@ export class authController {
 			}
 
 			// check to see if the verificationCode matches
-			if (user.verificationCode === verificationCode) {
-				user.verified = true;
-				user.verificationCode = null;
-				await user.save();
+			if (user.otp?.toString() !== otp.toString()) {
 				return res
 					.status(StatusCodes.OK)
-					.json({ success: true, message: "User successfully verified" });
+					.json({ success: true, message: "Invalid or expired OTP code" });
 			}
-			//if conditions not certified
-			return res
-				.status(StatusCodes.BAD_REQUEST)
-				.json({ success: false, message: "Could not verify user" });
+
+			user.verified = true;
+			(user.otp = null), await user.save();
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: `Verification successful for the email: ${user.email}`,
+			});
 		} catch (error: any) {
 			log.info(error);
 			if (error.message.indexOf("Cast to ObjectId failed") !== -1) {
@@ -223,13 +227,13 @@ export class authController {
 		res: Response,
 	) {
 		try {
-			const body = req.body as forgotPasswordInputs;
+			const { email } = req.body as forgotPasswordInputs;
 			const message: string =
 				"If a user with that email is registered you will receive a password reset email";
 			//check if user exist
-			const user = await existingUser(body.email);
+			const user = await existingUser(email);
 			if (!user) {
-				log.info(`User with email: ${body.email} does not exist`);
+				log.info(`User with email: ${email} does not exist`);
 				return res
 					.status(StatusCodes.OK)
 					.json({ success: true, message, token: "" });
@@ -239,59 +243,157 @@ export class authController {
 					.status(StatusCodes.UNAUTHORIZED)
 					.json({ success: false, message: "User not verified" });
 			}
-			const passwordResetCode = nanoid();
-			user.passwordResetCode = passwordResetCode;
+			//generate otp
+			const otp: number = Number(generateToken());
+			user.otp = otp;
 			await user.save();
-			const origin = process.env.ORIGIN;
-			const resetPassword = `${origin}/auth/reset-password?id=${user._id}&passwordCode=${passwordResetCode}&password=${body.password}&email=${body.email}`;
-			const emailMesaage = `<p>Please confirm your password reset by clicking on the following link: <a href="${resetPassword}">Reset password email</a> </p>`;
-			await sendEmail({
-				to: body.email,
-				from: "test@example.com",
-				subject: "Verify your email/account",
-				html: `<h4> Hello, ${user.fullName} </h4> ${emailMesaage}`,
-			});
-			log.info(`id: ${user._id}, passwordCode: ${passwordResetCode}`);
-			res.status(StatusCodes.OK).json({ success: true, message: message });
+
+			//send email with otp
+			await sendMail(email, otp);
+			const payload: object = {
+				userId: user._id,
+				email: user.email,
+				role: user.role,
+			};
+			const token = createJWT({ payload });
+			res
+				.status(StatusCodes.OK)
+				.json({ success: true, message: message, token });
 		} catch (error: any) {
 			log.info(error.message);
 			res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
 				success: false,
-				message: "Unable to send message",
+				message: "Unable to send mail",
 				error: error.message,
 			});
 		}
 	}
 
-	public async resetPassword(
-		req: Request<{}, {}, {}, resetPasswordInputs>,
-		res: Response,
-	) {
+	public async resendForgotPassword(req: CustomRequest, res: Response) {
 		try {
-			const query = req.query as resetPasswordInputs;
-			const user = await existingUser(query.email);
+			const userId: string | undefined = req.user?.userId;
+			const email: string | undefined = req.user?.email;
+			if (!userId || !email) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const user = await findUserById(userId);
 			if (!user) {
 				return res
 					.status(StatusCodes.BAD_REQUEST)
-					.json({ success: false, message: "Unable to change password" });
+					.json({ message: "Sorry, can not re-send forgot password code" });
 			}
-			if (
-				user.email !== query.email ||
-				user.passwordResetCode !== query.passwordCode
-			) {
+			// check to see if they are already verified
+			if (!user.verified) {
+				return res
+					.status(StatusCodes.OK)
+					.json({ message: "User is is not verified" });
+			}
+			const otp = user?.otp;
+			if (!otp) {
 				return res
 					.status(StatusCodes.BAD_REQUEST)
-					.json({ sucess: false, message: "Invalid query parameters" });
+					.json({ message: "Missing otp" });
 			}
-			user.password = query.password;
-			user.passwordResetCode = null;
+			//resend email
+			await sendMail(email, otp);
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "Forgot password email resent successfully",
+			});
+		} catch (error: any) {
+			log.info(error);
+			log.info("Unable to register user");
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				success: false,
+				message: "Unable to resend forgot password mail",
+			});
+		}
+	}
+
+	public async verifyPasswordOtp(req: CustomRequest, res: Response) {
+		try {
+			const { otp } = req.body as verifyPasswordOtpInputs;
+			const userId: string | undefined = req.user?.userId;
+			const email: string | undefined = req.user?.email;
+			if (!userId || !email) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const user = await findUserById(userId);
+			if (!user) {
+				return res
+					.status(StatusCodes.BAD_REQUEST)
+					.json({ message: "Sorry, can not re-send forgot password code" });
+			}
+			// check to see if they are already verified
+			if (!user.verified) {
+				return res
+					.status(StatusCodes.OK)
+					.json({ message: "User is is not verified" });
+			}
+			//check if otp is correct
+			if (otp.toString() !== user.otp?.toString()) {
+				return res
+					.status(StatusCodes.BAD_REQUEST)
+					.json({ message: "Invalid or expired otp" });
+			}
+
+			//set otp to null
+			user.otp = null;
+			await user.save();
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "Password OTP verified successfully",
+			});
+		} catch (error: any) {
+			log.info(error.message);
+			res
+				.status(StatusCodes.INTERNAL_SERVER_ERROR)
+				.json({
+					success: false,
+					message: "Unable to verify otp",
+					error: error.message,
+				});
+		}
+	}
+
+	public async resetPassword(req: CustomRequest, res: Response) {
+		try {
+			const { password } = req.body as resetPasswordInputs;
+			const userId: string | undefined = req.user?.userId;
+			const email: string | undefined = req.user?.email;
+			if (!userId || !email) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const user = await findUserById(userId);
+			if (!user) {
+				return res
+					.status(StatusCodes.BAD_REQUEST)
+					.json({ message: "Sorry, can not re-send forgot password code" });
+			}
+			// check to see if they are already verified
+			if (!user.verified) {
+				return res
+					.status(StatusCodes.OK)
+					.json({ message: "User is is not verified" });
+			}
+
+			//save the new password
+			user.password = password;
 			await user.save();
 			res
 				.status(StatusCodes.OK)
-				.json({ success: true, message: "Successfully updated password" });
+				.json({ success: true, message: "Password reset successfully" });
 		} catch (error: any) {
-			res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
-				message: "Unable to verify password reset code",
+			log.info(error.message);
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				success: false,
+				message: "Unable to reset password",
 				error: error.message,
 			});
 		}
