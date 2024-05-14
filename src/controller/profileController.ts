@@ -5,11 +5,12 @@ import {
 	userProfile,
 	validatePassword,
 	userNameExist,
+	existingUser,
 } from "../services";
-import { updateProfileInputs } from "../schema";
+import { updateProfileInputs, deleteAccountInputs } from "../schema";
 import { StatusCodes } from "http-status-codes";
 import { log } from "../utils";
-import { UserDocument } from "../model";
+import { UserDocument, UserModel } from "../model";
 
 export class profiles {
 	public async userProfile(req: CustomRequest, res: Response) {
@@ -87,7 +88,7 @@ export class profiles {
 				if (!isPasswordCorrect) {
 					return res
 						.status(StatusCodes.UNAUTHORIZED)
-						.json({ error: "old password must match current password" });
+						.json({ message: "old password must match current password" });
 				}
 				updateUser.password = body.password;
 				await updateUser.save();
@@ -128,6 +129,30 @@ export class profiles {
 				error: error,
 				message: "Unable to update account.",
 			});
+		}
+	}
+
+	public async deleteAccount(
+		req: Request<{}, {}, deleteAccountInputs>,
+		res: Response,
+	) {
+		try {
+			const { email } = req.body as deleteAccountInputs;
+			const user = await existingUser(email);
+			if (!user) {
+				return res
+					.status(StatusCodes.BAD_REQUEST)
+					.json({ message: "User not found" });
+			}
+			await user.deleteOne();
+			res
+				.status(StatusCodes.OK)
+				.json({ success: true, message: "User account successfully deleted" });
+		} catch (error: any) {
+			log.info(error.message);
+			res
+				.status(StatusCodes.INTERNAL_SERVER_ERROR)
+				.json({ success: false, message: "Unable to delete account" });
 		}
 	}
 }

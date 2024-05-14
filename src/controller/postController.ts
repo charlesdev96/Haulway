@@ -60,7 +60,7 @@ export class PostController {
 			if (!post) {
 				return res
 					.status(StatusCodes.NOT_FOUND)
-					.json({ error: "Post not found" });
+					.json({ message: "Post not found" });
 			}
 
 			//check if post belongs to user

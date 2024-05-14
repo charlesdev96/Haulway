@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authorizeUser, validateInputs } from "../middleware";
 import { profiles } from "../controller/profileController";
-import { updateProfileSchema } from "../schema";
+import { updateProfileSchema, deleteAccountSchema } from "../schema";
 
 export class profileRoute {
 	private router: Router;
@@ -25,6 +25,12 @@ export class profileRoute {
 			authorizeUser,
 			validateInputs(updateProfileSchema),
 			this.profileController.updateProfile.bind(this.profileController),
+		);
+		//delete account
+		this.router.delete(
+			"/delete-account",
+			validateInputs(deleteAccountSchema),
+			this.profileController.deleteAccount.bind(this.profileController),
 		);
 	}
 	public getProfileRoutes() {

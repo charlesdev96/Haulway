@@ -19,4 +19,15 @@ export const updateProfileSchema = z.object({
 		}),
 });
 
+export const deleteAccountSchema = z.object({
+	body: z.object({
+		email: z
+			.string({
+				required_error: "Please provide an email",
+			})
+			.email({ message: "Please provide a valid email" }),
+	}),
+});
+
 export type updateProfileInputs = z.infer<typeof updateProfileSchema>["body"];
+export type deleteAccountInputs = z.infer<typeof deleteAccountSchema>["body"];

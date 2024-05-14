@@ -102,7 +102,7 @@ class profiles {
                     if (!isPasswordCorrect) {
                         return res
                             .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
-                            .json({ error: "old password must match current password" });
+                            .json({ message: "old password must match current password" });
                     }
                     updateUser.password = body.password;
                     yield updateUser.save();
@@ -144,6 +144,29 @@ class profiles {
                     error: error,
                     message: "Unable to update account.",
                 });
+            }
+        });
+    }
+    deleteAccount(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { email } = req.body;
+                const user = yield (0, services_1.existingUser)(email);
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                        .json({ message: "User not found" });
+                }
+                yield user.deleteOne();
+                res
+                    .status(http_status_codes_1.StatusCodes.OK)
+                    .json({ success: true, message: "User account successfully deleted" });
+            }
+            catch (error) {
+                utils_1.log.info(error.message);
+                res
+                    .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
+                    .json({ success: false, message: "Unable to delete account" });
             }
         });
     }

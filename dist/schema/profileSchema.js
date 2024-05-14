@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateProfileSchema = void 0;
+exports.deleteAccountSchema = exports.updateProfileSchema = void 0;
 const zod_1 = require("zod");
 exports.updateProfileSchema = zod_1.z.object({
     body: zod_1.z
@@ -18,5 +18,14 @@ exports.updateProfileSchema = zod_1.z.object({
         .refine((data) => data.password === data.confirmPassword, {
         message: "Passwords do not match",
         path: ["confirmPassword"],
+    }),
+});
+exports.deleteAccountSchema = zod_1.z.object({
+    body: zod_1.z.object({
+        email: zod_1.z
+            .string({
+            required_error: "Please provide an email",
+        })
+            .email({ message: "Please provide a valid email" }),
     }),
 });

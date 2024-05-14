@@ -67,7 +67,7 @@ class PostController {
                 if (!post) {
                     return res
                         .status(http_status_codes_1.StatusCodes.NOT_FOUND)
-                        .json({ error: "Post not found" });
+                        .json({ message: "Post not found" });
                 }
                 //check if post belongs to user
                 if (userId.toString() !== ((_b = post.postedBy) === null || _b === void 0 ? void 0 : _b.toString())) {

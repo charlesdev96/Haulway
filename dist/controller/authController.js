@@ -19,6 +19,9 @@ var __rest = (this && this.__rest) || function (s, e) {
         }
     return t;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authController = void 0;
 const dotenv_1 = require("dotenv");
@@ -27,11 +30,18 @@ const services_1 = require("../services");
 const utils_1 = require("../utils");
 const http_status_codes_1 = require("http-status-codes");
 const nanoid_1 = require("nanoid");
+const lodash_1 = __importDefault(require("lodash"));
+//create 6 digits verification
+function generateOTP(length) {
+    const min = Math.pow(10, length - 1);
+    const max = Math.pow(10, length) - 1;
+    return lodash_1.default.random(min, max).toString();
+}
 //generate token
 function generateToken() {
     const numericAlphabet = "0123456789";
     const token = (0, nanoid_1.customAlphabet)("0123456789", 5);
-    return token();
+    return token(5);
 }
 class authController {
     register(req, res) {
@@ -46,7 +56,8 @@ class authController {
                         .json({ message: "User already exist" });
                 }
                 //create user if user does not exist
-                const otp = Number(generateToken());
+                // const otp: number = Number(generateToken());
+                const otp = Number(generateOTP(5));
                 body.otp = otp;
                 const user = yield (0, services_1.registerUser)(body);
                 //send email with verification code
@@ -237,7 +248,8 @@ class authController {
                         .json({ success: false, message: "User not verified" });
                 }
                 //generate otp
-                const otp = Number(generateToken());
+                // const otp: number = Number(generateToken());
+                const otp = Number(generateOTP(5));
                 user.otp = otp;
                 yield user.save();
                 //send email with otp
@@ -348,9 +360,7 @@ class authController {
             }
             catch (error) {
                 utils_1.log.info(error.message);
-                res
-                    .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
-                    .json({
+                res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
                     success: false,
                     message: "Unable to verify otp",
                     error: error.message,
