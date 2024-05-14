@@ -1,7 +1,12 @@
 import { config } from "dotenv";
 config();
 import express, { Request, Response, Express, NextFunction } from "express";
-import { connectDB, log } from "./utils";
+import {
+	connectDB,
+	log,
+	userCreatedEmitter,
+	deleteUnverifiedUsers,
+} from "./utils";
 import { notFound } from "./middleware";
 import RouterConfig from "./routes/routes";
 import helmet from "helmet";
@@ -29,6 +34,8 @@ const port: string | number = process.env.PORT || 3000;
 const start = async () => {
 	try {
 		await connectDB({} as Request, {} as Response);
+		await deleteUnverifiedUsers();
+		await userCreatedEmitter;
 		app.listen(port, () => {
 			log.info(`Server running on port ${port}...`);
 		});

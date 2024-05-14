@@ -37,6 +37,8 @@ const port = process.env.PORT || 3000;
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield (0, utils_1.connectDB)({}, {});
+        yield (0, utils_1.deleteUnverifiedUsers)();
+        yield utils_1.userCreatedEmitter;
         app.listen(port, () => {
             utils_1.log.info(`Server running on port ${port}...`);
         });
