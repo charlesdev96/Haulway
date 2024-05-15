@@ -1,22 +1,14 @@
 import { z } from "zod";
 
 export const updateProfileSchema = z.object({
-	body: z
-		.object({
-			fullName: z.string().optional(),
-			userName: z.string().optional(),
-			profilePic: z.string().optional(),
-			role: z
-				.enum(["admin", "influencer", "user", "vendor", "tutor"])
-				.optional(),
-			password: z.string().optional(),
-			confirmPassword: z.string().optional(),
-			oldPassword: z.string().optional(),
-		})
-		.refine((data) => data.password === data.confirmPassword, {
-			message: "Passwords do not match",
-			path: ["confirmPassword"],
-		}),
+	body: z.object({
+		fullName: z.string().optional(),
+		userName: z.string().optional(),
+		profilePic: z.string().url().optional(),
+		role: z.enum(["admin", "influencer", "user", "vendor", "tutor"]).optional(),
+		password: z.string().min(6).optional(),
+		oldPassword: z.string().optional(),
+	}),
 });
 
 export const deleteAccountSchema = z.object({

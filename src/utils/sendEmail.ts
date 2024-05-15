@@ -4,13 +4,13 @@ import request from "request";
 import { log } from "./logger";
 
 export const sendMail = async (email: string, code: number) => {
-	var data = {
+	const data = {
 		api_key: process.env.TERMII_API_KEY,
 		email_address: email,
 		code: `${code}`,
 		email_configuration_id: process.env.TERMII_email_configuration_id,
 	};
-	var options = {
+	const options = {
 		method: "POST",
 		url: "https://api.ng.termii.com/api/email/otp/send",
 		headers: {

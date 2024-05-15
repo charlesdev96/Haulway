@@ -53,15 +53,20 @@ exports.forgotPasswordSchema = zod_1.z.object({
 });
 exports.verifyPasswordOtpSchema = zod_1.z.object({
     body: zod_1.z.object({
-        otp: zod_1.z.number({
+        otp: zod_1.z
+            .number({
             required_error: "Please provide otp and it must be 5 digits",
-        }),
+        })
+            .min(5)
+            .max(5),
     }),
 });
 exports.resetPasswordSchema = zod_1.z.object({
     body: zod_1.z.object({
-        password: zod_1.z.string({
+        password: zod_1.z
+            .string({
             required_error: "Please provide a valid password",
-        }),
+        })
+            .min(6),
     }),
 });

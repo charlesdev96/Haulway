@@ -1,4 +1,3 @@
-import { query } from "express";
 import { z } from "zod";
 
 export const registerUserSchema = z.object({
@@ -56,17 +55,22 @@ export const forgotPasswordSchema = z.object({
 
 export const verifyPasswordOtpSchema = z.object({
 	body: z.object({
-		otp: z.number({
-			required_error: "Please provide otp and it must be 5 digits",
-		}),
+		otp: z
+			.number({
+				required_error: "Please provide otp and it must be 5 digits",
+			})
+			.min(5)
+			.max(5),
 	}),
 });
 
 export const resetPasswordSchema = z.object({
 	body: z.object({
-		password: z.string({
-			required_error: "Please provide a valid password",
-		}),
+		password: z
+			.string({
+				required_error: "Please provide a valid password",
+			})
+			.min(6),
 	}),
 });
 

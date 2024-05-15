@@ -18,13 +18,13 @@ const dotenv_1 = require("dotenv");
 const request_1 = __importDefault(require("request"));
 const logger_1 = require("./logger");
 const sendMail = (email, code) => __awaiter(void 0, void 0, void 0, function* () {
-    var data = {
+    const data = {
         api_key: process.env.TERMII_API_KEY,
         email_address: email,
         code: `${code}`,
         email_configuration_id: process.env.TERMII_email_configuration_id,
     };
-    var options = {
+    const options = {
         method: "POST",
         url: "https://api.ng.termii.com/api/email/otp/send",
         headers: {
