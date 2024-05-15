@@ -150,13 +150,13 @@ class authController {
                 // check to see if they are already verified
                 if (user.verified) {
                     return res
-                        .status(http_status_codes_1.StatusCodes.OK)
+                        .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
                         .json({ success: false, message: "User is already verified" });
                 }
                 // check to see if the verificationCode matches
                 if (((_b = user.otp) === null || _b === void 0 ? void 0 : _b.toString()) !== otp.toString()) {
                     return res
-                        .status(http_status_codes_1.StatusCodes.OK)
+                        .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
                         .json({ success: true, message: "Invalid or expired OTP code" });
                 }
                 user.verified = true;

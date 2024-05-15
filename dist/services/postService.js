@@ -28,7 +28,7 @@ const timeLinePost = () => __awaiter(void 0, void 0, void 0, function* () {
         .select("+_id +content +desc +views +numOfLikes +numOfComments +comments +postedBy +createdAt +updatedAt")
         .populate({
         path: "postedBy",
-        select: "+_id +fullName +profilePic +createdAt +updatedAt",
+        select: "+_id +fullName +profilePic +createdAt +updatedAt numOfFollowings numOfFollowers",
     })
         .populate({
         path: "comments",
@@ -62,6 +62,8 @@ const timeLinePost = () => __awaiter(void 0, void 0, void 0, function* () {
                     _id: ((_a = post.postedBy) === null || _a === void 0 ? void 0 : _a._id) || null,
                     fullName: post.postedBy.fullName || null,
                     profilePic: post.postedBy.profilePic,
+                    numOfFollowings: post.postedBy.numOfFollowings,
+                    numOfFollowers: post.postedBy.numOfFollowers,
                 }
                 : null,
             views: post.views,

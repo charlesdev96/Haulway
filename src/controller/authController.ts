@@ -147,14 +147,14 @@ export class authController {
 			// check to see if they are already verified
 			if (user.verified) {
 				return res
-					.status(StatusCodes.OK)
+					.status(StatusCodes.BAD_REQUEST)
 					.json({ success: false, message: "User is already verified" });
 			}
 
 			// check to see if the verificationCode matches
 			if (user.otp?.toString() !== otp.toString()) {
 				return res
-					.status(StatusCodes.OK)
+					.status(StatusCodes.BAD_REQUEST)
 					.json({ success: true, message: "Invalid or expired OTP code" });
 			}
 

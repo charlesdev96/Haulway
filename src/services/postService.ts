@@ -1,43 +1,5 @@
 import { PostInputs, PostModel } from "../model";
-
-interface User {
-	_id: string | null;
-	fullName: string | null;
-	profilePic: string | null;
-}
-
-interface Comment {
-	_id: string | null;
-	comment: string | null;
-	post: string | null;
-	commentedBy: User | null;
-	numOfReplies: number;
-	replies: Reply[];
-	createdAt: string | null;
-	updatedAt: string | null;
-}
-
-interface Reply {
-	_id: string | null;
-	reply: string | null;
-	comment: string | null;
-	replier: User | null;
-	createdAt: string | null;
-	updatedAt: string | null;
-}
-
-interface Post {
-	_id: string | null;
-	content: string[] | null;
-	desc: string | null;
-	postedBy: User | null;
-	views: number;
-	numOfLikes: number;
-	numOfComments: number;
-	comments: Comment[];
-	createdAt: string | null;
-	updatedAt: string | null;
-}
+import { Post } from "../types";
 
 export const createPosts = async (input: PostInputs) => {
 	return await PostModel.create(input);
@@ -58,7 +20,8 @@ export const timeLinePost = async () => {
 		)
 		.populate({
 			path: "postedBy",
-			select: "+_id +fullName +profilePic +createdAt +updatedAt",
+			select:
+				"+_id +fullName +profilePic +createdAt +updatedAt numOfFollowings numOfFollowers",
 		})
 		.populate({
 			path: "comments",
@@ -92,6 +55,8 @@ export const timeLinePost = async () => {
 					_id: post.postedBy?._id || null,
 					fullName: post.postedBy.fullName || null,
 					profilePic: post.postedBy.profilePic,
+					numOfFollowings: post.postedBy.numOfFollowings,
+					numOfFollowers: post.postedBy.numOfFollowers,
 				}
 			: null,
 		views: post.views,
