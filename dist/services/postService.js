@@ -55,13 +55,13 @@ const timeLinePost = () => __awaiter(void 0, void 0, void 0, function* () {
             _id: post._id,
             content: post.content || null,
             desc: post.desc || null,
+            createdAt: post.createdAt || null,
+            updatedAt: post.updatedAt || null,
             postedBy: post.postedBy
                 ? {
                     _id: ((_a = post.postedBy) === null || _a === void 0 ? void 0 : _a._id) || null,
                     fullName: post.postedBy.fullName || null,
                     profilePic: post.postedBy.profilePic,
-                    createdAt: post.postedBy.createdAt || null,
-                    updatedAt: post.postedBy.updatedAt || null,
                 }
                 : null,
             views: post.views,
@@ -73,13 +73,13 @@ const timeLinePost = () => __awaiter(void 0, void 0, void 0, function* () {
                     _id: comment._id || null,
                     comment: comment.comment || null,
                     post: comment.post || null,
+                    createdAt: comment.createdAt || null,
+                    updatedAt: comment.updatedAt || null,
                     commentedBy: comment.commentedBy
                         ? {
                             _id: ((_a = comment.commentedBy) === null || _a === void 0 ? void 0 : _a._id) || null,
                             fullName: comment.commentedBy.fullName || null,
                             profilePic: comment.commentedBy.profilePic,
-                            createdAt: comment.commentedBy.createdAt || null,
-                            updatedAt: comment.commentedBy.updatedAt || null,
                         }
                         : null,
                     numOfReplies: comment.numOfReplies,
@@ -89,6 +89,8 @@ const timeLinePost = () => __awaiter(void 0, void 0, void 0, function* () {
                             _id: reply._id || null,
                             reply: reply.reply || null,
                             comment: reply.comment || null,
+                            createdAt: reply.createdAt || null,
+                            updatedAt: reply.updatedAt || null,
                             replier: reply.replier
                                 ? {
                                     _id: ((_a = reply.replier) === null || _a === void 0 ? void 0 : _a._id) || null,
@@ -96,16 +98,10 @@ const timeLinePost = () => __awaiter(void 0, void 0, void 0, function* () {
                                     profilePic: reply.replier.profilePic,
                                 }
                                 : null,
-                            createdAt: reply.createdAt || null,
-                            updatedAt: reply.updatedAt || null,
                         });
                     }),
-                    createdAt: comment.createdAt || null,
-                    updatedAt: comment.updatedAt || null,
                 });
             }),
-            createdAt: post.createdAt || null,
-            updatedAt: post.updatedAt || null,
         });
     });
     return postsData;

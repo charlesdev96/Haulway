@@ -4,8 +4,6 @@ interface User {
 	_id: string | null;
 	fullName: string | null;
 	profilePic: string | null;
-	createdAt: string | null;
-	updatedAt: string | null;
 }
 
 interface Comment {
@@ -87,13 +85,13 @@ export const timeLinePost = async () => {
 		_id: post._id,
 		content: post.content || null,
 		desc: post.desc || null,
+		createdAt: post.createdAt || null,
+		updatedAt: post.updatedAt || null,
 		postedBy: post.postedBy
 			? {
 					_id: post.postedBy?._id || null,
 					fullName: post.postedBy.fullName || null,
 					profilePic: post.postedBy.profilePic,
-					createdAt: post.postedBy.createdAt || null,
-					updatedAt: post.postedBy.updatedAt || null,
 				}
 			: null,
 		views: post.views,
@@ -103,13 +101,13 @@ export const timeLinePost = async () => {
 			_id: comment._id || null,
 			comment: comment.comment || null,
 			post: comment.post || null,
+			createdAt: comment.createdAt || null,
+			updatedAt: comment.updatedAt || null,
 			commentedBy: comment.commentedBy
 				? {
 						_id: comment.commentedBy?._id || null,
 						fullName: comment.commentedBy.fullName || null,
 						profilePic: comment.commentedBy.profilePic,
-						createdAt: comment.commentedBy.createdAt || null,
-						updatedAt: comment.commentedBy.updatedAt || null,
 					}
 				: null,
 			numOfReplies: comment.numOfReplies,
@@ -117,6 +115,8 @@ export const timeLinePost = async () => {
 				_id: reply._id || null,
 				reply: reply.reply || null,
 				comment: reply.comment || null,
+				createdAt: reply.createdAt || null,
+				updatedAt: reply.updatedAt || null,
 				replier: reply.replier
 					? {
 							_id: reply.replier?._id || null,
@@ -124,14 +124,8 @@ export const timeLinePost = async () => {
 							profilePic: reply.replier.profilePic,
 						}
 					: null,
-				createdAt: reply.createdAt || null,
-				updatedAt: reply.updatedAt || null,
 			})),
-			createdAt: comment.createdAt || null,
-			updatedAt: comment.updatedAt || null,
 		})),
-		createdAt: post.createdAt || null,
-		updatedAt: post.updatedAt || null,
 	}));
 
 	return postsData;
