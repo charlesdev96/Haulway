@@ -1,5 +1,3 @@
-/* eslint @typescript-eslint/no-explicit-any: "off" */
-
 import { config } from "dotenv";
 config();
 import { Request, Response } from "express";

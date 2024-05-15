@@ -12,8 +12,9 @@
 		"build": "tsc",
 		"format": "prettier --write .",
 		"prepare": "husky install",
-		"lint": "eslint",
-		"lint:fix": "npm run lint -- --fix",
+		"lint:clean": "rm -rf .eslintcache",
+		"lint": "npm run lint:clean && eslint . --max-warnings 0",
+		"lint:fix": "npm run lint -- --fix && lint:clean",
 		"start": "node dist/app.js"
 	},
 	"keywords": [],

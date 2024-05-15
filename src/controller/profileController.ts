@@ -1,5 +1,3 @@
-/* eslint @typescript-eslint/no-explicit-any: "off" */
-
 import { Request, Response } from "express";
 import {
 	CustomRequest,

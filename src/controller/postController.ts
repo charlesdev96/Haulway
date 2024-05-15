@@ -1,5 +1,3 @@
-/* eslint @typescript-eslint/no-explicit-any: "off" */
-
 import { Response } from "express";
 import {
 	createPostInputs,
