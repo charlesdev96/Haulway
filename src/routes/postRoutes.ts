@@ -16,6 +16,12 @@ export class PostRouter {
 		this.initializeRoutes();
 	}
 	private initializeRoutes() {
+		//get all posts
+		this.router.get(
+			"/display-posts",
+			authorizeUser,
+			this.postController.getAllPost.bind(this.postController),
+		);
 		//create post
 		this.router.post(
 			"/create-post",

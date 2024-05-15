@@ -2,7 +2,7 @@ import { Router } from "express";
 import { authRoute } from "./authRoute";
 import { profileRoute } from "./profileRoutes";
 import { FilesUploadRouter } from "./filesRoutes";
-import { PostRouter } from "./postController";
+import { PostRouter } from "./postRoutes";
 import { commentRouter } from "./commentRoute";
 import { ReplyCommentRouter } from "./replyCommentRoute";
 

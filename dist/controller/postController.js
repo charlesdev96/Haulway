@@ -1,5 +1,4 @@
 "use strict";
-/* eslint @typescript-eslint/no-explicit-any: "off" */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -68,8 +67,18 @@ class PostController {
                         .status(http_status_codes_1.StatusCodes.NOT_FOUND)
                         .json({ message: "User not found" });
                 }
+                const posts = yield (0, services_1.timeLinePost)();
+                res
+                    .status(http_status_codes_1.StatusCodes.OK)
+                    .json({ success: true, message: "List of all posts", data: posts });
             }
-            catch (error) { }
+            catch (error) {
+                utils_1.log.info(error.message);
+                res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                    success: false,
+                    message: `Unable to display all posts: error: ${error.message}`,
+                });
+            }
         });
     }
     updatePost(req, res) {

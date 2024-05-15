@@ -1,5 +1,4 @@
 "use strict";
-/* eslint @typescript-eslint/no-explicit-any: "off" */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -30,19 +29,12 @@ const dotenv_1 = require("dotenv");
 const services_1 = require("../services");
 const utils_1 = require("../utils");
 const http_status_codes_1 = require("http-status-codes");
-const nanoid_1 = require("nanoid");
 const lodash_1 = __importDefault(require("lodash"));
 //create 6 digits verification
 function generateOTP(length) {
     const min = Math.pow(10, length - 1);
     const max = Math.pow(10, length) - 1;
     return lodash_1.default.random(min, max).toString();
-}
-//generate token
-function generateToken() {
-    const numericAlphabet = "0123456789";
-    const token = (0, nanoid_1.customAlphabet)("0123456789", 5);
-    return token(5);
 }
 class authController {
     register(req, res) {

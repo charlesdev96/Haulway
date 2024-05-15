@@ -4,7 +4,7 @@ const express_1 = require("express");
 const authRoute_1 = require("./authRoute");
 const profileRoutes_1 = require("./profileRoutes");
 const filesRoutes_1 = require("./filesRoutes");
-const postController_1 = require("./postController");
+const postRoutes_1 = require("./postRoutes");
 const commentRoute_1 = require("./commentRoute");
 const replyCommentRoute_1 = require("./replyCommentRoute");
 class RouterConfig {
@@ -21,7 +21,7 @@ class RouterConfig {
         //files upload
         this.router.use(`${baseUrl}`, new filesRoutes_1.FilesUploadRouter().getFiles());
         //post routes
-        this.router.use(`${baseUrl}/post`, new postController_1.PostRouter().getPostRouter());
+        this.router.use(`${baseUrl}/post`, new postRoutes_1.PostRouter().getPostRouter());
         //comment route
         this.router.use(`${baseUrl}/comment`, new commentRoute_1.commentRouter().getCommentRouter());
         //reply comment route

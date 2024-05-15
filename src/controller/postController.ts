@@ -9,6 +9,7 @@ import {
 	createPosts,
 	findPostById,
 	findUserById,
+	timeLinePost,
 } from "../services";
 import { log } from "../utils";
 import { StatusCodes } from "http-status-codes";
@@ -62,7 +63,17 @@ export class PostController {
 					.status(StatusCodes.NOT_FOUND)
 					.json({ message: "User not found" });
 			}
-		} catch (error) {}
+			const posts = await timeLinePost();
+			res
+				.status(StatusCodes.OK)
+				.json({ success: true, message: "List of all posts", data: posts });
+		} catch (error: any) {
+			log.info(error.message);
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				success: false,
+				message: `Unable to display all posts: error: ${error.message}`,
+			});
+		}
 	}
 
 	public async updatePost(req: CustomRequest, res: Response) {
