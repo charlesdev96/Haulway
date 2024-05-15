@@ -21,7 +21,7 @@ export const timeLinePost = async () => {
 		.populate({
 			path: "postedBy",
 			select:
-				"+_id +fullName +profilePic +createdAt +updatedAt numOfFollowings numOfFollowers",
+				"+_id +fullName +profilePic +createdAt +updatedAt +numOfFollowings +numOfFollowers",
 		})
 		.populate({
 			path: "comments",

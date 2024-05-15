@@ -28,7 +28,7 @@ const timeLinePost = () => __awaiter(void 0, void 0, void 0, function* () {
         .select("+_id +content +desc +views +numOfLikes +numOfComments +comments +postedBy +createdAt +updatedAt")
         .populate({
         path: "postedBy",
-        select: "+_id +fullName +profilePic +createdAt +updatedAt numOfFollowings numOfFollowers",
+        select: "+_id +fullName +profilePic +createdAt +updatedAt +numOfFollowings +numOfFollowers",
     })
         .populate({
         path: "comments",
