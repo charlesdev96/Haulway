@@ -1,3 +1,5 @@
+/* eslint @typescript-eslint/no-explicit-any: "off" */
+
 import { Request, Response } from "express";
 import {
 	CustomRequest,
@@ -10,7 +12,7 @@ import {
 import { updateProfileInputs, deleteAccountInputs } from "../schema";
 import { StatusCodes } from "http-status-codes";
 import { log } from "../utils";
-import { UserDocument, UserModel } from "../model";
+import { UserDocument } from "../model";
 
 export class profiles {
 	public async userProfile(req: CustomRequest, res: Response) {
@@ -79,7 +81,7 @@ export class profiles {
 				});
 			}
 			if (body.password && body.oldPassword) {
-				const { password, ...userData } = updateUser as { password: string };
+				const { password } = updateUser as { password: string };
 				//check if oldpassword matches current password
 				const isPasswordCorrect: boolean = await validatePassword(
 					body.oldPassword,

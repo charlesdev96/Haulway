@@ -5,7 +5,6 @@ export interface PostInputs {
 	desc?: string;
 	postedBy?: string;
 	views?: number;
-	followingStatus?: "following" | "follow" | "owner";
 	numOfLikes?: number;
 	numOfComments?: number;
 	comments?: string[];
@@ -50,11 +49,6 @@ const PostSchema = new mongoose.Schema(
 			type: Number,
 			default: 0,
 		},
-		followingStatus: {
-			type: String,
-			enum: ["owner", "following", "follow"],
-			default: "owner",
-		},
 		numOfLikes: {
 			type: Number,
 			default: 0,
@@ -65,7 +59,11 @@ const PostSchema = new mongoose.Schema(
 		},
 		comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
 	},
-	{ timestamps: true },
+	{
+		timestamps: true,
+		toJSON: { virtuals: true },
+		toObject: { virtuals: true },
+	},
 );
 
 export const PostModel = mongoose.model<PostDocument>("Post", PostSchema);

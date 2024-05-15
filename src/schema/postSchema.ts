@@ -23,6 +23,16 @@ export const updatePostSchema = z.object({
 	}),
 });
 
+export const deletePostSchema = z.object({
+	params: z.object({
+		postId: z.string({
+			required_error: "Please provide the id of the post to be deleted",
+		}),
+	}),
+});
+
 export type createPostInputs = z.infer<typeof createPostSchema>["body"];
 
 export type updatePostInputs = z.infer<typeof updatePostSchema>;
+
+export type deletePostInputs = z.infer<typeof deletePostSchema>["params"];

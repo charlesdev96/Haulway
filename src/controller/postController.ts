@@ -1,11 +1,15 @@
-import { Request, Response } from "express";
-import { createPostInputs, updatePostInputs } from "../schema";
-import { PostDocument } from "../model";
+/* eslint @typescript-eslint/no-explicit-any: "off" */
+
+import { Response } from "express";
+import {
+	createPostInputs,
+	updatePostInputs,
+	deletePostInputs,
+} from "../schema";
 import {
 	CustomRequest,
 	createPosts,
 	findPostById,
-	findPostByUser,
 	findUserById,
 } from "../services";
 import { log } from "../utils";
@@ -30,7 +34,8 @@ export class PostController {
 			body.postedBy = userId;
 			const post = await createPosts(body);
 			//push post._id
-			user.posts?.push(post._id);
+			await user.posts?.push(post._id);
+			user.numOfPosts = user.posts?.length;
 			await user.save();
 			res.status(StatusCodes.CREATED).json({
 				success: true,
@@ -43,6 +48,23 @@ export class PostController {
 				.status(StatusCodes.INTERNAL_SERVER_ERROR)
 				.json({ success: false, message: "Unable to create post" });
 		}
+	}
+
+	public async getAllPost(req: CustomRequest, res: Response) {
+		try {
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const user = await findUserById(userId);
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found" });
+			}
+		} catch (error) {}
 	}
 
 	public async updatePost(req: CustomRequest, res: Response) {
@@ -87,6 +109,57 @@ export class PostController {
 				success: false,
 				error: error.message,
 				message: "Unable to update post.",
+			});
+		}
+	}
+
+	public async deletePost(req: CustomRequest, res: Response) {
+		try {
+			const { postId } = req.params as deletePostInputs;
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const user = await findUserById(userId);
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found" });
+			}
+			const post = await findPostById(postId);
+			if (!post) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "Post not found" });
+			}
+
+			//check if post belongs to user
+			if (userId.toString() !== post.postedBy?.toString()) {
+				return res.status(StatusCodes.UNAUTHORIZED).json({
+					message:
+						"Oops! It looks like you can't delete this post. Only the author can delete this post.",
+				});
+			}
+			//remove from postId from list of user's post
+			user.posts = user.posts?.filter(
+				(postIds) => postIds.toString() !== postId.toString(),
+			);
+			//reduce number of user's posts
+			user.numOfPosts = user.posts?.length;
+			await user.save();
+			//then proceed to delete post
+			await post.deleteOne();
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "Your post has been deleted successfully.",
+			});
+		} catch (error: any) {
+			log.info(error.message);
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				success: false,
+				message: `Unable to delete post due to error: ${error.message}`,
 			});
 		}
 	}

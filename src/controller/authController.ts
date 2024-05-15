@@ -1,3 +1,5 @@
+/* eslint @typescript-eslint/no-explicit-any: "off" */
+
 import { config } from "dotenv";
 config();
 import { Request, Response } from "express";
@@ -19,7 +21,6 @@ import {
 } from "../services";
 import { log, createJWT, sendMail } from "../utils";
 import { StatusCodes } from "http-status-codes";
-import { customAlphabet } from "nanoid";
 import lodash from "lodash";
 
 //create 6 digits verification
@@ -27,13 +28,6 @@ function generateOTP(length: number) {
 	const min = Math.pow(10, length - 1);
 	const max = Math.pow(10, length) - 1;
 	return lodash.random(min, max).toString();
-}
-
-//generate token
-function generateToken() {
-	const numericAlphabet = "0123456789";
-	const token = customAlphabet("0123456789", 5);
-	return token(5);
 }
 
 export class authController {

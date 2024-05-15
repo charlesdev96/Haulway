@@ -20,11 +20,6 @@ const PostSchema = new mongoose_1.default.Schema({
         type: Number,
         default: 0,
     },
-    followingStatus: {
-        type: String,
-        enum: ["owner", "following", "follow"],
-        default: "owner",
-    },
     numOfLikes: {
         type: Number,
         default: 0,
@@ -34,5 +29,9 @@ const PostSchema = new mongoose_1.default.Schema({
         default: 0,
     },
     comments: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Comment" }],
-}, { timestamps: true });
+}, {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+});
 exports.PostModel = mongoose_1.default.model("Post", PostSchema);

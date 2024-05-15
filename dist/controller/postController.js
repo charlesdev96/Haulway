@@ -1,4 +1,5 @@
 "use strict";
+/* eslint @typescript-eslint/no-explicit-any: "off" */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -16,7 +17,7 @@ const http_status_codes_1 = require("http-status-codes");
 class PostController {
     createPost(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
+            var _a, _b, _c;
             try {
                 const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
                 if (!userId) {
@@ -34,7 +35,8 @@ class PostController {
                 body.postedBy = userId;
                 const post = yield (0, services_1.createPosts)(body);
                 //push post._id
-                (_b = user.posts) === null || _b === void 0 ? void 0 : _b.push(post._id);
+                yield ((_b = user.posts) === null || _b === void 0 ? void 0 : _b.push(post._id));
+                user.numOfPosts = (_c = user.posts) === null || _c === void 0 ? void 0 : _c.length;
                 yield user.save();
                 res.status(http_status_codes_1.StatusCodes.CREATED).json({
                     success: true,
@@ -48,6 +50,26 @@ class PostController {
                     .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
                     .json({ success: false, message: "Unable to create post" });
             }
+        });
+    }
+    getAllPost(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                const user = yield (0, services_1.findUserById)(userId);
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found" });
+                }
+            }
+            catch (error) { }
         });
     }
     updatePost(req, res) {
@@ -95,6 +117,56 @@ class PostController {
                     success: false,
                     error: error.message,
                     message: "Unable to update post.",
+                });
+            }
+        });
+    }
+    deletePost(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b, _c, _d;
+            try {
+                const { postId } = req.params;
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                const user = yield (0, services_1.findUserById)(userId);
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found" });
+                }
+                const post = yield (0, services_1.findPostById)(postId);
+                if (!post) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "Post not found" });
+                }
+                //check if post belongs to user
+                if (userId.toString() !== ((_b = post.postedBy) === null || _b === void 0 ? void 0 : _b.toString())) {
+                    return res.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).json({
+                        message: "Oops! It looks like you can't delete this post. Only the author can delete this post.",
+                    });
+                }
+                //remove from postId from list of user's post
+                user.posts = (_c = user.posts) === null || _c === void 0 ? void 0 : _c.filter((postIds) => postIds.toString() !== postId.toString());
+                //reduce number of user's posts
+                user.numOfPosts = (_d = user.posts) === null || _d === void 0 ? void 0 : _d.length;
+                yield user.save();
+                //then proceed to delete post
+                yield post.deleteOne();
+                res.status(http_status_codes_1.StatusCodes.OK).json({
+                    success: true,
+                    message: "Your post has been deleted successfully.",
+                });
+            }
+            catch (error) {
+                utils_1.log.info(error.message);
+                res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                    success: false,
+                    message: `Unable to delete post due to error: ${error.message}`,
                 });
             }
         });

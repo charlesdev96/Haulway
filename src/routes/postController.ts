@@ -1,7 +1,11 @@
 import { Router } from "express";
 import { PostController } from "../controller/postController";
 import { authorizeUser, validateInputs } from "../middleware";
-import { createPostSchema, updatePostSchema } from "../schema";
+import {
+	createPostSchema,
+	updatePostSchema,
+	deletePostSchema,
+} from "../schema";
 
 export class PostRouter {
 	private router: Router;
@@ -25,6 +29,13 @@ export class PostRouter {
 			authorizeUser,
 			validateInputs(updatePostSchema),
 			this.postController.updatePost.bind(this.postController),
+		);
+		//delete post
+		this.router.delete(
+			"/delete-post/:postId",
+			authorizeUser,
+			validateInputs(deletePostSchema),
+			this.postController.deletePost.bind(this.postController),
 		);
 	}
 

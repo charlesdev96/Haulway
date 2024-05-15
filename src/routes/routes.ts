@@ -3,6 +3,8 @@ import { authRoute } from "./authRoute";
 import { profileRoute } from "./profileRoutes";
 import { FilesUploadRouter } from "./filesRoutes";
 import { PostRouter } from "./postController";
+import { commentRouter } from "./commentRoute";
+import { ReplyCommentRouter } from "./replyCommentRoute";
 
 class RouterConfig {
 	private router: Router;
@@ -27,6 +29,18 @@ class RouterConfig {
 
 		//post routes
 		this.router.use(`${baseUrl}/post`, new PostRouter().getPostRouter());
+
+		//comment route
+		this.router.use(
+			`${baseUrl}/comment`,
+			new commentRouter().getCommentRouter(),
+		);
+
+		//reply comment route
+		this.router.use(
+			`${baseUrl}/reply`,
+			new ReplyCommentRouter().getReplyCommentRouter(),
+		);
 	}
 
 	public getRouter(): Router {
