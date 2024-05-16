@@ -9,7 +9,7 @@ class UserActivityRouter {
     constructor() {
         this.router = (0, express_1.Router)();
         this.userActivityController = new userActivityController_1.UserActivitiesController();
-        this.initializeRoutes;
+        this.initializeRoutes();
     }
     initializeRoutes() {
         //follow and unfollower user

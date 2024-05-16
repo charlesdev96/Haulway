@@ -9,7 +9,7 @@ export class UserActivityRouter {
 	constructor() {
 		this.router = Router();
 		this.userActivityController = new UserActivitiesController();
-		this.initializeRoutes;
+		this.initializeRoutes();
 	}
 	private initializeRoutes() {
 		//follow and unfollower user
