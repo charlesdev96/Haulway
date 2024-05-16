@@ -5,6 +5,7 @@ import { FilesUploadRouter } from "./filesRoutes";
 import { PostRouter } from "./postRoutes";
 import { commentRouter } from "./commentRoute";
 import { ReplyCommentRouter } from "./replyCommentRoute";
+import { UserActivityRouter } from "./userActivityRoute";
 
 class RouterConfig {
 	private router: Router;
@@ -40,6 +41,12 @@ class RouterConfig {
 		this.router.use(
 			`${baseUrl}/reply`,
 			new ReplyCommentRouter().getReplyCommentRouter(),
+		);
+
+		//user activities router
+		this.router.use(
+			`${baseUrl}/activity`,
+			new UserActivityRouter().getUserActivityRouter(),
 		);
 	}
 

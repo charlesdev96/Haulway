@@ -7,7 +7,19 @@ export const createPostSchema = z.object({
 			.nonempty({ message: "Content Can't be empty!" }),
 		desc: z.string().optional(),
 		postedBy: z.string().optional(),
-		followingStatus: z.enum(["following", "follow", "owner"]).optional(),
+		tagPeople: z.array(z.string()).optional(),
+		addLocation: z.object({}).optional(),
+		addMusic: z.string().optional(),
+		addCategory: z.array(z.string()).optional(),
+		products: z.array(z.string()).optional(),
+	}),
+});
+
+export const getSinglePostSchema = z.object({
+	params: z.object({
+		postId: z.string({
+			required_error: "Please provide post id",
+		}),
 	}),
 });
 
@@ -15,6 +27,11 @@ export const updatePostSchema = z.object({
 	body: z.object({
 		content: z.array(z.string()).optional(),
 		desc: z.string().optional(),
+		tagPeople: z.array(z.string()).optional(),
+		addLocation: z.object({}).optional(),
+		addMusic: z.string().optional(),
+		addCategory: z.array(z.string()).optional(),
+		products: z.array(z.string()).optional(),
 	}),
 	params: z.object({
 		postId: z.string({
@@ -32,6 +49,8 @@ export const deletePostSchema = z.object({
 });
 
 export type createPostInputs = z.infer<typeof createPostSchema>["body"];
+
+export type getSinglePostInputs = z.infer<typeof getSinglePostSchema>["params"];
 
 export type updatePostInputs = z.infer<typeof updatePostSchema>;
 

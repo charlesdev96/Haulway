@@ -20,7 +20,7 @@ exports.registerUserSchema = zod_1.z.object({
             .min(6, { message: "Password too short - should be 6 chars minimum" }),
         otp: zod_1.z.number().optional(),
         forgotPasswordOtp: zod_1.z.number().optional(),
-        otpExpirationDate: zod_1.z.date().nullable().optional(),
+        otpExpirationDate: zod_1.z.string().nullable().optional(),
     }),
 });
 exports.verifyUserSchema = zod_1.z.object({

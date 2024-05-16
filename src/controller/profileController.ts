@@ -10,7 +10,7 @@ import {
 import { updateProfileInputs, deleteAccountInputs } from "../schema";
 import { StatusCodes } from "http-status-codes";
 import { log } from "../utils";
-import { UserDocument } from "../model";
+import { UserDocument, UserModel } from "../model";
 
 export class profiles {
 	public async userProfile(req: CustomRequest, res: Response) {

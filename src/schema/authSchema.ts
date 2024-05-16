@@ -18,7 +18,7 @@ export const registerUserSchema = z.object({
 			.min(6, { message: "Password too short - should be 6 chars minimum" }),
 		otp: z.number().optional(),
 		forgotPasswordOtp: z.number().optional(),
-		otpExpirationDate: z.date().nullable().optional(),
+		otpExpirationDate: z.string().nullable().optional(),
 	}),
 });
 

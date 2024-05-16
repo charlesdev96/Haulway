@@ -4,27 +4,17 @@ export interface PostInputs {
 	content?: string[];
 	desc?: string;
 	postedBy?: string;
+	numOfShares?: number;
 	views?: number;
 	numOfLikes?: number;
 	numOfComments?: number;
 	comments?: string[];
-	tagPeople?: string[];
-	addLocation?: string;
-	addMusic?: string;
-	addCategory?:
-		| "dinner"
-		| "office"
-		| "wedding"
-		| "pyjamas"
-		| "beach"
-		| "casual"
-		| "sport"
-		| "grwm"
-		| "lookbook"
-		| "hauls"
-		| "featured"
-		| "jewelry"
-		| "cosmetics";
+	tagPeople?: string[] | null;
+	numOfPeopleTag?: number;
+	addLocation?: {} | string | null;
+	addMusic?: string | null;
+	addCategory?: string[] | null;
+	products?: string[] | null;
 }
 
 export interface PostDocument extends PostInputs, mongoose.Document {
@@ -53,11 +43,31 @@ const PostSchema = new mongoose.Schema(
 			type: Number,
 			default: 0,
 		},
+		numOfShares: {
+			type: Number,
+			default: 0,
+		},
 		numOfComments: {
 			type: Number,
 			default: 0,
 		},
+		numOfPeopleTag: {
+			type: Number,
+			default: 0,
+		},
+		tagPeople: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 		comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
+		addMusic: {
+			type: String,
+		},
+		addLocation: {
+			type: String,
+		},
+		addCategory: {
+			type: Array,
+			default: [],
+		},
+		products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
 	},
 	{
 		timestamps: true,

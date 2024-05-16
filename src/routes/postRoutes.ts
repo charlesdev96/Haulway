@@ -5,6 +5,7 @@ import {
 	createPostSchema,
 	updatePostSchema,
 	deletePostSchema,
+	getSinglePostSchema,
 } from "../schema";
 
 export class PostRouter {
@@ -28,6 +29,13 @@ export class PostRouter {
 			authorizeUser,
 			validateInputs(createPostSchema),
 			this.postController.createPost.bind(this.postController),
+		);
+		//get single post
+		this.router.get(
+			"/get-post/:postId",
+			authorizeUser,
+			validateInputs(getSinglePostSchema),
+			this.postController.getSinglePost.bind(this.postController),
 		);
 		//update post
 		this.router.patch(

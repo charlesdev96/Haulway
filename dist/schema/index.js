@@ -19,3 +19,4 @@ __exportStar(require("./profileSchema"), exports);
 __exportStar(require("./postSchema"), exports);
 __exportStar(require("./commentSchema"), exports);
 __exportStar(require("./replyCommentSchema"), exports);
+__exportStar(require("./userActivitiesSchema"), exports);

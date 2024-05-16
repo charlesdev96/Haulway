@@ -7,6 +7,7 @@ const filesRoutes_1 = require("./filesRoutes");
 const postRoutes_1 = require("./postRoutes");
 const commentRoute_1 = require("./commentRoute");
 const replyCommentRoute_1 = require("./replyCommentRoute");
+const userActivityRoute_1 = require("./userActivityRoute");
 class RouterConfig {
     constructor() {
         this.router = (0, express_1.Router)();
@@ -26,6 +27,8 @@ class RouterConfig {
         this.router.use(`${baseUrl}/comment`, new commentRoute_1.commentRouter().getCommentRouter());
         //reply comment route
         this.router.use(`${baseUrl}/reply`, new replyCommentRoute_1.ReplyCommentRouter().getReplyCommentRouter());
+        //user activities router
+        this.router.use(`${baseUrl}/activity`, new userActivityRoute_1.UserActivityRouter().getUserActivityRouter());
     }
     getRouter() {
         return this.router;

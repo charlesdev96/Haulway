@@ -81,6 +81,44 @@ class PostController {
             }
         });
     }
+    getSinglePost(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const { postId } = req.params;
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                const user = yield (0, services_1.findUserById)(userId);
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found" });
+                }
+                const post = yield (0, services_1.singlePost)(postId);
+                if (!post) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "Post not found" });
+                }
+                res.status(http_status_codes_1.StatusCodes.OK).json({
+                    success: true,
+                    message: "Posts retrieved successfully.",
+                    data: post,
+                });
+            }
+            catch (error) {
+                utils_1.log.info(error.message);
+                res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                    success: false,
+                    message: `Unable to display all posts: error: ${error.message}`,
+                });
+            }
+        });
+    }
     updatePost(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b;
@@ -159,7 +197,7 @@ class PostController {
                         message: "Oops! It looks like you can't delete this post. Only the author can delete this post.",
                     });
                 }
-                //remove from postId from list of user's post
+                //remove postId from list of user's post
                 user.posts = (_c = user.posts) === null || _c === void 0 ? void 0 : _c.filter((postIds) => postIds.toString() !== postId.toString());
                 //reduce number of user's posts
                 user.numOfPosts = (_d = user.posts) === null || _d === void 0 ? void 0 : _d.length;

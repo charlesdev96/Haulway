@@ -26,7 +26,7 @@ export const authorizeUser = async (
 	if (!authHeader || !authHeader.startsWith("Bearer")) {
 		return res
 			.status(StatusCodes.UNAUTHORIZED)
-			.json({ error: "Authentication invalid" });
+			.json({ message: "Authentication invalid" });
 	}
 	const token = authHeader.split(" ")[1];
 	try {

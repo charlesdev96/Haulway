@@ -1,5 +1,5 @@
 import mongoose, { Date } from "mongoose";
-import { hashSync, genSalt, compare } from "bcryptjs";
+import { hashSync, genSalt } from "bcryptjs";
 
 export interface UserInputs {
 	fullName?: string;
@@ -14,18 +14,22 @@ export interface UserInputs {
 	role?: "user" | "influencer" | "vendor" | "admin" | "tutor";
 	posts?: string[];
 	address?: string[];
-	products?: string[];
-	store?: string[];
 	numOfFollowers?: number;
 	numOfFollowings?: number;
 	followers?: string[];
 	followings?: string[];
 	carts?: string[];
+	orderHistory?: string[];
+	products?: string[];
+	productsDelivered?: { [key: string]: any }[];
+	contracts?: string[];
+	store?: string[];
+	productsSold?: string[];
 }
 
 export interface UserDocument extends UserInputs, mongoose.Document {
 	_id?: string;
-	otpExpirationDate?: Date;
+	otpExpirationDate?: string;
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -76,7 +80,7 @@ const UserSchema = new mongoose.Schema(
 			type: Number,
 		},
 		otpExpirationDate: {
-			type: Date,
+			type: String,
 		},
 		posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
 		address: [{ type: mongoose.Schema.Types.ObjectId, ref: "Address" }],
@@ -93,6 +97,15 @@ const UserSchema = new mongoose.Schema(
 		followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 		followings: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 		carts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Cart" }],
+		contracts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Contract" }],
+		orderHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
+		productsDelivered: [
+			{
+				product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+				details: { type: mongoose.Schema.Types.Mixed },
+			},
+		],
+		productsSold: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
 	},
 	{ timestamps: true },
 );
@@ -105,3 +118,13 @@ UserSchema.pre("save", async function (next) {
 });
 
 export const UserModel = mongoose.model<UserDocument>("User", UserSchema);
+// export const UserModel = (role: string) => {
+// 	switch (role) {
+// 		case "vendor":
+// 			return mongoose.model<VendorDocument>("User", UserSchema);
+// 		case "influencer":
+// 			return mongoose.model<InfluencerDocument>("User", UserSchema);
+// 		default:
+// 			return mongoose.model<UserDocument>("User", UserSchema);
+// 	}
+// };

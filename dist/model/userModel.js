@@ -60,7 +60,7 @@ const UserSchema = new mongoose_1.default.Schema({
         type: Number,
     },
     otpExpirationDate: {
-        type: Date,
+        type: String,
     },
     posts: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Post" }],
     address: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Address" }],
@@ -77,6 +77,15 @@ const UserSchema = new mongoose_1.default.Schema({
     followers: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" }],
     followings: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" }],
     carts: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Cart" }],
+    contracts: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Contract" }],
+    orderHistory: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Order" }],
+    productsDelivered: [
+        {
+            product: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "Product" },
+            details: { type: mongoose_1.default.Schema.Types.Mixed },
+        },
+    ],
+    productsSold: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Product" }],
 }, { timestamps: true });
 UserSchema.pre("save", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -88,3 +97,13 @@ UserSchema.pre("save", function (next) {
     });
 });
 exports.UserModel = mongoose_1.default.model("User", UserSchema);
+// export const UserModel = (role: string) => {
+// 	switch (role) {
+// 		case "vendor":
+// 			return mongoose.model<VendorDocument>("User", UserSchema);
+// 		case "influencer":
+// 			return mongoose.model<InfluencerDocument>("User", UserSchema);
+// 		default:
+// 			return mongoose.model<UserDocument>("User", UserSchema);
+// 	}
+// };

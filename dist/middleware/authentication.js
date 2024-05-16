@@ -18,7 +18,7 @@ const authorizeUser = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     if (!authHeader || !authHeader.startsWith("Bearer")) {
         return res
             .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
-            .json({ error: "Authentication invalid" });
+            .json({ message: "Authentication invalid" });
     }
     const token = authHeader.split(" ")[1];
     try {
