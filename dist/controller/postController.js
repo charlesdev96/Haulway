@@ -67,7 +67,7 @@ class PostController {
                         .status(http_status_codes_1.StatusCodes.NOT_FOUND)
                         .json({ message: "User not found" });
                 }
-                const posts = yield (0, services_1.timeLinePost)();
+                const posts = yield (0, services_1.timeLinePost)(userId);
                 res
                     .status(http_status_codes_1.StatusCodes.OK)
                     .json({ success: true, message: "List of all posts", data: posts });

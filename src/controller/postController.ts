@@ -65,7 +65,7 @@ export class PostController {
 					.status(StatusCodes.NOT_FOUND)
 					.json({ message: "User not found" });
 			}
-			const posts = await timeLinePost();
+			const posts = await timeLinePost(userId);
 			res
 				.status(StatusCodes.OK)
 				.json({ success: true, message: "List of all posts", data: posts });

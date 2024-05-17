@@ -23,13 +23,12 @@ const findPostByUser = (userId) => __awaiter(void 0, void 0, void 0, function* (
     return yield model_1.PostModel.find({ postedBy: userId }).sort({ updatedAt: -1 });
 });
 exports.findPostByUser = findPostByUser;
-const timeLinePost = () => __awaiter(void 0, void 0, void 0, function* () {
-    const status = ["following", "follow", "owner"];
+const timeLinePost = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const posts = yield model_1.PostModel.find({})
         .select("+_id +content +desc +views +numOfLikes +numOfComments +comments +products +addMusic +postedBy +createdAt +updatedAt")
         .populate({
         path: "postedBy",
-        select: "+_id +fullName +profilePic +createdAt +updatedAt +numOfFollowings +numOfFollowers",
+        select: "+_id +fullName +profilePic +createdAt +updatedAt +numOfFollowings +numOfFollowers +followers",
     })
         .populate({
         path: "comments",
@@ -52,8 +51,18 @@ const timeLinePost = () => __awaiter(void 0, void 0, void 0, function* () {
         .sort({ updatedAt: -1 });
     const postsData = posts.map((post) => {
         var _a;
-        return ({
+        let status = "follow";
+        // Check if userId is the owner of the post
+        if (post.postedBy._id.toString() === userId.toString()) {
+            status = "owner";
+        }
+        // Check if userId is in the followers array
+        if (post.postedBy.followers.includes(userId.toString())) {
+            status = "following";
+        }
+        return {
             _id: post._id,
+            status: status,
             content: post.content || null,
             desc: post.desc || null,
             createdAt: post.createdAt || null,
@@ -105,7 +114,7 @@ const timeLinePost = () => __awaiter(void 0, void 0, void 0, function* () {
                     }),
                 });
             }),
-        });
+        };
     });
     return postsData;
 });

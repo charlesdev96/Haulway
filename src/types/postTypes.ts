@@ -28,6 +28,7 @@ export interface Reply {
 
 export interface Post {
 	_id?: string | null;
+	status: string;
 	content?: string[] | null;
 	desc?: string | null;
 	postedBy?: User | null;
