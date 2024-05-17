@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { CommentController } from "../controller/commentController";
-import { createCommentSchema } from "../schema";
+import {
+	createCommentSchema,
+	updateCommentSchema,
+	deletecommentSchema,
+} from "../schema";
 import { authorizeUser, validateInputs } from "../middleware";
 
 export class commentRouter {
@@ -19,6 +23,20 @@ export class commentRouter {
 			authorizeUser,
 			validateInputs(createCommentSchema),
 			this.commentController.createComment.bind(this.commentController),
+		);
+		//update comment
+		this.router.patch(
+			"/edit-comment/:commentId",
+			authorizeUser,
+			validateInputs(updateCommentSchema),
+			this.commentController.editComment.bind(this.commentController),
+		);
+		//delete comment
+		this.router.delete(
+			"/delete-comment/:commentId",
+			authorizeUser,
+			validateInputs(deletecommentSchema),
+			this.commentController.deleteComment.bind(this.commentController),
 		);
 	}
 

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { ManualLocation, GoogleLocation } from "../types";
 
 export interface PostInputs {
 	content?: string[];
@@ -12,11 +13,12 @@ export interface PostInputs {
 	likes?: string[];
 	tagPeople?: string[] | null;
 	numOfPeopleTag?: number;
-	addLocation?: { [key: string]: any } | string | null;
+	addLocation?: ManualLocation | GoogleLocation | null;
 	addMusic?: string | null;
 	addCategory?: string[] | null;
 	products?: string[] | null;
 }
+// addLocation?: { [key: string]: any } | string | null;
 
 export interface PostDocument extends PostInputs, mongoose.Document {
 	_id?: string;

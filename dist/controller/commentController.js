@@ -61,5 +61,124 @@ class CommentController {
             }
         });
     }
+    editComment(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
+            try {
+                const { commentId } = req.params;
+                const { comment } = req.body;
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                //find logged in user
+                const user = yield (0, services_1.findUserById)(userId);
+                //check if user exist
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found" });
+                }
+                //find comment to be updated
+                const comments = yield (0, services_1.findCommentById)(commentId);
+                //check if comment exist
+                if (!comments) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "Comment not found" });
+                }
+                //check if comment belong to user
+                if (userId.toString() !== ((_b = comments.commentedBy) === null || _b === void 0 ? void 0 : _b.toString())) {
+                    return res.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).json({
+                        success: false,
+                        message: "You can only edit your own comment.",
+                    });
+                }
+                //proceed to update comment
+                comments.comment = comment;
+                yield comments.save();
+                res
+                    .status(http_status_codes_1.StatusCodes.OK)
+                    .json({ success: true, message: "Your comment has been updated." });
+            }
+            catch (error) {
+                utils_1.log.info(error.message);
+                res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                    success: false,
+                    message: `Unable to edit comment: ${error.message}`,
+                });
+            }
+        });
+    }
+    deleteComment(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b, _c, _d;
+            try {
+                const { commentId } = req.params;
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                //find logged in user
+                const user = yield (0, services_1.findUserById)(userId);
+                //check if user exist
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found" });
+                }
+                //find comment to be updated
+                const comments = yield (0, services_1.findCommentById)(commentId);
+                //check if comment exist
+                if (!comments) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "Comment not found" });
+                }
+                //check if comment belong to user
+                if (userId.toString() !== ((_b = comments.commentedBy) === null || _b === void 0 ? void 0 : _b.toString())) {
+                    return res.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).json({
+                        success: false,
+                        message: "You can only edit your own comment.",
+                    });
+                }
+                //reduce the comment on the post
+                const postId = comments.post;
+                if (!postId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                        .json({ message: "No postId found" });
+                }
+                const post = yield (0, services_1.findPostById)(postId);
+                if (!post) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "Post not found" });
+                }
+                //remove comment from post and reduce the numOfComments
+                post.comments = (_c = post.comments) === null || _c === void 0 ? void 0 : _c.filter((comment) => comment.toString() !== commentId.toString());
+                post.numOfComments = (_d = post.comments) === null || _d === void 0 ? void 0 : _d.length;
+                yield post.save();
+                //delete replies
+                yield (0, services_1.deleteRepliesByCommentId)(commentId);
+                //then delete comment
+                yield comments.deleteOne();
+                res
+                    .status(http_status_codes_1.StatusCodes.OK)
+                    .json({ success: true, message: "Your comment has been deleted." });
+            }
+            catch (error) {
+                utils_1.log.info(error.message);
+                res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                    success: false,
+                    message: `Unable to delete comment: ${error.message}`,
+                });
+            }
+        });
+    }
 }
 exports.CommentController = CommentController;

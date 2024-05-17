@@ -1,7 +1,15 @@
 import { z } from "zod";
 
-const GoogleLocationSchema = z.string();
-const LocationSchema = z.object({});
+const GoogleLocationSchema = z.object({
+	address: z.string().optional(),
+});
+const LocationSchema = z.object({
+	zipCode: z.string().optional(),
+	landMark: z.string().optional(),
+	city: z.string().optional(),
+	state: z.string().optional(),
+	country: z.string().optional(),
+});
 const AddLocationSchema = z
 	.union([LocationSchema, GoogleLocationSchema])
 	.nullable();
@@ -14,6 +22,7 @@ export const createPostSchema = z.object({
 		desc: z.string().optional(),
 		postedBy: z.string().optional(),
 		tagPeople: z.array(z.string()).optional(),
+		numOfPeopleTag: z.number().optional(),
 		addLocation: AddLocationSchema.optional(),
 		addMusic: z.string().optional(),
 		addCategory: z.array(z.string()).optional(),
@@ -34,6 +43,7 @@ export const updatePostSchema = z.object({
 		content: z.array(z.string()).optional(),
 		desc: z.string().optional(),
 		tagPeople: z.array(z.string()).optional(),
+		numOfPeopleTag: z.number().optional(),
 		addLocation: AddLocationSchema.optional(),
 		addMusic: z.string().optional(),
 		addCategory: z.array(z.string()).optional(),

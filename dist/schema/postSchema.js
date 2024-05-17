@@ -2,8 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deletePostSchema = exports.updatePostSchema = exports.getSinglePostSchema = exports.createPostSchema = void 0;
 const zod_1 = require("zod");
-const GoogleLocationSchema = zod_1.z.string();
-const LocationSchema = zod_1.z.object({});
+const GoogleLocationSchema = zod_1.z.object({
+    address: zod_1.z.string().optional(),
+});
+const LocationSchema = zod_1.z.object({
+    zipCode: zod_1.z.string().optional(),
+    landMark: zod_1.z.string().optional(),
+    city: zod_1.z.string().optional(),
+    state: zod_1.z.string().optional(),
+    country: zod_1.z.string().optional(),
+});
 const AddLocationSchema = zod_1.z
     .union([LocationSchema, GoogleLocationSchema])
     .nullable();
@@ -15,6 +23,7 @@ exports.createPostSchema = zod_1.z.object({
         desc: zod_1.z.string().optional(),
         postedBy: zod_1.z.string().optional(),
         tagPeople: zod_1.z.array(zod_1.z.string()).optional(),
+        numOfPeopleTag: zod_1.z.number().optional(),
         addLocation: AddLocationSchema.optional(),
         addMusic: zod_1.z.string().optional(),
         addCategory: zod_1.z.array(zod_1.z.string()).optional(),
@@ -33,6 +42,7 @@ exports.updatePostSchema = zod_1.z.object({
         content: zod_1.z.array(zod_1.z.string()).optional(),
         desc: zod_1.z.string().optional(),
         tagPeople: zod_1.z.array(zod_1.z.string()).optional(),
+        numOfPeopleTag: zod_1.z.number().optional(),
         addLocation: AddLocationSchema.optional(),
         addMusic: zod_1.z.string().optional(),
         addCategory: zod_1.z.array(zod_1.z.string()).optional(),

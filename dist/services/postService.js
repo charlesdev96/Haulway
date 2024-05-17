@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.singlePost = exports.timeLinePost = exports.findPostByUser = exports.findPostById = exports.createPosts = void 0;
 const model_1 = require("../model");
+const types_1 = require("../types");
 const createPosts = (input) => __awaiter(void 0, void 0, void 0, function* () {
     return yield model_1.PostModel.create(input);
 });
@@ -25,10 +26,14 @@ const findPostByUser = (userId) => __awaiter(void 0, void 0, void 0, function* (
 exports.findPostByUser = findPostByUser;
 const timeLinePost = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const posts = yield model_1.PostModel.find({})
-        .select("+_id +content +desc +views +numOfLikes +numOfComments +comments +products +addMusic +postedBy +createdAt +updatedAt")
+        .select("+_id +content +desc +views +numOfLikes +numOfComments +comments +products +addMusic +postedBy +createdAt +updatedAt +tagPeople +numOfPeopleTag +addLocation +addMusic +addCategory +numOfShares")
         .populate({
         path: "postedBy",
         select: "+_id +fullName +profilePic +createdAt +updatedAt +numOfFollowings +numOfFollowers +followers",
+    })
+        .populate({
+        path: "tagPeople",
+        select: "+_id +fullName +profilePic",
     })
         .populate({
         path: "comments",
@@ -49,7 +54,7 @@ const timeLinePost = (userId) => __awaiter(void 0, void 0, void 0, function* () 
         ],
     })
         .sort({ updatedAt: -1 });
-    const postsData = posts.map((post) => {
+    const postsData = (posts || []).map((post) => {
         var _a;
         let status = "follow";
         // Check if userId is the owner of the post
@@ -65,21 +70,32 @@ const timeLinePost = (userId) => __awaiter(void 0, void 0, void 0, function* () 
             status: status,
             content: post.content || null,
             desc: post.desc || null,
+            views: post.views,
+            numOfShares: post.numOfShares,
+            numOfLikes: post.numOfLikes,
+            numOfComments: post.numOfComments,
+            numOfPeopleTag: post.numOfPeopleTag,
+            addLocation: post.addLocation || types_1.location || {},
+            addMusic: post.addMusic || "" || null,
+            addCategory: post.addCategory || [] || null,
             createdAt: post.createdAt || null,
             updatedAt: post.updatedAt || null,
             postedBy: post.postedBy
                 ? {
                     _id: ((_a = post.postedBy) === null || _a === void 0 ? void 0 : _a._id) || null,
                     fullName: post.postedBy.fullName || null,
-                    profilePic: post.postedBy.profilePic,
+                    profilePic: post.postedBy.profilePic || "",
                     numOfFollowings: post.postedBy.numOfFollowings,
                     numOfFollowers: post.postedBy.numOfFollowers,
                 }
-                : null,
-            views: post.views,
-            numOfLikes: post.numOfLikes,
-            numOfComments: post.numOfComments,
-            comments: post.comments.map((comment) => {
+                : {},
+            tagPeople: (post.tagPeople || []).map((people) => ({
+                _id: people._id || null,
+                fullName: people.fullName || null,
+                profilePic: people.profilePic || "",
+            })),
+            products: post.products || [],
+            comments: (post.comments || []).map((comment) => {
                 var _a;
                 return ({
                     _id: comment._id || null,
@@ -90,12 +106,12 @@ const timeLinePost = (userId) => __awaiter(void 0, void 0, void 0, function* () 
                     commentedBy: comment.commentedBy
                         ? {
                             _id: ((_a = comment.commentedBy) === null || _a === void 0 ? void 0 : _a._id) || null,
-                            fullName: comment.commentedBy.fullName || null,
+                            fullName: comment.commentedBy.fullName || "",
                             profilePic: comment.commentedBy.profilePic,
                         }
-                        : null,
+                        : {},
                     numOfReplies: comment.numOfReplies,
-                    replies: comment.replies.map((reply) => {
+                    replies: (comment.replies || []).map((reply) => {
                         var _a;
                         return ({
                             _id: reply._id || null,
@@ -107,9 +123,9 @@ const timeLinePost = (userId) => __awaiter(void 0, void 0, void 0, function* () 
                                 ? {
                                     _id: ((_a = reply.replier) === null || _a === void 0 ? void 0 : _a._id) || null,
                                     fullName: reply.replier.fullName || null,
-                                    profilePic: reply.replier.profilePic,
+                                    profilePic: reply.replier.profilePic || "",
                                 }
-                                : null,
+                                : {},
                         });
                     }),
                 });
@@ -121,10 +137,14 @@ const timeLinePost = (userId) => __awaiter(void 0, void 0, void 0, function* () 
 exports.timeLinePost = timeLinePost;
 const singlePost = (postId) => __awaiter(void 0, void 0, void 0, function* () {
     const post = yield model_1.PostModel.findOne({ _id: postId })
-        .select("+_id +content +desc +views +numOfLikes +numOfComments +comments +postedBy +createdAt +updatedAt")
+        .select("+_id +content +desc +views +numOfLikes +numOfComments +comments +products +addMusic +postedBy +createdAt +updatedAt +tagPeople +numOfPeopleTag +addLocation +addMusic +addCategory +numOfShares")
         .populate({
         path: "postedBy",
-        select: "+_id +fullName +profilePic +createdAt +updatedAt +numOfFollowings +numOfFollowers",
+        select: "+_id +fullName +profilePic +createdAt +updatedAt +numOfFollowings +numOfFollowers +followers",
+    })
+        .populate({
+        path: "tagPeople",
+        select: "+_id +fullName +profilePic",
     })
         .populate({
         path: "comments",
@@ -146,51 +166,5 @@ const singlePost = (postId) => __awaiter(void 0, void 0, void 0, function* () {
     })
         .sort({ updatedAt: -1 });
     return post;
-    // if (!post) {
-    // 	return null;
-    // }
-    // const postData: PartialPost{}= {
-    // 	_id: post._id || null,
-    // 	content: post.content || null,
-    // 	desc: post.desc || null,
-    // 	createdAt:post.createdAt || null
-    // 	updatedAt: post.updatedAt || null,
-    // 	postedBy: {
-    // 		_id: post.postedBy?._id || null,
-    // 		fullName: post.postedBy?.fullName || null,
-    // 		profilePic: post.postedBy?.profilePic || null,
-    // 		numOfFollowings: post.postedBy?.numOfFollowings || 0,
-    // 		numOfFollowers: post.postedBy?.numOfFollowers || 0,
-    // 	},
-    // 	views: post.views || 0,
-    // 	numOfLikes: post.numOfLikes || 0,
-    // 	numOfComments: post.numOfComments || 0,
-    // 	comments: (post.comments || []).map((comment: any) => ({
-    // 		_id: comment._id || null,
-    // 		comment: comment.comment || null,
-    // 		post: comment.post || null,
-    // 		createdAt: comment.createdAt || null,
-    // 		updatedAt: comment.updatedAt || null,
-    // 		commentedBy: {
-    // 			_id: comment.commentedBy?._id || null,
-    // 			fullName: comment.commentedBy?.fullName || null,
-    // 			profilePic: comment.commentedBy?.profilePic || null,
-    // 		},
-    // 		numOfReplies: comment.numOfReplies || 0,
-    // 		replies: (comment.replies || []).map((reply: any) => ({
-    // 			_id: reply._id || null,
-    // 			reply: reply.reply || null,
-    // 			comment: reply.comment || null,
-    // 			createdAt: reply.createdAt || null,
-    // 			updatedAt: reply.updatedAt || null,
-    // 			replier: {
-    // 				_id: reply.replier?._id || null,
-    // 				fullName: reply.replier?.fullName || null,
-    // 				profilePic: reply.replier?.profilePic || null,
-    // 			},
-    // 		})),
-    // 	})),
-    // };
-    // return postData;
 });
 exports.singlePost = singlePost;

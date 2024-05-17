@@ -16,7 +16,6 @@ export const createCommentSchema = z.object({
 export const updateCommentSchema = z.object({
 	body: z.object({
 		comment: z.string().min(1).optional(),
-		rating: z.string().min(1).max(5).optional(),
 	}),
 	params: z.object({
 		commentId: z.string({

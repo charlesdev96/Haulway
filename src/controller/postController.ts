@@ -33,6 +33,7 @@ export class PostController {
 			}
 			const body = req.body as createPostInputs;
 			body.postedBy = userId;
+			body.numOfPeopleTag = body.tagPeople?.length;
 			const post = await createPosts(body);
 			//push post._id
 			await user.posts?.push(post._id);

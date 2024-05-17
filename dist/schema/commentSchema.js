@@ -17,7 +17,6 @@ exports.createCommentSchema = zod_1.z.object({
 exports.updateCommentSchema = zod_1.z.object({
     body: zod_1.z.object({
         comment: zod_1.z.string().min(1).optional(),
-        rating: zod_1.z.string().min(1).max(5).optional(),
     }),
     params: zod_1.z.object({
         commentId: zod_1.z.string({

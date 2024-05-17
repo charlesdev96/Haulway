@@ -1,5 +1,5 @@
 import { PostInputs, PostModel } from "../model";
-import { Post } from "../types";
+import { Post, location } from "../types";
 
 export const createPosts = async (input: PostInputs) => {
 	return await PostModel.create(input);
@@ -16,12 +16,16 @@ export const findPostByUser = async (userId: string) => {
 export const timeLinePost = async (userId: string) => {
 	const posts = await PostModel.find({})
 		.select(
-			"+_id +content +desc +views +numOfLikes +numOfComments +comments +products +addMusic +postedBy +createdAt +updatedAt",
+			"+_id +content +desc +views +numOfLikes +numOfComments +comments +products +addMusic +postedBy +createdAt +updatedAt +tagPeople +numOfPeopleTag +addLocation +addMusic +addCategory +numOfShares",
 		)
 		.populate({
 			path: "postedBy",
 			select:
 				"+_id +fullName +profilePic +createdAt +updatedAt +numOfFollowings +numOfFollowers +followers",
+		})
+		.populate({
+			path: "tagPeople",
+			select: "+_id +fullName +profilePic",
 		})
 		.populate({
 			path: "comments",
@@ -43,7 +47,7 @@ export const timeLinePost = async (userId: string) => {
 			],
 		})
 		.sort({ updatedAt: -1 });
-	const postsData: Post[] = posts.map((post: any) => {
+	const postsData: Post[] = (posts || []).map((post: any) => {
 		let status = "follow";
 
 		// Check if userId is the owner of the post
@@ -61,21 +65,32 @@ export const timeLinePost = async (userId: string) => {
 			status: status,
 			content: post.content || null,
 			desc: post.desc || null,
+			views: post.views,
+			numOfShares: post.numOfShares,
+			numOfLikes: post.numOfLikes,
+			numOfComments: post.numOfComments,
+			numOfPeopleTag: post.numOfPeopleTag,
+			addLocation: post.addLocation || location || {},
+			addMusic: post.addMusic || "" || null,
+			addCategory: post.addCategory || [] || null,
 			createdAt: post.createdAt || null,
 			updatedAt: post.updatedAt || null,
 			postedBy: post.postedBy
 				? {
 						_id: post.postedBy?._id || null,
 						fullName: post.postedBy.fullName || null,
-						profilePic: post.postedBy.profilePic,
+						profilePic: post.postedBy.profilePic || "",
 						numOfFollowings: post.postedBy.numOfFollowings,
 						numOfFollowers: post.postedBy.numOfFollowers,
 					}
-				: null,
-			views: post.views,
-			numOfLikes: post.numOfLikes,
-			numOfComments: post.numOfComments,
-			comments: post.comments.map((comment: any) => ({
+				: {},
+			tagPeople: (post.tagPeople || []).map((people: any) => ({
+				_id: people._id || null,
+				fullName: people.fullName || null,
+				profilePic: people.profilePic || "",
+			})),
+			products: post.products || [],
+			comments: (post.comments || []).map((comment: any) => ({
 				_id: comment._id || null,
 				comment: comment.comment || null,
 				post: comment.post || null,
@@ -84,12 +99,12 @@ export const timeLinePost = async (userId: string) => {
 				commentedBy: comment.commentedBy
 					? {
 							_id: comment.commentedBy?._id || null,
-							fullName: comment.commentedBy.fullName || null,
+							fullName: comment.commentedBy.fullName || "",
 							profilePic: comment.commentedBy.profilePic,
 						}
-					: null,
+					: {},
 				numOfReplies: comment.numOfReplies,
-				replies: comment.replies.map((reply: any) => ({
+				replies: (comment.replies || []).map((reply: any) => ({
 					_id: reply._id || null,
 					reply: reply.reply || null,
 					comment: reply.comment || null,
@@ -99,9 +114,9 @@ export const timeLinePost = async (userId: string) => {
 						? {
 								_id: reply.replier?._id || null,
 								fullName: reply.replier.fullName || null,
-								profilePic: reply.replier.profilePic,
+								profilePic: reply.replier.profilePic || "",
 							}
-						: null,
+						: {},
 				})),
 			})),
 		};
@@ -113,12 +128,16 @@ export const timeLinePost = async (userId: string) => {
 export const singlePost = async (postId: string) => {
 	const post = await PostModel.findOne({ _id: postId })
 		.select(
-			"+_id +content +desc +views +numOfLikes +numOfComments +comments +postedBy +createdAt +updatedAt",
+			"+_id +content +desc +views +numOfLikes +numOfComments +comments +products +addMusic +postedBy +createdAt +updatedAt +tagPeople +numOfPeopleTag +addLocation +addMusic +addCategory +numOfShares",
 		)
 		.populate({
 			path: "postedBy",
 			select:
-				"+_id +fullName +profilePic +createdAt +updatedAt +numOfFollowings +numOfFollowers",
+				"+_id +fullName +profilePic +createdAt +updatedAt +numOfFollowings +numOfFollowers +followers",
+		})
+		.populate({
+			path: "tagPeople",
+			select: "+_id +fullName +profilePic",
 		})
 		.populate({
 			path: "comments",
@@ -141,53 +160,4 @@ export const singlePost = async (postId: string) => {
 		})
 		.sort({ updatedAt: -1 });
 	return post;
-
-	// if (!post) {
-	// 	return null;
-	// }
-
-	// const postData: PartialPost{}= {
-	// 	_id: post._id || null,
-	// 	content: post.content || null,
-	// 	desc: post.desc || null,
-	// 	createdAt:post.createdAt || null
-	// 	updatedAt: post.updatedAt || null,
-	// 	postedBy: {
-	// 		_id: post.postedBy?._id || null,
-	// 		fullName: post.postedBy?.fullName || null,
-	// 		profilePic: post.postedBy?.profilePic || null,
-	// 		numOfFollowings: post.postedBy?.numOfFollowings || 0,
-	// 		numOfFollowers: post.postedBy?.numOfFollowers || 0,
-	// 	},
-	// 	views: post.views || 0,
-	// 	numOfLikes: post.numOfLikes || 0,
-	// 	numOfComments: post.numOfComments || 0,
-	// 	comments: (post.comments || []).map((comment: any) => ({
-	// 		_id: comment._id || null,
-	// 		comment: comment.comment || null,
-	// 		post: comment.post || null,
-	// 		createdAt: comment.createdAt || null,
-	// 		updatedAt: comment.updatedAt || null,
-	// 		commentedBy: {
-	// 			_id: comment.commentedBy?._id || null,
-	// 			fullName: comment.commentedBy?.fullName || null,
-	// 			profilePic: comment.commentedBy?.profilePic || null,
-	// 		},
-	// 		numOfReplies: comment.numOfReplies || 0,
-	// 		replies: (comment.replies || []).map((reply: any) => ({
-	// 			_id: reply._id || null,
-	// 			reply: reply.reply || null,
-	// 			comment: reply.comment || null,
-	// 			createdAt: reply.createdAt || null,
-	// 			updatedAt: reply.updatedAt || null,
-	// 			replier: {
-	// 				_id: reply.replier?._id || null,
-	// 				fullName: reply.replier?.fullName || null,
-	// 				profilePic: reply.replier?.profilePic || null,
-	// 			},
-	// 		})),
-	// 	})),
-	// };
-
-	// return postData;
 };

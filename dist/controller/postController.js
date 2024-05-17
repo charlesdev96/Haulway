@@ -16,7 +16,7 @@ const http_status_codes_1 = require("http-status-codes");
 class PostController {
     createPost(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c;
+            var _a, _b, _c, _d;
             try {
                 const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
                 if (!userId) {
@@ -32,10 +32,11 @@ class PostController {
                 }
                 const body = req.body;
                 body.postedBy = userId;
+                body.numOfPeopleTag = (_b = body.tagPeople) === null || _b === void 0 ? void 0 : _b.length;
                 const post = yield (0, services_1.createPosts)(body);
                 //push post._id
-                yield ((_b = user.posts) === null || _b === void 0 ? void 0 : _b.push(post._id));
-                user.numOfPosts = (_c = user.posts) === null || _c === void 0 ? void 0 : _c.length;
+                yield ((_c = user.posts) === null || _c === void 0 ? void 0 : _c.push(post._id));
+                user.numOfPosts = (_d = user.posts) === null || _d === void 0 ? void 0 : _d.length;
                 yield user.save();
                 res.status(http_status_codes_1.StatusCodes.CREATED).json({
                     success: true,
