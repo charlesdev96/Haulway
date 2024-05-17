@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+const GoogleLocationSchema = z.string();
+const LocationSchema = z.object({});
+const AddLocationSchema = z
+	.union([LocationSchema, GoogleLocationSchema])
+	.nullable();
+
 export const createPostSchema = z.object({
 	body: z.object({
 		content: z
@@ -8,7 +14,7 @@ export const createPostSchema = z.object({
 		desc: z.string().optional(),
 		postedBy: z.string().optional(),
 		tagPeople: z.array(z.string()).optional(),
-		addLocation: z.object({}).optional(),
+		addLocation: AddLocationSchema.optional(),
 		addMusic: z.string().optional(),
 		addCategory: z.array(z.string()).optional(),
 		products: z.array(z.string()).optional(),
@@ -28,7 +34,7 @@ export const updatePostSchema = z.object({
 		content: z.array(z.string()).optional(),
 		desc: z.string().optional(),
 		tagPeople: z.array(z.string()).optional(),
-		addLocation: z.object({}).optional(),
+		addLocation: AddLocationSchema.optional(),
 		addMusic: z.string().optional(),
 		addCategory: z.array(z.string()).optional(),
 		products: z.array(z.string()).optional(),

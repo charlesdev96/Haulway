@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { UserActivitiesController } from "../controller/userActivityController";
 import { authorizeUser, validateInputs } from "../middleware";
-import { followerUserSchema } from "../schema";
+import { followerUserSchema, likePostSchema } from "../schema";
 
 export class UserActivityRouter {
 	private router: Router;
@@ -18,6 +18,13 @@ export class UserActivityRouter {
 			authorizeUser,
 			validateInputs(followerUserSchema),
 			this.userActivityController.followUser.bind(this.userActivityController),
+		);
+		//like and unlike a post
+		this.router.patch(
+			"/like-post/:postId",
+			authorizeUser,
+			validateInputs(likePostSchema),
+			this.userActivityController.likePost.bind(this.userActivityController),
 		);
 	}
 

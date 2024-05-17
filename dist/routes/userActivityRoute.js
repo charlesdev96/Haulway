@@ -14,6 +14,8 @@ class UserActivityRouter {
     initializeRoutes() {
         //follow and unfollower user
         this.router.patch("/follow-user/:targetUserId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.followerUserSchema), this.userActivityController.followUser.bind(this.userActivityController));
+        //like and unlike a post
+        this.router.patch("/like-post/:postId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.likePostSchema), this.userActivityController.likePost.bind(this.userActivityController));
     }
     getUserActivityRouter() {
         return this.router;

@@ -8,4 +8,14 @@ export const followerUserSchema = z.object({
 	}),
 });
 
+export const likePostSchema = z.object({
+	params: z.object({
+		postId: z.string({
+			required_error: "Please provide the id of the post you want to like",
+		}),
+	}),
+});
+
 export type followerUserInputs = z.infer<typeof followerUserSchema>["params"];
+
+export type likePostInputs = z.infer<typeof likePostSchema>["params"];

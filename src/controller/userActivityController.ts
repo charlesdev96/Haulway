@@ -1,9 +1,8 @@
 import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { CustomRequest, findUserById } from "../services";
-import { followerUserInputs } from "../schema";
+import { CustomRequest, findUserById, findPostById } from "../services";
+import { followerUserInputs, likePostInputs } from "../schema";
 import { log } from "../utils";
-import { AnyArray } from "mongoose";
 
 export class UserActivitiesController {
 	public async followUser(req: CustomRequest, res: Response) {
@@ -61,6 +60,52 @@ export class UserActivitiesController {
 					success: true,
 					message: `Congratulations!!!, you are now following ${targetUserFullName}`,
 				});
+			}
+		} catch (error: any) {
+			log.info(error);
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				success: false,
+				message: `Unable to follow user. error: ${error.message}`,
+			});
+		}
+	}
+
+	public async likePost(req: CustomRequest, res: Response) {
+		try {
+			const { postId } = req.params as likePostInputs;
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			//find post you want to like
+			const post = await findPostById(postId);
+			if (!post) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "Post not found." });
+			}
+			//check if user have already liked the post
+			const alreadyLiked = post.likes?.includes(userId.toString());
+			if (alreadyLiked) {
+				//if already liked, undo, remove userId from the likes array
+				post.likes = post.likes?.filter(
+					(like) => like.toString() !== userId.toString(),
+				);
+				post.numOfLikes = post.likes?.length;
+				await post.save();
+				return res
+					.status(StatusCodes.OK)
+					.json({ success: true, message: "Your like has been removed" });
+			} else {
+				//like the post
+				post.likes?.push(userId);
+				post.numOfLikes = post.likes?.length;
+				await post.save();
+				return res
+					.status(StatusCodes.OK)
+					.json({ success: true, message: "Your like has been counted.!!!" });
 			}
 		} catch (error: any) {
 			log.info(error);

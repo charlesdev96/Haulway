@@ -37,18 +37,21 @@ const PostSchema = new mongoose_1.default.Schema({
         default: 0,
     },
     tagPeople: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" }],
+    likes: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" }],
     comments: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Comment" }],
     addMusic: {
         type: String,
-    },
-    addLocation: {
-        type: String,
+        default: null,
     },
     addCategory: {
         type: Array,
         default: [],
     },
     products: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Product" }],
+    addLocation: {
+        type: mongoose_1.default.Schema.Types.Mixed,
+        default: null,
+    },
 }, {
     timestamps: true,
     toJSON: { virtuals: true },

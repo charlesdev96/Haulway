@@ -9,9 +9,10 @@ export interface PostInputs {
 	numOfLikes?: number;
 	numOfComments?: number;
 	comments?: string[];
+	likes?: string[];
 	tagPeople?: string[] | null;
 	numOfPeopleTag?: number;
-	addLocation?: {} | string | null;
+	addLocation?: { [key: string]: any } | string | null;
 	addMusic?: string | null;
 	addCategory?: string[] | null;
 	products?: string[] | null;
@@ -56,18 +57,21 @@ const PostSchema = new mongoose.Schema(
 			default: 0,
 		},
 		tagPeople: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+		likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 		comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
 		addMusic: {
 			type: String,
-		},
-		addLocation: {
-			type: String,
+			default: null,
 		},
 		addCategory: {
 			type: Array,
 			default: [],
 		},
 		products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+		addLocation: {
+			type: mongoose.Schema.Types.Mixed,
+			default: null,
+		},
 	},
 	{
 		timestamps: true,
