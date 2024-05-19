@@ -7,3 +7,7 @@ export const createreply = async (input: ReplyInput) => {
 export const deleteRepliesByCommentId = async (comment: string) => {
 	return ReplyModel.deleteMany({ comment: comment });
 };
+
+export const findReplyById = async (replyId: string) => {
+	return ReplyModel.findOne({ _id: replyId });
+};

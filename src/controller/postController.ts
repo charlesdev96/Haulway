@@ -12,9 +12,12 @@ import {
 	findUserById,
 	timeLinePost,
 	singlePost,
+	deleteCommentByPost,
+	deleteReplyByPost,
 } from "../services";
 import { log } from "../utils";
 import { StatusCodes } from "http-status-codes";
+import { ReplyModel, CommentModel } from "../model";
 
 export class PostController {
 	public async createPost(req: CustomRequest, res: Response) {
@@ -94,12 +97,13 @@ export class PostController {
 					.status(StatusCodes.NOT_FOUND)
 					.json({ message: "User not found" });
 			}
-			const post = await singlePost(postId);
+			const post = await singlePost(postId, userId);
 			if (!post) {
 				return res
 					.status(StatusCodes.NOT_FOUND)
 					.json({ message: "Post not found" });
 			}
+
 			res.status(StatusCodes.OK).json({
 				success: true,
 				message: "Posts retrieved successfully.",
@@ -197,8 +201,25 @@ export class PostController {
 			//reduce number of user's posts
 			user.numOfPosts = user.posts?.length;
 			await user.save();
-			//then proceed to delete post
-			await post.deleteOne();
+			//delete comments associated with post
+			const comment = await CommentModel.find({ post: postId });
+			if (!comment) {
+				//then proceed to delete post
+				await post.deleteOne();
+			} else {
+				await deleteCommentByPost(postId);
+				//then proceed to delete replies
+				const reply = await ReplyModel.find({ post: postId });
+				if (reply.length > 0) {
+					//then delete replies
+					await deleteReplyByPost(postId);
+					await post.deleteOne();
+				} else {
+					//if no replies, delete post
+					await post.deleteOne();
+				}
+			}
+
 			res.status(StatusCodes.OK).json({
 				success: true,
 				message: "Your post has been deleted successfully.",

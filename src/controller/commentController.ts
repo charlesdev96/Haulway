@@ -14,6 +14,7 @@ import {
 } from "../services";
 import { StatusCodes } from "http-status-codes";
 import { log } from "../utils";
+import { ReplyModel } from "../model";
 
 export class CommentController {
 	public async createComment(req: CustomRequest, res: Response) {
@@ -137,7 +138,7 @@ export class CommentController {
 			if (userId.toString() !== comments.commentedBy?.toString()) {
 				return res.status(StatusCodes.UNAUTHORIZED).json({
 					success: false,
-					message: "You can only edit your own comment.",
+					message: "You can only delete your own comment.",
 				});
 			}
 			//reduce the comment on the post
@@ -160,9 +161,15 @@ export class CommentController {
 			post.numOfComments = post.comments?.length;
 			await post.save();
 			//delete replies
-			await deleteRepliesByCommentId(commentId);
-			//then delete comment
-			await comments.deleteOne();
+			const reply = await ReplyModel.find({ comment: commentId });
+			if (reply.length > 0) {
+				await deleteRepliesByCommentId(commentId);
+				//then delete comment
+				await comments.deleteOne();
+			} else {
+				//then delete comment
+				await comments.deleteOne();
+			}
 			res
 				.status(StatusCodes.OK)
 				.json({ success: true, message: "Your comment has been deleted." });

@@ -4,6 +4,7 @@ export interface User {
 	profilePic?: string | null;
 	numOfFollowers?: number;
 	numOfFollowings?: number;
+	follower?: string[];
 }
 
 export interface Comment {

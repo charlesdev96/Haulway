@@ -4,6 +4,7 @@ export interface ReplyInput {
 	reply?: string;
 	comment?: string;
 	replier?: string;
+	post?: string;
 }
 
 export interface ReplyDocument extends ReplyInput, mongoose.Document {
@@ -18,6 +19,10 @@ const ReplySchema = new mongoose.Schema(
 		comment: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Comment",
+		},
+		post: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Post",
 		},
 		replier: {
 			type: mongoose.Schema.Types.ObjectId,
