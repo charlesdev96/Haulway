@@ -13,6 +13,7 @@ exports.PostController = void 0;
 const services_1 = require("../services");
 const utils_1 = require("../utils");
 const http_status_codes_1 = require("http-status-codes");
+const model_1 = require("../model");
 class PostController {
     createPost(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -99,7 +100,7 @@ class PostController {
                         .status(http_status_codes_1.StatusCodes.NOT_FOUND)
                         .json({ message: "User not found" });
                 }
-                const post = yield (0, services_1.singlePost)(postId);
+                const post = yield (0, services_1.singlePost)(postId, userId);
                 if (!post) {
                     return res
                         .status(http_status_codes_1.StatusCodes.NOT_FOUND)
@@ -203,8 +204,26 @@ class PostController {
                 //reduce number of user's posts
                 user.numOfPosts = (_d = user.posts) === null || _d === void 0 ? void 0 : _d.length;
                 yield user.save();
-                //then proceed to delete post
-                yield post.deleteOne();
+                //delete comments associated with post
+                const comment = yield model_1.CommentModel.find({ post: postId });
+                if (!comment) {
+                    //then proceed to delete post
+                    yield post.deleteOne();
+                }
+                else {
+                    yield (0, services_1.deleteCommentByPost)(postId);
+                    //then proceed to delete replies
+                    const reply = yield model_1.ReplyModel.find({ post: postId });
+                    if (reply.length > 0) {
+                        //then delete replies
+                        yield (0, services_1.deleteReplyByPost)(postId);
+                        yield post.deleteOne();
+                    }
+                    else {
+                        //if no replies, delete post
+                        yield post.deleteOne();
+                    }
+                }
                 res.status(http_status_codes_1.StatusCodes.OK).json({
                     success: true,
                     message: "Your post has been deleted successfully.",

@@ -11,6 +11,10 @@ const ReplySchema = new mongoose_1.default.Schema({
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "Comment",
     },
+    post: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: "Post",
+    },
     replier: {
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "User",

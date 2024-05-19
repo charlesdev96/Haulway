@@ -13,6 +13,7 @@ exports.CommentController = void 0;
 const services_1 = require("../services");
 const http_status_codes_1 = require("http-status-codes");
 const utils_1 = require("../utils");
+const model_1 = require("../model");
 class CommentController {
     createComment(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -143,7 +144,7 @@ class CommentController {
                 if (userId.toString() !== ((_b = comments.commentedBy) === null || _b === void 0 ? void 0 : _b.toString())) {
                     return res.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).json({
                         success: false,
-                        message: "You can only edit your own comment.",
+                        message: "You can only delete your own comment.",
                     });
                 }
                 //reduce the comment on the post
@@ -164,9 +165,16 @@ class CommentController {
                 post.numOfComments = (_d = post.comments) === null || _d === void 0 ? void 0 : _d.length;
                 yield post.save();
                 //delete replies
-                yield (0, services_1.deleteRepliesByCommentId)(commentId);
-                //then delete comment
-                yield comments.deleteOne();
+                const reply = yield model_1.ReplyModel.find({ comment: commentId });
+                if (reply.length > 0) {
+                    yield (0, services_1.deleteRepliesByCommentId)(commentId);
+                    //then delete comment
+                    yield comments.deleteOne();
+                }
+                else {
+                    //then delete comment
+                    yield comments.deleteOne();
+                }
                 res
                     .status(http_status_codes_1.StatusCodes.OK)
                     .json({ success: true, message: "Your comment has been deleted." });

@@ -13,7 +13,11 @@ class ReplyCommentRouter {
     }
     initializeRoutes() {
         //reply a comment
-        this.router.post("/create-reply/:commentId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.createreplySchema), this.replyCommentController.CreateReply.bind(this.replyCommentController));
+        this.router.post("/create-reply/:postId/:commentId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.createreplySchema), this.replyCommentController.CreateReply.bind(this.replyCommentController));
+        //edit reply
+        this.router.patch("/edit-reply/:replyId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.editReplySchema), this.replyCommentController.editReply.bind(this.replyCommentController));
+        //reply a comment
+        this.router.delete("/delete-reply/:replyId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.deleteReplySchema), this.replyCommentController.deleteReply.bind(this.replyCommentController));
     }
     getReplyCommentRouter() {
         return this.router;

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteRepliesByCommentId = exports.createreply = void 0;
+exports.findReplyById = exports.deleteRepliesByCommentId = exports.createreply = void 0;
 const model_1 = require("../model");
 const createreply = (input) => __awaiter(void 0, void 0, void 0, function* () {
     return model_1.ReplyModel.create(input);
@@ -19,3 +19,7 @@ const deleteRepliesByCommentId = (comment) => __awaiter(void 0, void 0, void 0, 
     return model_1.ReplyModel.deleteMany({ comment: comment });
 });
 exports.deleteRepliesByCommentId = deleteRepliesByCommentId;
+const findReplyById = (replyId) => __awaiter(void 0, void 0, void 0, function* () {
+    return model_1.ReplyModel.findOne({ _id: replyId });
+});
+exports.findReplyById = findReplyById;
