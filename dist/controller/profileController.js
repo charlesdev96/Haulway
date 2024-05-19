@@ -43,7 +43,7 @@ class profiles {
     }
     updateProfile(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
+            var _a, _b;
             try {
                 const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
                 if (!userId) {
@@ -66,14 +66,6 @@ class profiles {
                     return res.status(http_status_codes_1.StatusCodes.OK).json({
                         success: true,
                         message: `Profile information updated. Your full name is now ${body.fullName}`,
-                    });
-                }
-                if (body.role) {
-                    updateUser.role = body.role;
-                    yield updateUser.save();
-                    return res.status(http_status_codes_1.StatusCodes.OK).json({
-                        success: true,
-                        message: `Profile information updated. Your role is now ${body.role}`,
                     });
                 }
                 if (body.profilePic) {
@@ -102,7 +94,14 @@ class profiles {
                 }
                 if (body.userName) {
                     //check if username exist
+                    body.userName = `@${body.userName}`;
                     const existingUsername = yield (0, services_1.userNameExist)(body.userName);
+                    //check if username belong to user
+                    if (((_b = existingUsername === null || existingUsername === void 0 ? void 0 : existingUsername.userName) === null || _b === void 0 ? void 0 : _b.toString()) === body.userName.toString()) {
+                        return res
+                            .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                            .json({ message: `${body.userName} is already assigned to you` });
+                    }
                     if (existingUsername) {
                         const message = `Oops! Username ${body.userName} already taken. Please choose a different one.`;
                         utils_1.log.info(message);
@@ -125,6 +124,79 @@ class profiles {
                     success: true,
                     message: "User account was not updated",
                 });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                    success: false,
+                    error: error,
+                    message: "Unable to update account.",
+                });
+            }
+        });
+    }
+    upgradeAccount(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                const body = req.body;
+                const user = yield (0, services_1.findUserById)(userId);
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found." });
+                }
+                const updateUser = user;
+                //check if user has already upgraded
+                if (updateUser.role !== "user") {
+                    return res.status(http_status_codes_1.StatusCodes.FORBIDDEN).json({
+                        message: `You have already changed your role once to ${updateUser.role}. Further changes are not permitted.`,
+                    });
+                }
+                if (body.role === "vendor") {
+                    //create a store for vendor
+                    if (!body.store) {
+                        return res
+                            .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                            .json({ message: "Please fill up store properties" });
+                    }
+                    else {
+                        //store name must be unique
+                        const storeNameExist = yield (0, services_1.findStoreByName)(body.store.storeName.toString().toUpperCase());
+                        if (storeNameExist) {
+                            return res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({
+                                mesage: `Store name ${body.store.storeName} already exist, please choose another name`,
+                            });
+                        }
+                        //if store name does not exist, proceed to create store
+                        body.store.owner = userId.toString();
+                        body.store.role = "vendor";
+                        const newStore = yield (0, services_1.createStore)(body.store);
+                        updateUser.store = newStore._id;
+                        //update user account
+                        updateUser.role = body.role;
+                        yield updateUser.save();
+                        res.status(http_status_codes_1.StatusCodes.OK).json({
+                            success: true,
+                            message: `Congratulations, Your account has been successfully upgraded to ${body.role}!!!`,
+                        });
+                    }
+                }
+                else {
+                    //update user account
+                    updateUser.role = body.role;
+                    yield updateUser.save();
+                    res.status(http_status_codes_1.StatusCodes.OK).json({
+                        success: true,
+                        message: `Congratulations, Your account has been successfully upgraded to ${body.role}!!!`,
+                    });
+                }
             }
             catch (error) {
                 utils_1.log.info(error);

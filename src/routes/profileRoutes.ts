@@ -1,7 +1,11 @@
 import { Router } from "express";
 import { authorizeUser, validateInputs } from "../middleware";
 import { profiles } from "../controller/profileController";
-import { updateProfileSchema, deleteAccountSchema } from "../schema";
+import {
+	updateProfileSchema,
+	deleteAccountSchema,
+	upgradeAccountSchema,
+} from "../schema";
 
 export class profileRoute {
 	private router: Router;
@@ -13,6 +17,13 @@ export class profileRoute {
 	}
 
 	private initializeRoutes() {
+		//upgrade account
+		this.router.post(
+			"/upgrade-account",
+			authorizeUser,
+			validateInputs(upgradeAccountSchema),
+			this.profileController.upgradeAccount.bind(this.profileController),
+		);
 		//user profile
 		this.router.get(
 			"/user-profile",

@@ -6,8 +6,14 @@ import {
 	validatePassword,
 	userNameExist,
 	existingUser,
+	createStore,
+	findStoreByName,
 } from "../services";
-import { updateProfileInputs, deleteAccountInputs } from "../schema";
+import {
+	updateProfileInputs,
+	deleteAccountInputs,
+	upgradeAccountInputs,
+} from "../schema";
 import { StatusCodes } from "http-status-codes";
 import { log } from "../utils";
 import { UserDocument, UserModel } from "../model";
@@ -62,14 +68,6 @@ export class profiles {
 					message: `Profile information updated. Your full name is now ${body.fullName}`,
 				});
 			}
-			if (body.role) {
-				updateUser.role = body.role;
-				await updateUser.save();
-				return res.status(StatusCodes.OK).json({
-					success: true,
-					message: `Profile information updated. Your role is now ${body.role}`,
-				});
-			}
 			if (body.profilePic) {
 				updateUser.profilePic = body.profilePic;
 				await updateUser.save();
@@ -99,7 +97,16 @@ export class profiles {
 			}
 			if (body.userName) {
 				//check if username exist
+				body.userName = `@${body.userName}`;
 				const existingUsername = await userNameExist(body.userName);
+				//check if username belong to user
+				if (
+					existingUsername?.userName?.toString() === body.userName.toString()
+				) {
+					return res
+						.status(StatusCodes.BAD_REQUEST)
+						.json({ message: `${body.userName} is already assigned to you` });
+				}
 				if (existingUsername) {
 					const message = `Oops! Username ${body.userName} already taken. Please choose a different one.`;
 					log.info(message);
@@ -122,6 +129,77 @@ export class profiles {
 				success: true,
 				message: "User account was not updated",
 			});
+		} catch (error: any) {
+			log.info(error);
+			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+				success: false,
+				error: error,
+				message: "Unable to update account.",
+			});
+		}
+	}
+
+	public async upgradeAccount(req: CustomRequest, res: Response) {
+		try {
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const body = req.body as upgradeAccountInputs;
+			const user = await findUserById(userId);
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found." });
+			}
+
+			const updateUser = user as UserDocument;
+			//check if user has already upgraded
+			if (updateUser.role !== "user") {
+				return res.status(StatusCodes.FORBIDDEN).json({
+					message: `You have already changed your role once to ${updateUser.role}. Further changes are not permitted.`,
+				});
+			}
+			if (body.role === "vendor") {
+				//create a store for vendor
+				if (!body.store) {
+					return res
+						.status(StatusCodes.BAD_REQUEST)
+						.json({ message: "Please fill up store properties" });
+				} else {
+					//store name must be unique
+					const storeNameExist = await findStoreByName(
+						body.store.storeName.toString().toUpperCase(),
+					);
+					if (storeNameExist) {
+						return res.status(StatusCodes.BAD_REQUEST).json({
+							mesage: `Store name ${body.store.storeName} already exist, please choose another name`,
+						});
+					}
+					//if store name does not exist, proceed to create store
+					body.store.owner = userId.toString();
+					body.store.role = "vendor";
+					const newStore = await createStore(body.store);
+					updateUser.store = newStore._id;
+					//update user account
+					updateUser.role = body.role;
+					await updateUser.save();
+					res.status(StatusCodes.OK).json({
+						success: true,
+						message: `Congratulations, Your account has been successfully upgraded to ${body.role}!!!`,
+					});
+				}
+			} else {
+				//update user account
+				updateUser.role = body.role;
+				await updateUser.save();
+				res.status(StatusCodes.OK).json({
+					success: true,
+					message: `Congratulations, Your account has been successfully upgraded to ${body.role}!!!`,
+				});
+			}
 		} catch (error: any) {
 			log.info(error);
 			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

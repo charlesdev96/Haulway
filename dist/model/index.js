@@ -18,3 +18,4 @@ __exportStar(require("./userModel"), exports);
 __exportStar(require("./postModel"), exports);
 __exportStar(require("./commentModel"), exports);
 __exportStar(require("./replyCommentModel"), exports);
+__exportStar(require("./storeModel"), exports);

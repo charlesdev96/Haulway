@@ -18,3 +18,4 @@ __exportStar(require("./userService"), exports);
 __exportStar(require("./postService"), exports);
 __exportStar(require("./commentService"), exports);
 __exportStar(require("./replyCommentServices"), exports);
+__exportStar(require("./storeServices"), exports);

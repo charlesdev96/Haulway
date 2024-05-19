@@ -5,7 +5,6 @@ export const updateProfileSchema = z.object({
 		fullName: z.string().optional(),
 		userName: z.string().optional(),
 		profilePic: z.string().url().optional(),
-		role: z.enum(["admin", "influencer", "user", "vendor", "tutor"]).optional(),
 		password: z.string().min(6).optional(),
 		oldPassword: z.string().optional(),
 	}),
@@ -21,5 +20,29 @@ export const deleteAccountSchema = z.object({
 	}),
 });
 
+export const createStoreSchema = z.object({
+	role: z.string().optional(),
+	owner: z.string().optional(),
+	storeName: z.string({
+		required_error: "Please provide a name for your store",
+	}),
+	storeLogo: z.string({
+		required_error: "Please provide a logo for your store",
+	}),
+	currency: z.string({
+		required_error: "Please provide a currency for your store",
+	}),
+});
+
+export const upgradeAccountSchema = z.object({
+	body: z.object({
+		role: z.enum(["admin", "influencer", "user", "vendor", "tutor"], {
+			message: "Please provide your role",
+		}),
+		store: createStoreSchema.optional(),
+	}),
+});
+
 export type updateProfileInputs = z.infer<typeof updateProfileSchema>["body"];
 export type deleteAccountInputs = z.infer<typeof deleteAccountSchema>["body"];
+export type upgradeAccountInputs = z.infer<typeof upgradeAccountSchema>["body"];

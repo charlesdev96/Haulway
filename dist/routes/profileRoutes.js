@@ -12,6 +12,8 @@ class profileRoute {
         this.initializeRoutes();
     }
     initializeRoutes() {
+        //upgrade account
+        this.router.post("/upgrade-account", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.upgradeAccountSchema), this.profileController.upgradeAccount.bind(this.profileController));
         //user profile
         this.router.get("/user-profile", middleware_1.authorizeUser, this.profileController.userProfile.bind(this.profileController));
         //update profile

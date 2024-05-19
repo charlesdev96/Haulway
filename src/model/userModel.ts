@@ -23,7 +23,7 @@ export interface UserInputs {
 	products?: string[];
 	productsDelivered?: { [key: string]: any }[];
 	contracts?: string[];
-	store?: string[];
+	store?: string;
 	productsSold?: string[];
 }
 
@@ -85,7 +85,7 @@ const UserSchema = new mongoose.Schema(
 		posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
 		address: [{ type: mongoose.Schema.Types.ObjectId, ref: "Address" }],
 		products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
-		store: [{ type: mongoose.Schema.Types.ObjectId, ref: "Store" }],
+		store: { type: mongoose.Schema.Types.ObjectId, ref: "Store" },
 		numOfFollowers: {
 			type: Number,
 			default: 0,
