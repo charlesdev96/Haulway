@@ -6,6 +6,7 @@ import { PostRouter } from "./postRoutes";
 import { commentRouter } from "./commentRoute";
 import { ReplyCommentRouter } from "./replyCommentRoute";
 import { UserActivityRouter } from "./userActivityRoute";
+import { UserRouter } from "./userRoute";
 
 class RouterConfig {
 	private router: Router;
@@ -48,6 +49,8 @@ class RouterConfig {
 			`${baseUrl}/activity`,
 			new UserActivityRouter().getUserActivityRouter(),
 		);
+		//user router
+		this.router.use(`${baseUrl}/user`, new UserRouter().getAllUserRouter());
 	}
 
 	public getRouter(): Router {

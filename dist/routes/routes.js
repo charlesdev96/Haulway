@@ -8,6 +8,7 @@ const postRoutes_1 = require("./postRoutes");
 const commentRoute_1 = require("./commentRoute");
 const replyCommentRoute_1 = require("./replyCommentRoute");
 const userActivityRoute_1 = require("./userActivityRoute");
+const userRoute_1 = require("./userRoute");
 class RouterConfig {
     constructor() {
         this.router = (0, express_1.Router)();
@@ -29,6 +30,8 @@ class RouterConfig {
         this.router.use(`${baseUrl}/reply`, new replyCommentRoute_1.ReplyCommentRouter().getReplyCommentRouter());
         //user activities router
         this.router.use(`${baseUrl}/activity`, new userActivityRoute_1.UserActivityRouter().getUserActivityRouter());
+        //user router
+        this.router.use(`${baseUrl}/user`, new userRoute_1.UserRouter().getAllUserRouter());
     }
     getRouter() {
         return this.router;

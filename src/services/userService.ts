@@ -26,6 +26,12 @@ export const userProfile = async (email: string) => {
 	);
 };
 
+export const getAllUser = async () => {
+	return await UserModel.find({})
+		.select("_id userName profilePic fullName role")
+		.sort({ createdAt: -1 });
+};
+
 export const userNameExist = async (userName: string) => {
 	return await UserModel.findOne({ userName: userName }).select(
 		"-password -verificationCode -passwordResetCode -otp",

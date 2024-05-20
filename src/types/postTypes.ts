@@ -1,3 +1,5 @@
+import { string } from "zod";
+
 export interface User {
 	_id?: string | null;
 	fullName?: string | null;
@@ -22,17 +24,17 @@ export interface Reply {
 	_id?: string | null;
 	reply?: string | null;
 	comment?: string | null;
-	replier?: User[] | null;
+	replier?: User[] | [];
 	createdAt?: string | null;
 	updatedAt?: string | null;
 }
 
 export interface ManualLocation {
-	zipCode?: string | null;
-	landMark?: string | null;
-	city?: string | null;
-	state?: string | null;
-	country?: string | null;
+	zipCode?: string | "";
+	landMark?: string | "";
+	city?: string | "";
+	state?: string | "";
+	country?: string | "";
 }
 
 export interface GoogleLocation {
@@ -54,8 +56,8 @@ export interface Post {
 	numOfPeopleTag?: number;
 	addLocation?: ManualLocation | GoogleLocation | null;
 	addCategory?: string[] | null;
-	addMusic?: string | null;
-	products?: string[] | null;
+	addMusic?: string | "";
+	products?: string[] | [];
 	createdAt?: string | null;
 	updatedAt?: string | null;
 }
