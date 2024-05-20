@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import {
 	CustomRequest,
 	findUserById,
-	userProfile,
+	userData,
 	validatePassword,
 	userNameExist,
 	existingUser,
@@ -21,13 +21,19 @@ import { UserDocument, UserModel } from "../model";
 export class profiles {
 	public async userProfile(req: CustomRequest, res: Response) {
 		try {
-			const email = req.user?.email;
-			if (!email) {
+			const userId = req.user?.userId;
+			const role = req.user?.role;
+			if (!userId) {
 				return res
 					.status(StatusCodes.UNAUTHORIZED)
 					.json({ message: "Unauthorized: Missing authentication token." });
 			}
-			const user = await userProfile(email);
+			if (!role) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const user = await userData(role.toString(), userId.toString());
 			res.status(StatusCodes.OK).json({
 				success: true,
 				message: "User profile retrieved successfully.",
@@ -162,7 +168,7 @@ export class profiles {
 					message: `You have already changed your role once to ${updateUser.role}. Further changes are not permitted.`,
 				});
 			}
-			if (body.role === "vendor") {
+			if (body.role === "vendor" || body.role === "influencer") {
 				//create a store for vendor
 				if (!body.store) {
 					return res
@@ -180,7 +186,7 @@ export class profiles {
 					}
 					//if store name does not exist, proceed to create store
 					body.store.owner = userId.toString();
-					body.store.role = "vendor";
+					body.store.role = body.role;
 					const newStore = await createStore(body.store);
 					updateUser.store = newStore._id;
 					//update user account
@@ -233,4 +239,7 @@ export class profiles {
 				.json({ success: false, message: "Unable to delete account" });
 		}
 	}
+}
+function elseif() {
+	throw new Error("Function not implemented.");
 }

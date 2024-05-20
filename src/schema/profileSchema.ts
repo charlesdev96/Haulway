@@ -20,19 +20,31 @@ export const deleteAccountSchema = z.object({
 	}),
 });
 
-export const createStoreSchema = z.object({
-	role: z.string().optional(),
-	owner: z.string().optional(),
-	storeName: z.string({
-		required_error: "Please provide a name for your store",
-	}),
-	storeLogo: z.string({
-		required_error: "Please provide a logo for your store",
-	}),
-	currency: z.string({
-		required_error: "Please provide a currency for your store",
-	}),
-});
+export const createStoreSchema = z
+	.object({
+		role: z.string().optional(),
+		owner: z.string().optional(),
+		storeName: z.string({
+			required_error: "Please provide a name for your store",
+		}),
+		storeLogo: z.string().optional(),
+		currency: z.string({
+			required_error: "Please provide a currency for your store",
+		}),
+	})
+	.refine(
+		(data) => {
+			if (data.role === "vendor" && !data.storeLogo) {
+				return false;
+			} else {
+				return true;
+			}
+		},
+		{
+			message: "Please provide a logo for your store",
+			path: ["storeLogo"],
+		},
+	);
 
 export const upgradeAccountSchema = z.object({
 	body: z.object({

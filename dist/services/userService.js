@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validatePassword = exports.userNameExist = exports.getAllUser = exports.userProfile = exports.findUserById = exports.existingUser = exports.registerUser = void 0;
+exports.userData = exports.validatePassword = exports.userNameExist = exports.getAllUser = exports.findUserById = exports.existingUser = exports.userProfile = exports.registerUser = void 0;
 const model_1 = require("../model");
 const lodash_1 = require("lodash");
 const bcryptjs_1 = require("bcryptjs");
@@ -23,6 +23,10 @@ const registerUser = (input) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.registerUser = registerUser;
+const userProfile = (email) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield model_1.UserModel.findOne({ email: email }).select("-password -verificationCode -passwordResetCode -otp");
+});
+exports.userProfile = userProfile;
 const existingUser = (email) => __awaiter(void 0, void 0, void 0, function* () {
     return yield model_1.UserModel.findOne({ email: email });
 });
@@ -31,10 +35,6 @@ const findUserById = (userId) => __awaiter(void 0, void 0, void 0, function* () 
     return yield model_1.UserModel.findOne({ _id: userId });
 });
 exports.findUserById = findUserById;
-const userProfile = (email) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield model_1.UserModel.findOne({ email: email }).select("-password -verificationCode -passwordResetCode -otp");
-});
-exports.userProfile = userProfile;
 const getAllUser = () => __awaiter(void 0, void 0, void 0, function* () {
     return yield model_1.UserModel.find({})
         .select("_id userName profilePic fullName role")
@@ -49,3 +49,38 @@ const validatePassword = (userPassword, canditatePassword) => __awaiter(void 0, 
     return yield (0, bcryptjs_1.compare)(userPassword, canditatePassword);
 });
 exports.validatePassword = validatePassword;
+const userData = (role, userId) => __awaiter(void 0, void 0, void 0, function* () {
+    if (role === "vendor") {
+        return yield model_1.UserModel.findById(userId)
+            .select("_id profilePic userName role numOfPosts fullName numOfPosts numOfFollowers numOfFollowings store posts products contracts")
+            .populate({
+            path: "posts",
+            select: "_id content desc",
+        })
+            .populate({
+            path: "store",
+            select: "_id storeName storeLogo currency products",
+        });
+    }
+    else if (role === "influencer") {
+        return yield model_1.UserModel.findById(userId)
+            .select("_id profilePic userName role numOfPosts fullName numOfPosts numOfFollowers numOfFollowings store posts products contracts")
+            .populate({
+            path: "posts",
+            select: "_id content desc",
+        })
+            .populate({
+            path: "store",
+            select: "_id storeName currency videos",
+        });
+    }
+    else {
+        return yield model_1.UserModel.findById(userId)
+            .select("_id profilePic userName role numOfPosts fullName numOfPosts numOfFollowers numOfFollowings posts")
+            .populate({
+            path: "posts",
+            select: "_id content desc",
+        });
+    }
+});
+exports.userData = userData;

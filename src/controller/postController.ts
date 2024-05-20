@@ -15,6 +15,7 @@ import {
 	deleteCommentByPost,
 	deleteReplyByPost,
 } from "../services";
+import { Post } from "../types";
 import { log } from "../utils";
 import { StatusCodes } from "http-status-codes";
 import { ReplyModel, CommentModel } from "../model";
@@ -97,17 +98,35 @@ export class PostController {
 					.status(StatusCodes.NOT_FOUND)
 					.json({ message: "User not found" });
 			}
-			const post = await singlePost(postId, userId);
-			if (!post) {
+			const singlepost = await singlePost(postId);
+			if (!singlepost) {
 				return res
 					.status(StatusCodes.NOT_FOUND)
 					.json({ message: "Post not found" });
 			}
+			//convert object post to array so that we can map it
+			const updatedPost = [singlepost];
+			const postsData: Post[] = (updatedPost || []).map((post: any) => {
+				let status = "follow";
+
+				// Check if userId is the owner of the post
+				if (post.postedBy._id.toString() === userId.toString()) {
+					status = "owner";
+				}
+
+				// Check if userId is in the followers array
+				if (post.postedBy.followers.includes(userId.toString())) {
+					status = "following";
+				}
+				// Remove the followers field from postedBy
+				const { followers, ...postedBy } = post.postedBy._doc;
+				return { status: status, ...post._doc, postedBy };
+			});
 
 			res.status(StatusCodes.OK).json({
 				success: true,
 				message: "Posts retrieved successfully.",
-				data: post,
+				data: postsData,
 			});
 		} catch (error: any) {
 			log.info(error.message);

@@ -16,15 +16,21 @@ const utils_1 = require("../utils");
 class profiles {
     userProfile(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
+            var _a, _b;
             try {
-                const email = (_a = req.user) === null || _a === void 0 ? void 0 : _a.email;
-                if (!email) {
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                const role = (_b = req.user) === null || _b === void 0 ? void 0 : _b.role;
+                if (!userId) {
                     return res
                         .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
                         .json({ message: "Unauthorized: Missing authentication token." });
                 }
-                const user = yield (0, services_1.userProfile)(email);
+                if (!role) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                const user = yield (0, services_1.userData)(role.toString(), userId.toString());
                 res.status(http_status_codes_1.StatusCodes.OK).json({
                     success: true,
                     message: "User profile retrieved successfully.",
@@ -159,7 +165,7 @@ class profiles {
                         message: `You have already changed your role once to ${updateUser.role}. Further changes are not permitted.`,
                     });
                 }
-                if (body.role === "vendor") {
+                if (body.role === "vendor" || body.role === "influencer") {
                     //create a store for vendor
                     if (!body.store) {
                         return res
@@ -176,7 +182,7 @@ class profiles {
                         }
                         //if store name does not exist, proceed to create store
                         body.store.owner = userId.toString();
-                        body.store.role = "vendor";
+                        body.store.role = body.role;
                         const newStore = yield (0, services_1.createStore)(body.store);
                         updateUser.store = newStore._id;
                         //update user account
@@ -233,3 +239,6 @@ class profiles {
     }
 }
 exports.profiles = profiles;
+function elseif() {
+    throw new Error("Function not implemented.");
+}

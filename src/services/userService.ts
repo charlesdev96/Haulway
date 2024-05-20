@@ -12,18 +12,18 @@ export const registerUser = async (input: UserInputs) => {
 	}
 };
 
+export const userProfile = async (email: string) => {
+	return await UserModel.findOne({ email: email }).select(
+		"-password -verificationCode -passwordResetCode -otp",
+	);
+};
+
 export const existingUser = async (email: string) => {
 	return await UserModel.findOne({ email: email });
 };
 
 export const findUserById = async (userId: string) => {
 	return await UserModel.findOne({ _id: userId });
-};
-
-export const userProfile = async (email: string) => {
-	return await UserModel.findOne({ email: email }).select(
-		"-password -verificationCode -passwordResetCode -otp",
-	);
 };
 
 export const getAllUser = async () => {
@@ -52,3 +52,42 @@ export interface CustomRequest extends Request {
 		role?: string;
 	};
 }
+
+export const userData = async (role: string, userId: string) => {
+	if (role === "vendor") {
+		return await UserModel.findById(userId)
+			.select(
+				"_id profilePic userName role numOfPosts fullName numOfPosts numOfFollowers numOfFollowings store posts products contracts",
+			)
+			.populate({
+				path: "posts",
+				select: "_id content desc",
+			})
+			.populate({
+				path: "store",
+				select: "_id storeName storeLogo currency products",
+			});
+	} else if (role === "influencer") {
+		return await UserModel.findById(userId)
+			.select(
+				"_id profilePic userName role numOfPosts fullName numOfPosts numOfFollowers numOfFollowings store posts products contracts",
+			)
+			.populate({
+				path: "posts",
+				select: "_id content desc",
+			})
+			.populate({
+				path: "store",
+				select: "_id storeName currency videos",
+			});
+	} else {
+		return await UserModel.findById(userId)
+			.select(
+				"_id profilePic userName role numOfPosts fullName numOfPosts numOfFollowers numOfFollowings posts",
+			)
+			.populate({
+				path: "posts",
+				select: "_id content desc",
+			});
+	}
+};

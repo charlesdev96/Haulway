@@ -67,16 +67,18 @@ export const timeLinePost = async (userId: string) => {
 		if (post.postedBy.followers.includes(userId.toString())) {
 			status = "following";
 		}
-		return { status: status, ...post._doc };
+		// Remove the followers field from postedBy
+		const { followers, ...postedBy } = post.postedBy._doc;
+		return { status: status, ...post._doc, postedBy };
 	});
 
 	return postsData;
 };
 
-export const singlePost = async (postId: string, userId: string) => {
+export const singlePost = async (postId: string) => {
 	// Increment the views by 1
 	await PostModel.updateOne({ _id: postId }, { $inc: { views: 1 } });
-	const post = await PostModel.findOne({ _id: postId })
+	return await PostModel.findOne({ _id: postId })
 		.select(
 			"_id content desc views numOfLikes numOfComments comments products addMusic postedBy createdAt updatedAt tagPeople numOfPeopleTag addLocation addMusic addCategory numOfShares",
 		)
@@ -109,21 +111,4 @@ export const singlePost = async (postId: string, userId: string) => {
 			],
 		})
 		.sort({ updatedAt: -1 });
-
-	const posts = [post];
-	const postsData: Post[] = (posts || []).map((post: any) => {
-		let status = "follow";
-
-		// Check if userId is the owner of the post
-		if (post.postedBy._id.toString() === userId.toString()) {
-			status = "owner";
-		}
-
-		// Check if userId is in the followers array
-		if (post.postedBy.followers.includes(userId.toString())) {
-			status = "following";
-		}
-		return { status: status, ...post._doc };
-	});
-	return postsData;
 };

@@ -7,6 +7,7 @@ export interface StoreInputs {
 	storeLogo?: string;
 	owner?: string;
 	role?: string;
+	videos?: string[];
 }
 
 export interface StoreDocument extends StoreInputs, mongoose.Document {
@@ -28,11 +29,14 @@ const StoreSchema = new mongoose.Schema(
 		},
 		storeLogo: {
 			type: String,
-			required: [true, "Please provide a store logo"],
 		},
 		role: { type: String },
 		owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 		products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+		videos: {
+			type: Array,
+			default: [],
+		},
 	},
 	{
 		timestamps: true,

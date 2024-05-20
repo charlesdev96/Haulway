@@ -20,18 +20,28 @@ exports.deleteAccountSchema = zod_1.z.object({
             .email({ message: "Please provide a valid email" }),
     }),
 });
-exports.createStoreSchema = zod_1.z.object({
+exports.createStoreSchema = zod_1.z
+    .object({
     role: zod_1.z.string().optional(),
     owner: zod_1.z.string().optional(),
     storeName: zod_1.z.string({
         required_error: "Please provide a name for your store",
     }),
-    storeLogo: zod_1.z.string({
-        required_error: "Please provide a logo for your store",
-    }),
+    storeLogo: zod_1.z.string().optional(),
     currency: zod_1.z.string({
         required_error: "Please provide a currency for your store",
     }),
+})
+    .refine((data) => {
+    if (data.role === "vendor" && !data.storeLogo) {
+        return false;
+    }
+    else {
+        return true;
+    }
+}, {
+    message: "Please provide a logo for your store",
+    path: ["storeLogo"],
 });
 exports.upgradeAccountSchema = zod_1.z.object({
     body: zod_1.z.object({
