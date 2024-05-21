@@ -240,6 +240,3 @@ export class profiles {
 		}
 	}
 }
-function elseif() {
-	throw new Error("Function not implemented.");
-}

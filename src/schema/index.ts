@@ -4,3 +4,4 @@ export * from "./postSchema";
 export * from "./commentSchema";
 export * from "./replyCommentSchema";
 export * from "./userActivitiesSchema";
+export * from "./userSchema";

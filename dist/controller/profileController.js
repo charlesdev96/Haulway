@@ -239,6 +239,3 @@ class profiles {
     }
 }
 exports.profiles = profiles;
-function elseif() {
-    throw new Error("Function not implemented.");
-}

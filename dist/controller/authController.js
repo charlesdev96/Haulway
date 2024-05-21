@@ -210,7 +210,6 @@ class authController {
                 res.status(200).json({
                     success: true,
                     message: `Welcome back ${user.fullName} to Haulway App.`,
-                    data: data,
                     token,
                 });
             }

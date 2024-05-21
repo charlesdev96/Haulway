@@ -8,6 +8,7 @@ export interface UserInputs {
 	email?: string;
 	profilePic?: string;
 	verified?: boolean;
+	profileViews?: number;
 	numOfPosts?: number;
 	deviceType?: "android" | "ios";
 	otp?: number | null;
@@ -71,6 +72,10 @@ const UserSchema = new mongoose.Schema(
 			type: Number,
 			default: 0,
 		},
+		profileViews: {
+			type: Number,
+			default: 0,
+		},
 		deviceType: {
 			type: String,
 			enum: ["android", "ios"],
@@ -118,13 +123,3 @@ UserSchema.pre("save", async function (next) {
 });
 
 export const UserModel = mongoose.model<UserDocument>("User", UserSchema);
-// export const UserModel = (role: string) => {
-// 	switch (role) {
-// 		case "vendor":
-// 			return mongoose.model<VendorDocument>("User", UserSchema);
-// 		case "influencer":
-// 			return mongoose.model<InfluencerDocument>("User", UserSchema);
-// 		default:
-// 			return mongoose.model<UserDocument>("User", UserSchema);
-// 	}
-// };

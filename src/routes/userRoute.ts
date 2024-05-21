@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { authorizeUser } from "../middleware";
+import { authorizeUser, validateInputs } from "../middleware";
 import { UserController } from "../controller/userController";
+import { getSingleUserSchema } from "../schema";
 
 export class UserRouter {
 	private router: Router;
@@ -16,6 +17,13 @@ export class UserRouter {
 			"/get-all-users",
 			authorizeUser,
 			this.userController.getAllUsers.bind(this.userController),
+		);
+		//get single user route
+		this.router.get(
+			"/get-single-user/:id",
+			authorizeUser,
+			validateInputs(getSingleUserSchema),
+			this.userController.getSingleUser.bind(this.userController),
 		);
 	}
 

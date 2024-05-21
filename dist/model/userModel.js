@@ -51,6 +51,10 @@ const UserSchema = new mongoose_1.default.Schema({
         type: Number,
         default: 0,
     },
+    profileViews: {
+        type: Number,
+        default: 0,
+    },
     deviceType: {
         type: String,
         enum: ["android", "ios"],
@@ -97,13 +101,3 @@ UserSchema.pre("save", function (next) {
     });
 });
 exports.UserModel = mongoose_1.default.model("User", UserSchema);
-// export const UserModel = (role: string) => {
-// 	switch (role) {
-// 		case "vendor":
-// 			return mongoose.model<VendorDocument>("User", UserSchema);
-// 		case "influencer":
-// 			return mongoose.model<InfluencerDocument>("User", UserSchema);
-// 		default:
-// 			return mongoose.model<UserDocument>("User", UserSchema);
-// 	}
-// };

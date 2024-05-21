@@ -1,7 +1,8 @@
-import { UserDocument, UserInputs, UserModel } from "../model";
+import { UserInputs, UserModel } from "../model";
 import { omit } from "lodash";
 import { Request } from "express";
 import { compare } from "bcryptjs";
+import { UserData } from "../types";
 
 export const registerUser = async (input: UserInputs) => {
 	try {
@@ -26,10 +27,39 @@ export const findUserById = async (userId: string) => {
 	return await UserModel.findOne({ _id: userId });
 };
 
-export const getAllUser = async () => {
-	return await UserModel.find({})
-		.select("_id userName profilePic fullName role")
+export const getAllUser = async (userId: string) => {
+	//exclude the logged in user
+	const users = await UserModel.find({ _id: { $ne: userId } })
+		.select("_id userName profilePic fullName role followers")
 		.sort({ createdAt: -1 });
+
+	const data: UserData[] = (users || []).map((user: any) => {
+		let status = "follow";
+		// Check if userId is in the followers array
+		if (user.followers.includes(userId.toString())) {
+			status = "following";
+		}
+		// Remove the followers field from postedBy
+		const { followers, ...userDetails } = user._doc;
+		return { status: status, ...userDetails };
+	});
+	return data;
+};
+
+export const singleUser = async (searchedUserId: string) => {
+	// Increment the profileViews by 1
+	await UserModel.updateOne(
+		{ _id: searchedUserId },
+		{ $inc: { profileViews: 1 } },
+	);
+	return UserModel.findOne({ _id: searchedUserId })
+		.select(
+			"_id profilePic fullName userName numOfFollowers numOfFollowings numOfPosts followers posts products",
+		)
+		.populate({
+			path: "posts",
+			select: "_id content",
+		});
 };
 
 export const userNameExist = async (userName: string) => {
@@ -57,7 +87,7 @@ export const userData = async (role: string, userId: string) => {
 	if (role === "vendor") {
 		return await UserModel.findById(userId)
 			.select(
-				"_id profilePic userName role numOfPosts fullName numOfPosts numOfFollowers numOfFollowings store posts products contracts",
+				"_id profilePic userName role numOfPosts fullName profileViews numOfPosts numOfFollowers numOfFollowings store posts products contracts",
 			)
 			.populate({
 				path: "posts",
@@ -70,7 +100,7 @@ export const userData = async (role: string, userId: string) => {
 	} else if (role === "influencer") {
 		return await UserModel.findById(userId)
 			.select(
-				"_id profilePic userName role numOfPosts fullName numOfPosts numOfFollowers numOfFollowings store posts products contracts",
+				"_id profilePic userName role numOfPosts fullName profileViews numOfPosts numOfFollowers numOfFollowings store posts products contracts",
 			)
 			.populate({
 				path: "posts",
@@ -83,7 +113,7 @@ export const userData = async (role: string, userId: string) => {
 	} else {
 		return await UserModel.findById(userId)
 			.select(
-				"_id profilePic userName role numOfPosts fullName numOfPosts numOfFollowers numOfFollowings posts",
+				"_id profilePic userName role numOfPosts fullName profileViews numOfPosts numOfFollowers numOfFollowings posts",
 			)
 			.populate({
 				path: "posts",
