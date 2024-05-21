@@ -15,7 +15,7 @@ export const registerUser = async (input: UserInputs) => {
 
 export const userProfile = async (email: string) => {
 	return await UserModel.findOne({ email: email }).select(
-		"-password -verificationCode -passwordResetCode -otp",
+		"_id profilePic fullName userName email role verified numOfPosts deviceType numOfFollowers numOfFollowings createdAt updatedAt profileViews",
 	);
 };
 

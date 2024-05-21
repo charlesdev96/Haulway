@@ -192,7 +192,7 @@ class authController {
                         .json({ success: false, message: "Please verify your email" });
                 }
                 //check user password
-                const _a = user, { password } = _a, userData = __rest(_a, ["password"]);
+                const _a = user, { password, role, _id } = _a, userDatas = __rest(_a, ["password", "role", "_id"]);
                 const checkPassword = yield (0, services_1.validatePassword)(body.password, password);
                 if (!checkPassword) {
                     return res
@@ -206,10 +206,12 @@ class authController {
                     role: user.role,
                 };
                 const token = (0, utils_1.createJWT)({ payload });
-                const data = yield (0, services_1.userProfile)(body.email);
+                // const data = await userProfile(body.email);
+                const data = yield (0, services_1.userData)(role.toString(), _id.toString());
                 res.status(200).json({
                     success: true,
                     message: `Welcome back ${user.fullName} to Haulway App.`,
+                    data: data,
                     token,
                 });
             }

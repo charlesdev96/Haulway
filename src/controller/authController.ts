@@ -16,6 +16,7 @@ import {
 	CustomRequest,
 	validatePassword,
 	userProfile,
+	userData,
 } from "../services";
 import { log, createJWT, sendMail } from "../utils";
 import { StatusCodes } from "http-status-codes";
@@ -189,7 +190,11 @@ export class authController {
 					.json({ success: false, message: "Please verify your email" });
 			}
 			//check user password
-			const { password, ...userData } = user as { password: string };
+			const { password, role, _id, ...userDatas } = user as {
+				password: string;
+				role: string;
+				_id: string;
+			};
 			const checkPassword: boolean = await validatePassword(
 				body.password,
 				password,
@@ -208,10 +213,12 @@ export class authController {
 			};
 
 			const token = createJWT({ payload });
-			const data = await userProfile(body.email);
+			// const data = await userProfile(body.email);
+			const data = await userData(role.toString(), _id.toString());
 			res.status(200).json({
 				success: true,
 				message: `Welcome back ${user.fullName} to Haulway App.`,
+				data: data,
 				token,
 			});
 		} catch (error: any) {

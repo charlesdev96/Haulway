@@ -35,7 +35,7 @@ const registerUser = (input) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.registerUser = registerUser;
 const userProfile = (email) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield model_1.UserModel.findOne({ email: email }).select("-password -verificationCode -passwordResetCode -otp");
+    return yield model_1.UserModel.findOne({ email: email }).select("_id profilePic fullName userName email role verified numOfPosts deviceType numOfFollowers numOfFollowings createdAt updatedAt profileViews");
 });
 exports.userProfile = userProfile;
 const existingUser = (email) => __awaiter(void 0, void 0, void 0, function* () {
