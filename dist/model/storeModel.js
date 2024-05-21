@@ -8,8 +8,9 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const StoreSchema = new mongoose_1.default.Schema({
     storeName: {
         type: String,
-        unique: [true, "Store name must be unique"],
+        unique: true,
         required: [true, "Please provide a store name"],
+        trim: true,
     },
     currency: {
         type: String,

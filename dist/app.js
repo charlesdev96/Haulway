@@ -15,13 +15,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = require("dotenv");
 (0, dotenv_1.config)();
 const express_1 = __importDefault(require("express"));
+const http_1 = require("http");
+const socket_io_1 = require("socket.io");
 const utils_1 = require("./utils");
+const server_1 = require("./server");
 const middleware_1 = require("./middleware");
 const routes_1 = __importDefault(require("./routes/routes"));
 const helmet_1 = __importDefault(require("helmet"));
 const cors_1 = __importDefault(require("cors"));
 const express_fileupload_1 = __importDefault(require("express-fileupload"));
 const app = (0, express_1.default)();
+const server = (0, http_1.createServer)(app);
+const io = new socket_io_1.Server(server, {
+    cors: {
+        origin: "*", // Replace with your frontend URL
+        methods: ["GET", "POST", "PATCH", "DELETE"],
+    },
+});
+(0, server_1.setupSocket)(io);
 const router = new routes_1.default();
 //use middleware
 app.use((0, helmet_1.default)());
@@ -39,7 +50,7 @@ const start = () => __awaiter(void 0, void 0, void 0, function* () {
         yield (0, utils_1.connectDB)({}, {});
         yield (0, utils_1.deleteUnverifiedUsers)();
         yield utils_1.userCreatedEmitter;
-        app.listen(port, () => {
+        server.listen(port, () => {
             utils_1.log.info(`Server running on port ${port}...`);
         });
     }

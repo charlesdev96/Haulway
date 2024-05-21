@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { isTokenValid } from "../utils";
 import { StatusCodes } from "http-status-codes";
 
-interface TokenPayLoad {
+export interface TokenPayLoad {
 	userId: string;
 	email: string;
 	role: string;

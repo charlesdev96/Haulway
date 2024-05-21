@@ -1,12 +1,15 @@
 import { config } from "dotenv";
 config();
-import express, { Request, Response, Express, NextFunction } from "express";
+import express, { Request, Response, Express } from "express";
+import { createServer } from "http";
+import { Server } from "socket.io";
 import {
 	connectDB,
 	log,
 	userCreatedEmitter,
 	deleteUnverifiedUsers,
 } from "./utils";
+import { setupSocket } from "./server";
 import { notFound } from "./middleware";
 import RouterConfig from "./routes/routes";
 import helmet from "helmet";
@@ -14,6 +17,14 @@ import cors from "cors";
 import expressFileUpload from "express-fileupload";
 
 const app: Express = express();
+const server = createServer(app);
+const io = new Server(server, {
+	cors: {
+		origin: "*", // Replace with your frontend URL
+		methods: ["GET", "POST", "PATCH", "DELETE"],
+	},
+});
+setupSocket(io);
 const router = new RouterConfig();
 
 //use middleware
@@ -36,7 +47,7 @@ const start = async () => {
 		await connectDB({} as Request, {} as Response);
 		await deleteUnverifiedUsers();
 		await userCreatedEmitter;
-		app.listen(port, () => {
+		server.listen(port, () => {
 			log.info(`Server running on port ${port}...`);
 		});
 	} catch (error: any) {
