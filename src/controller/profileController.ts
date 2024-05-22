@@ -184,6 +184,12 @@ export class profiles {
 							mesage: `Store name ${body.store.storeName} already exist, please choose another name`,
 						});
 					}
+					//vendor store must have storelogo
+					if (body.role === "vendor" && !body.store.storeLogo) {
+						return res
+							.status(StatusCodes.BAD_REQUEST)
+							.json({ message: "Please provide a store logo" });
+					}
 					//if store name does not exist, proceed to create store
 					body.store.owner = userId.toString();
 					body.store.role = body.role;
