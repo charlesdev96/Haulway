@@ -54,6 +54,7 @@ class authController {
                 body.otp = otp;
                 const user = yield (0, services_1.registerUser)(body);
                 //send email with verification code
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const _a = user, { _id, email } = _a, userDAta = __rest(_a, ["_id", "email"]);
                 //send email with otp
                 yield (0, utils_1.sendMail)(body.email, otp);
@@ -192,6 +193,7 @@ class authController {
                         .json({ success: false, message: "Please verify your email" });
                 }
                 //check user password
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const _a = user, { password, role, _id } = _a, userDatas = __rest(_a, ["password", "role", "_id"]);
                 const checkPassword = yield (0, services_1.validatePassword)(body.password, password);
                 if (!checkPassword) {

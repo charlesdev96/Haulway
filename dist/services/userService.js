@@ -58,6 +58,7 @@ const getAllUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
             status = "following";
         }
         // Remove the followers field from postedBy
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const _a = user._doc, { followers } = _a, userDetails = __rest(_a, ["followers"]);
         return Object.assign({ status: status }, userDetails);
     });

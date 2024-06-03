@@ -8,6 +8,6 @@ export interface user {
 }
 
 export interface UserData extends user {
-	profile?: user | {};
+	profile?: user | object;
 	status?: "follow" | "following";
 }

@@ -40,6 +40,7 @@ export const getAllUser = async (userId: string) => {
 			status = "following";
 		}
 		// Remove the followers field from postedBy
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const { followers, ...userDetails } = user._doc;
 		return { status: status, ...userDetails };
 	});

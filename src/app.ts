@@ -50,7 +50,7 @@ const start = async () => {
 		server.listen(port, () => {
 			log.info(`Server running on port ${port}...`);
 		});
-	} catch (error: any) {
+	} catch (error: unknown) {
 		log.info("Unable to start app");
 	}
 };

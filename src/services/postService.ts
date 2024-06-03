@@ -1,5 +1,5 @@
 import { PostInputs, PostModel, CommentModel, ReplyModel } from "../model";
-import { Post, location } from "../types";
+import { Post } from "../types";
 
 export const createPosts = async (input: PostInputs) => {
 	return await PostModel.create(input);
@@ -68,6 +68,7 @@ export const timeLinePost = async (userId: string) => {
 			status = "following";
 		}
 		// Remove the followers field from postedBy
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const { followers, ...postedBy } = post.postedBy._doc;
 		return { status: status, ...post._doc, postedBy };
 	});

@@ -1,7 +1,7 @@
 import cron from "node-cron";
 import { EventEmitter } from "events";
 import { log } from "../utils";
-import { UserModel } from "../model"; // Assuming Users model is defined in ../src/models/index
+import { UserModel } from "../model";
 
 // Function to delete unverified users created more than 25 minutes ago
 export const deleteUnverifiedUsers = async () => {

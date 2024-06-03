@@ -16,7 +16,7 @@ exports.userCreatedEmitter = exports.deleteUnverifiedUsers = void 0;
 const node_cron_1 = __importDefault(require("node-cron"));
 const events_1 = require("events");
 const utils_1 = require("../utils");
-const model_1 = require("../model"); // Assuming Users model is defined in ../src/models/index
+const model_1 = require("../model");
 // Function to delete unverified users created more than 25 minutes ago
 const deleteUnverifiedUsers = () => __awaiter(void 0, void 0, void 0, function* () {
     try {

@@ -15,7 +15,6 @@ import {
 	findUserById,
 	CustomRequest,
 	validatePassword,
-	userProfile,
 	userData,
 } from "../services";
 import { log, createJWT, sendMail } from "../utils";
@@ -31,7 +30,7 @@ function generateOTP(length: number) {
 
 export class authController {
 	public async register(
-		req: Request<{}, {}, registerUserInputs>,
+		req: Request<object, object, registerUserInputs>,
 		res: Response,
 	) {
 		try {
@@ -50,6 +49,7 @@ export class authController {
 			const user = await registerUser(body);
 
 			//send email with verification code
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { _id, email, ...userDAta } = user as {
 				_id: string;
 				email: string;
@@ -176,7 +176,7 @@ export class authController {
 		}
 	}
 
-	public async login(req: Request<{}, {}, loginInputs>, res: Response) {
+	public async login(req: Request<object, object, loginInputs>, res: Response) {
 		try {
 			const body = req.body as loginInputs;
 			const message = "Invalid email or password";
@@ -190,6 +190,7 @@ export class authController {
 					.json({ success: false, message: "Please verify your email" });
 			}
 			//check user password
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { password, role, _id, ...userDatas } = user as {
 				password: string;
 				role: string;
@@ -230,7 +231,7 @@ export class authController {
 	}
 
 	public async forgotPassword(
-		req: Request<{}, {}, forgotPasswordInputs>,
+		req: Request<object, object, forgotPasswordInputs>,
 		res: Response,
 	) {
 		try {
