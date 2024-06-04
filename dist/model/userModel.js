@@ -62,10 +62,9 @@ const UserSchema = new mongoose_1.default.Schema({
     },
     otp: {
         type: Number,
+        default: null,
     },
-    otpExpirationDate: {
-        type: String,
-    },
+    otpExpirationDate: { type: Date, default: null },
     posts: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Post" }],
     address: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Address" }],
     products: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Product" }],

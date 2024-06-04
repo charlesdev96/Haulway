@@ -20,6 +20,7 @@ import {
 import { log, createJWT, sendMail } from "../utils";
 import { StatusCodes } from "http-status-codes";
 import lodash from "lodash";
+import { addMinutes, isAfter } from "date-fns";
 
 //create 6 digits verification
 function generateOTP(length: number) {
@@ -46,6 +47,8 @@ export class authController {
 			// const otp: number = Number(generateToken());
 			const otp: number = Number(generateOTP(5));
 			body.otp = otp;
+			const otpExpirationDate: Date = addMinutes(new Date(), 30);
+			body.otpExpirationDate = otpExpirationDate;
 			const user = await registerUser(body);
 
 			//send email with verification code
@@ -159,7 +162,24 @@ export class authController {
 					.json({ success: true, message: "Invalid or expired OTP code" });
 			}
 
+			const otpExpirationDate: Date | null | undefined =
+				user.otpExpirationDate instanceof Date ? user.otpExpirationDate : null;
+			if (!otpExpirationDate) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "Expiration date not found" });
+			}
+
+			//check for expired otp
+			const currentDate = new Date();
+			if (isAfter(currentDate, otpExpirationDate)) {
+				return res
+					.status(StatusCodes.BAD_REQUEST)
+					.json({ message: "Invalid or expired otp" });
+			}
+
 			user.verified = true;
+			user.otpExpirationDate = null;
 			(user.otp = null), await user.save();
 			res.status(StatusCodes.OK).json({
 				success: true,
@@ -255,6 +275,8 @@ export class authController {
 			// const otp: number = Number(generateToken());
 			const otp: number = Number(generateOTP(5));
 			user.otp = otp;
+			const otpExpirationDate = addMinutes(new Date(), 30);
+			user.otpExpirationDate = otpExpirationDate as any;
 			await user.save();
 
 			//send email with otp
@@ -350,8 +372,25 @@ export class authController {
 					.json({ message: "Invalid or expired otp" });
 			}
 
+			const otpExpirationDate: Date | null | undefined =
+				user.otpExpirationDate instanceof Date ? user.otpExpirationDate : null;
+			if (!otpExpirationDate) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "Expiration date not found" });
+			}
+
+			//check for expired otp
+			const currentDate = new Date();
+			if (isAfter(currentDate, otpExpirationDate)) {
+				return res
+					.status(StatusCodes.BAD_REQUEST)
+					.json({ message: "Invalid or expired otp" });
+			}
+
 			//set otp to null
 			user.otp = null;
+			user.otpExpirationDate = null;
 			await user.save();
 			res.status(StatusCodes.OK).json({
 				success: true,

@@ -30,6 +30,7 @@ const services_1 = require("../services");
 const utils_1 = require("../utils");
 const http_status_codes_1 = require("http-status-codes");
 const lodash_1 = __importDefault(require("lodash"));
+const date_fns_1 = require("date-fns");
 //create 6 digits verification
 function generateOTP(length) {
     const min = Math.pow(10, length - 1);
@@ -52,6 +53,8 @@ class authController {
                 // const otp: number = Number(generateToken());
                 const otp = Number(generateOTP(5));
                 body.otp = otp;
+                const otpExpirationDate = (0, date_fns_1.addMinutes)(new Date(), 30);
+                body.otpExpirationDate = otpExpirationDate;
                 const user = yield (0, services_1.registerUser)(body);
                 //send email with verification code
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -160,7 +163,21 @@ class authController {
                         .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
                         .json({ success: true, message: "Invalid or expired OTP code" });
                 }
+                const otpExpirationDate = user.otpExpirationDate instanceof Date ? user.otpExpirationDate : null;
+                if (!otpExpirationDate) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "Expiration date not found" });
+                }
+                //check for expired otp
+                const currentDate = new Date();
+                if ((0, date_fns_1.isAfter)(currentDate, otpExpirationDate)) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                        .json({ message: "Invalid or expired otp" });
+                }
                 user.verified = true;
+                user.otpExpirationDate = null;
                 (user.otp = null), yield user.save();
                 res.status(http_status_codes_1.StatusCodes.OK).json({
                     success: true,
@@ -247,6 +264,8 @@ class authController {
                 // const otp: number = Number(generateToken());
                 const otp = Number(generateOTP(5));
                 user.otp = otp;
+                const otpExpirationDate = (0, date_fns_1.addMinutes)(new Date(), 30);
+                user.otpExpirationDate = otpExpirationDate;
                 yield user.save();
                 //send email with otp
                 yield (0, utils_1.sendMail)(email, otp);
@@ -346,8 +365,22 @@ class authController {
                         .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
                         .json({ message: "Invalid or expired otp" });
                 }
+                const otpExpirationDate = user.otpExpirationDate instanceof Date ? user.otpExpirationDate : null;
+                if (!otpExpirationDate) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "Expiration date not found" });
+                }
+                //check for expired otp
+                const currentDate = new Date();
+                if ((0, date_fns_1.isAfter)(currentDate, otpExpirationDate)) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                        .json({ message: "Invalid or expired otp" });
+                }
                 //set otp to null
                 user.otp = null;
+                user.otpExpirationDate = null;
                 yield user.save();
                 res.status(http_status_codes_1.StatusCodes.OK).json({
                     success: true,

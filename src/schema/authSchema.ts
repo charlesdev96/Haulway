@@ -17,8 +17,8 @@ export const registerUserSchema = z.object({
 			})
 			.min(6, { message: "Password too short - should be 6 chars minimum" }),
 		otp: z.number().optional(),
-		forgotPasswordOtp: z.number().optional(),
-		otpExpirationDate: z.string().nullable().optional(),
+		otpExpirationDate: z.date().nullable().optional(),
+		role: z.enum(["user", "admin"]).optional(),
 	}),
 });
 
@@ -55,12 +55,9 @@ export const forgotPasswordSchema = z.object({
 
 export const verifyPasswordOtpSchema = z.object({
 	body: z.object({
-		otp: z
-			.number({
-				required_error: "Please provide otp and it must be 5 digits",
-			})
-			.min(5)
-			.max(5),
+		otp: z.number({
+			required_error: "Please provide otp and it must be 5 digits",
+		}),
 	}),
 });
 

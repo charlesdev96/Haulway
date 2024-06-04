@@ -30,9 +30,9 @@ export interface UserInputs {
 
 export interface UserDocument extends UserInputs, mongoose.Document {
 	_id?: string;
-	otpExpirationDate?: string;
 	createdAt: Date;
 	updatedAt: Date;
+	otpExpirationDate?: Date | null;
 }
 
 const UserSchema = new mongoose.Schema(
@@ -83,10 +83,9 @@ const UserSchema = new mongoose.Schema(
 		},
 		otp: {
 			type: Number,
+			default: null,
 		},
-		otpExpirationDate: {
-			type: String,
-		},
+		otpExpirationDate: { type: Date, default: null },
 		posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
 		address: [{ type: mongoose.Schema.Types.ObjectId, ref: "Address" }],
 		products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],

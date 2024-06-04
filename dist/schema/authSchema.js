@@ -19,8 +19,8 @@ exports.registerUserSchema = zod_1.z.object({
         })
             .min(6, { message: "Password too short - should be 6 chars minimum" }),
         otp: zod_1.z.number().optional(),
-        forgotPasswordOtp: zod_1.z.number().optional(),
-        otpExpirationDate: zod_1.z.string().nullable().optional(),
+        otpExpirationDate: zod_1.z.date().nullable().optional(),
+        role: zod_1.z.enum(["user", "admin"]).optional(),
     }),
 });
 exports.verifyUserSchema = zod_1.z.object({
@@ -53,12 +53,9 @@ exports.forgotPasswordSchema = zod_1.z.object({
 });
 exports.verifyPasswordOtpSchema = zod_1.z.object({
     body: zod_1.z.object({
-        otp: zod_1.z
-            .number({
+        otp: zod_1.z.number({
             required_error: "Please provide otp and it must be 5 digits",
-        })
-            .min(5)
-            .max(5),
+        }),
     }),
 });
 exports.resetPasswordSchema = zod_1.z.object({

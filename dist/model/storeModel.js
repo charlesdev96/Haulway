@@ -14,7 +14,7 @@ const StoreSchema = new mongoose_1.default.Schema({
     },
     currency: {
         type: String,
-        required: [true, "Please provide a currency"],
+        default: "USD",
     },
     storeLogo: {
         type: String,
@@ -22,10 +22,6 @@ const StoreSchema = new mongoose_1.default.Schema({
     role: { type: String },
     owner: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" },
     products: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Product" }],
-    videos: {
-        type: Array,
-        default: [],
-    },
 }, {
     timestamps: true,
     toJSON: { virtuals: true },
@@ -33,7 +29,7 @@ const StoreSchema = new mongoose_1.default.Schema({
 });
 // Transform to uppercase for easy comparison and uniqueness before saving
 StoreSchema.pre("save", function (next) {
-    this.storeName = this.storeName.toUpperCase();
+    this.storeName = this.storeName.trim().replace(/\s+/g, " ").toUpperCase();
     next();
 });
 exports.StoreModel = mongoose_1.default.model("Store", StoreSchema);

@@ -7,7 +7,6 @@ export interface StoreInputs {
 	storeLogo?: string;
 	owner?: string;
 	role?: string;
-	videos?: string[];
 }
 
 export interface StoreDocument extends StoreInputs, mongoose.Document {
@@ -26,7 +25,7 @@ const StoreSchema = new mongoose.Schema(
 		},
 		currency: {
 			type: String,
-			required: [true, "Please provide a currency"],
+			default: "USD",
 		},
 		storeLogo: {
 			type: String,
@@ -34,10 +33,6 @@ const StoreSchema = new mongoose.Schema(
 		role: { type: String },
 		owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 		products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
-		videos: {
-			type: Array,
-			default: [],
-		},
 	},
 	{
 		timestamps: true,
@@ -48,7 +43,7 @@ const StoreSchema = new mongoose.Schema(
 
 // Transform to uppercase for easy comparison and uniqueness before saving
 StoreSchema.pre("save", function (next) {
-	this.storeName = this.storeName.toUpperCase();
+	this.storeName = this.storeName.trim().replace(/\s+/g, " ").toUpperCase();
 	next();
 });
 
