@@ -57,9 +57,22 @@ const ProductSchema = new mongoose_1.default.Schema({
         enum: ["published", "unpublished"],
         default: "published",
     },
+    numOfProReviews: { type: Number, default: 0 },
+    reviews: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "ProductReview" }],
 }, {
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
+});
+ProductSchema.pre("save", function (next) {
+    if (this.productPrice) {
+        const { basePrice, discount } = this.productPrice;
+        if (basePrice !== undefined && discount !== undefined) {
+            const discountedPrice = (1 - discount) * basePrice;
+            this.productPrice.discountPrice = Number(parseFloat(discountedPrice.toFixed(2)));
+            this.productPrice.price = this.productPrice.discountPrice;
+        }
+    }
+    next();
 });
 exports.VendorProductModel = mongoose_1.default.model("VendorProduct", ProductSchema);

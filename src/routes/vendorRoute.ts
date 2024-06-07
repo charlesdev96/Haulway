@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { VendorProductController } from "../controller/vendorProductController";
 import { validateInputs, authorizeUser } from "../middleware";
-import { vendorProductSchema } from "../schema";
+import { vendorProductSchema, updateVendorProductSchema } from "../schema";
 
 export class VendorRouter {
 	private router: Router;
@@ -18,6 +18,15 @@ export class VendorRouter {
 			authorizeUser,
 			validateInputs(vendorProductSchema),
 			this.vendorProductController.createProduct.bind(
+				this.vendorProductController,
+			),
+		);
+		//update product
+		this.router.patch(
+			"/update-product/:productId",
+			authorizeUser,
+			validateInputs(updateVendorProductSchema),
+			this.vendorProductController.updateProduct.bind(
 				this.vendorProductController,
 			),
 		);

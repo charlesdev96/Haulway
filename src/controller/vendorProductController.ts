@@ -1,10 +1,12 @@
 import { Response } from "express";
-import { vendorProductInputs } from "../schema";
+import { vendorProductInputs, updateVendorProductInputs } from "../schema";
 import {
 	CustomRequest,
 	findUserById,
 	createNewVendorProduct,
 	findStoreByUserId,
+	updateVendorProduct,
+	findVendorProductById,
 } from "../services";
 import { log } from "../utils";
 import { StatusCodes } from "http-status-codes";
@@ -28,7 +30,7 @@ export class VendorProductController {
 					.json({ message: "User not found" });
 			}
 			//check user role
-			if (user.role === "vendor") {
+			if (user.role !== "vendor") {
 				return res.status(StatusCodes.FORBIDDEN).json({
 					message:
 						"You are forbidden to access this route. Only vendors are allowed.",
@@ -68,6 +70,86 @@ export class VendorProductController {
 		} catch (error: unknown) {
 			log.info(error);
 			if (error instanceof Error) {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `Unable to create product due to: ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An unknown error occurred while creating the product",
+				});
+			}
+		}
+	}
+
+	public async updateProduct(req: CustomRequest, res: Response) {
+		try {
+			const body = req.body as updateVendorProductInputs["body"];
+			const { productId } = req.params as updateVendorProductInputs["params"];
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			//find logged in user
+			const user = await findUserById(userId);
+			//check if user exist
+			if (!user || !user.role) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found" });
+			}
+			//check user role
+			if (user.role !== "vendor") {
+				return res.status(StatusCodes.FORBIDDEN).json({
+					message:
+						"You are forbidden to access this route. Only vendors are allowed.",
+				});
+			}
+			//find product
+			const product = await findVendorProductById(productId);
+			if (!product) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "Product not found" });
+			}
+			//check if product belong to user
+			if (product.vendor?.toString() !== userId.toString()) {
+				return res.status(StatusCodes.UNAUTHORIZED).json({
+					message:
+						"Oops! It looks like you can't edit this product. Only the author can make changes.",
+				});
+			}
+			//proceed to update product
+			if (body.productPrice) {
+				const discountedPrice: number =
+					(1 - (body.productPrice.discount || 0)) * body.productPrice.basePrice;
+				body.productPrice.discountPrice = Number(discountedPrice.toFixed(2));
+				body.productPrice.price = body.productPrice.discountPrice;
+				const updatedProduct = await updateVendorProduct(productId, body);
+				res.status(StatusCodes.OK).json({
+					success: true,
+					message: "Product successfully updated",
+					data: updatedProduct,
+				});
+			} else {
+				const updatedProduct = await updateVendorProduct(productId, body);
+				res.status(StatusCodes.OK).json({
+					success: true,
+					message: "Product successfully updated",
+					data: updatedProduct,
+				});
+			}
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				if (error.message.indexOf("Cast to ObjectId failed") !== -1) {
+					return res
+						.status(StatusCodes.INTERNAL_SERVER_ERROR)
+						.json({ message: "Wrong Id format" });
+				}
 				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 					success: false,
 					message: `Unable to create product due to: ${error.message}`,

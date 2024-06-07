@@ -130,6 +130,7 @@ class PostController {
                         status = "following";
                     }
                     // Remove the followers field from postedBy
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     const _a = post.postedBy._doc, { followers } = _a, postedBy = __rest(_a, ["followers"]);
                     return Object.assign(Object.assign({ status: status }, post._doc), { postedBy });
                 });

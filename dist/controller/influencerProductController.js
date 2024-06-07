@@ -34,7 +34,7 @@ class InfluencerProductController {
                         .json({ message: "User not found" });
                 }
                 //check user role
-                if (user.role === "influencer") {
+                if (user.role !== "influencer") {
                     return res.status(http_status_codes_1.StatusCodes.FORBIDDEN).json({
                         message: "You are forbidden to access this route. Only influencers are allowed.",
                     });

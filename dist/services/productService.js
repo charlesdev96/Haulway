@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createNewInfluencerProduct = exports.createNewVendorProduct = exports.findInfluencerProductById = exports.findVendorProductById = void 0;
+exports.updateInfluencerProduct = exports.updateVendorProduct = exports.createNewInfluencerProduct = exports.createNewVendorProduct = exports.findInfluencerProductById = exports.findVendorProductById = void 0;
 const model_1 = require("../model");
 const findVendorProductById = (productId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield model_1.VendorProductModel.findById(productId);
@@ -27,3 +27,11 @@ const createNewInfluencerProduct = (input) => __awaiter(void 0, void 0, void 0, 
     return yield model_1.InfluencerProductModel.create(input);
 });
 exports.createNewInfluencerProduct = createNewInfluencerProduct;
+const updateVendorProduct = (productId, updates) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield model_1.VendorProductModel.updateOne({ _id: productId }, { $set: updates });
+});
+exports.updateVendorProduct = updateVendorProduct;
+const updateInfluencerProduct = (productId, updates) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield model_1.InfluencerProductModel.updateOne({ _id: productId }, { $set: updates });
+});
+exports.updateInfluencerProduct = updateInfluencerProduct;

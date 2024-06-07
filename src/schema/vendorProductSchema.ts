@@ -59,4 +59,21 @@ export const vendorProductSchema = z.object({
 	}),
 });
 
+export const updateVendorProductSchema = z.object({
+	body: z.object({
+		genInfo: generalInformationSchema.optional(),
+		productPrice: priceSchema.optional(),
+		shippingAndDelivery: shippingSchema.optional(),
+		inventory: inventorySchema.optional(),
+		productReview: productSchema.optional(),
+	}),
+	params: z.object({
+		productId: z.string({ required_error: "product id is required" }),
+	}),
+});
+
 export type vendorProductInputs = z.infer<typeof vendorProductSchema>["body"];
+
+export type updateVendorProductInputs = z.infer<
+	typeof updateVendorProductSchema
+>;

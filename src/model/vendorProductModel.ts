@@ -14,6 +14,8 @@ export interface VendorProductInputs {
 	inventory?: Inventory;
 	productReview?: ProductReview;
 	vendor?: string;
+	numOfProReviews?: number | 0;
+	reviews?: string[];
 	status?: "published" | "unpublished";
 }
 
@@ -80,6 +82,8 @@ const ProductSchema = new mongoose.Schema(
 			enum: ["published", "unpublished"],
 			default: "published",
 		},
+		numOfProReviews: { type: Number, default: 0 },
+		reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "ProductReview" }],
 	},
 	{
 		timestamps: true,
@@ -87,6 +91,20 @@ const ProductSchema = new mongoose.Schema(
 		toObject: { virtuals: true },
 	},
 );
+
+ProductSchema.pre("save", function (next) {
+	if (this.productPrice) {
+		const { basePrice, discount } = this.productPrice;
+		if (basePrice !== undefined && discount !== undefined) {
+			const discountedPrice = (1 - discount) * basePrice;
+			this.productPrice.discountPrice = Number(
+				parseFloat(discountedPrice.toFixed(2)),
+			);
+			this.productPrice.price = this.productPrice.discountPrice;
+		}
+	}
+	next();
+});
 
 export const VendorProductModel = mongoose.model<VendorProductDocument>(
 	"VendorProduct",

@@ -26,3 +26,23 @@ export const createNewInfluencerProduct = async (
 ): Promise<InfluencerProductDocument> => {
 	return await InfluencerProductModel.create(input);
 };
+
+export const updateVendorProduct = async (
+	productId: string,
+	updates: Partial<VendorProductInputs>,
+) => {
+	return await VendorProductModel.updateOne(
+		{ _id: productId },
+		{ $set: updates },
+	);
+};
+
+export const updateInfluencerProduct = async (
+	productId: string,
+	updates: Partial<InfluencerProductInputs>,
+) => {
+	return await InfluencerProductModel.updateOne(
+		{ _id: productId },
+		{ $set: updates },
+	);
+};

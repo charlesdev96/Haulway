@@ -31,4 +31,16 @@ const ProductSchema = new mongoose_1.default.Schema({
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
 });
+// Pre-save hook to format the discountPrice and price
+ProductSchema.pre("save", function (next) {
+    if (this.productPrice) {
+        const { basePrice, discount } = this.productPrice;
+        if (basePrice !== undefined && discount !== undefined) {
+            const discountedPrice = (1 - discount) * basePrice;
+            this.productPrice.discountPrice = Number(parseFloat(discountedPrice.toFixed(2)));
+            this.productPrice.price = this.productPrice.discountPrice;
+        }
+    }
+    next();
+});
 exports.InfluencerProductModel = mongoose_1.default.model("InfluencerProduct", ProductSchema);
