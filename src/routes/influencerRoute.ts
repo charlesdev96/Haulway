@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { InfluencerProductController } from "../controller/influencerProductController";
 import { authorizeUser, validateInputs } from "../middleware";
-import { influencerProductSchema } from "../schema";
+import {
+	influencerProductSchema,
+	updateInfluencerProductSchema,
+} from "../schema";
 
 export class InfluencerRouter {
 	private router: Router;
@@ -18,6 +21,13 @@ export class InfluencerRouter {
 			authorizeUser,
 			validateInputs(influencerProductSchema),
 			this.influencerProductCon.createProduct.bind(this.influencerProductCon),
+		);
+		//update influencer product
+		this.router.patch(
+			"/update-product/:productId",
+			authorizeUser,
+			validateInputs(updateInfluencerProductSchema),
+			this.influencerProductCon.updateProduct.bind(this.influencerProductCon),
 		);
 	}
 

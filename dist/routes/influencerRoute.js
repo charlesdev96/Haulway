@@ -14,6 +14,8 @@ class InfluencerRouter {
     initializeRoute() {
         //create influencer product
         this.router.post("/create-product", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.influencerProductSchema), this.influencerProductCon.createProduct.bind(this.influencerProductCon));
+        //update influencer product
+        this.router.patch("/update-product/:productId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.updateInfluencerProductSchema), this.influencerProductCon.updateProduct.bind(this.influencerProductCon));
     }
     getInfluencerRoute() {
         return this.router;

@@ -28,7 +28,7 @@ const createNewInfluencerProduct = (input) => __awaiter(void 0, void 0, void 0, 
 });
 exports.createNewInfluencerProduct = createNewInfluencerProduct;
 const updateVendorProduct = (productId, updates) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield model_1.VendorProductModel.updateOne({ _id: productId }, { $set: updates });
+    return yield model_1.VendorProductModel.findOneAndUpdate({ _id: productId }, updates, { new: true, runValidators: true });
 });
 exports.updateVendorProduct = updateVendorProduct;
 const updateInfluencerProduct = (productId, updates) => __awaiter(void 0, void 0, void 0, function* () {

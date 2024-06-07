@@ -32,6 +32,40 @@ export const influencerProductSchema = z.object({
 	}),
 });
 
+export const updateInfluencerProductSchema = z.object({
+	body: z.object({
+		genInfo: z
+			.object({
+				videoName: z.string().optional(),
+				videoType: z.string().optional(),
+				videoDesc: z.string().min(3).max(500).optional(),
+				videoCategory: z.string().optional(),
+			})
+			.optional(),
+		productPrice: z
+			.object({
+				basePrice: z.number().optional(),
+				discount: z.number().optional(),
+				discountPrice: z.number().optional(),
+				discountType: z.string().optional(),
+				price: z.number().optional(),
+			})
+			.optional(),
+		productReview: z
+			.object({
+				products: z.array(z.string()).optional(),
+			})
+			.optional(),
+	}),
+	params: z.object({
+		productId: z.string({ required_error: "product id is required" }),
+	}),
+});
+
 export type influencerProductInputs = z.infer<
 	typeof influencerProductSchema
 >["body"];
+
+export type updateInfluencerProductInputs = z.infer<
+	typeof updateInfluencerProductSchema
+>;

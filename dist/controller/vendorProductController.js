@@ -126,24 +126,22 @@ class VendorProductController {
                         message: "Oops! It looks like you can't edit this product. Only the author can make changes.",
                     });
                 }
-                //proceed to update product
-                if (body.productPrice) {
+                // proceed to update product
+                if (body.productPrice && body.productPrice.basePrice) {
                     const discountedPrice = (1 - (body.productPrice.discount || 0)) * body.productPrice.basePrice;
                     body.productPrice.discountPrice = Number(discountedPrice.toFixed(2));
                     body.productPrice.price = body.productPrice.discountPrice;
-                    const updatedProduct = yield (0, services_1.updateVendorProduct)(productId, body);
+                    yield (0, services_1.updateVendorProduct)(productId, body);
                     res.status(http_status_codes_1.StatusCodes.OK).json({
                         success: true,
                         message: "Product successfully updated",
-                        data: updatedProduct,
                     });
                 }
                 else {
-                    const updatedProduct = yield (0, services_1.updateVendorProduct)(productId, body);
+                    yield (0, services_1.updateVendorProduct)(productId, body);
                     res.status(http_status_codes_1.StatusCodes.OK).json({
                         success: true,
                         message: "Product successfully updated",
-                        data: updatedProduct,
                     });
                 }
             }

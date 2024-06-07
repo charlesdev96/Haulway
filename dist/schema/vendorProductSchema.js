@@ -55,11 +55,45 @@ exports.vendorProductSchema = zod_1.z.object({
 });
 exports.updateVendorProductSchema = zod_1.z.object({
     body: zod_1.z.object({
-        genInfo: generalInformationSchema.optional(),
-        productPrice: priceSchema.optional(),
-        shippingAndDelivery: shippingSchema.optional(),
-        inventory: inventorySchema.optional(),
-        productReview: productSchema.optional(),
+        genInfo: zod_1.z
+            .object({
+            name: zod_1.z.string().optional(),
+            brand: zod_1.z.string().optional(),
+            colour: zod_1.z.array(zod_1.z.string()).optional(),
+            desc: zod_1.z.string().min(3).max(500).optional(),
+            category: zod_1.z.string().optional(),
+            size: zod_1.z.array(zod_1.z.enum(validSizes)).optional(),
+            gender: zod_1.z.enum(["male", "female", "unisex"]).optional(),
+            productVar: prodVarSchema.optional(),
+        })
+            .optional(),
+        productPrice: zod_1.z
+            .object({
+            basePrice: zod_1.z.number().optional(),
+            discount: zod_1.z.number().optional(),
+            discountPrice: zod_1.z.number().optional(),
+            discountType: zod_1.z.string().optional(),
+            price: zod_1.z.number().optional(),
+        })
+            .optional(),
+        shippingAndDelivery: zod_1.z
+            .object({
+            shippingOptions: zod_1.z.enum(["dhl", "fedx", "ups"]).optional(),
+            refundPolicy: zod_1.z.string().optional(),
+        })
+            .optional(),
+        inventory: zod_1.z
+            .object({
+            quantity: zod_1.z.number().optional(),
+            stockStatus: zod_1.z.string().optional(),
+            productTags: zod_1.z.array(zod_1.z.string()).optional(),
+        })
+            .optional(),
+        productReview: zod_1.z
+            .object({
+            products: zod_1.z.array(zod_1.z.string()).optional(),
+        })
+            .optional(),
     }),
     params: zod_1.z.object({
         productId: zod_1.z.string({ required_error: "product id is required" }),

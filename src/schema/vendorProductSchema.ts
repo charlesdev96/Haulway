@@ -61,11 +61,45 @@ export const vendorProductSchema = z.object({
 
 export const updateVendorProductSchema = z.object({
 	body: z.object({
-		genInfo: generalInformationSchema.optional(),
-		productPrice: priceSchema.optional(),
-		shippingAndDelivery: shippingSchema.optional(),
-		inventory: inventorySchema.optional(),
-		productReview: productSchema.optional(),
+		genInfo: z
+			.object({
+				name: z.string().optional(),
+				brand: z.string().optional(),
+				colour: z.array(z.string()).optional(),
+				desc: z.string().min(3).max(500).optional(),
+				category: z.string().optional(),
+				size: z.array(z.enum(validSizes)).optional(),
+				gender: z.enum(["male", "female", "unisex"]).optional(),
+				productVar: prodVarSchema.optional(),
+			})
+			.optional(),
+		productPrice: z
+			.object({
+				basePrice: z.number().optional(),
+				discount: z.number().optional(),
+				discountPrice: z.number().optional(),
+				discountType: z.string().optional(),
+				price: z.number().optional(),
+			})
+			.optional(),
+		shippingAndDelivery: z
+			.object({
+				shippingOptions: z.enum(["dhl", "fedx", "ups"]).optional(),
+				refundPolicy: z.string().optional(),
+			})
+			.optional(),
+		inventory: z
+			.object({
+				quantity: z.number().optional(),
+				stockStatus: z.string().optional(),
+				productTags: z.array(z.string()).optional(),
+			})
+			.optional(),
+		productReview: z
+			.object({
+				products: z.array(z.string()).optional(),
+			})
+			.optional(),
 	}),
 	params: z.object({
 		productId: z.string({ required_error: "product id is required" }),

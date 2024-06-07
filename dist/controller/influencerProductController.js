@@ -87,5 +87,85 @@ class InfluencerProductController {
             }
         });
     }
+    updateProduct(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
+            try {
+                const body = req.body;
+                const { productId } = req.params;
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                //find logged in user
+                const user = yield (0, services_1.findUserById)(userId);
+                //check if user exist
+                if (!user || !user.role) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found" });
+                }
+                //check user role
+                if (user.role !== "influencer") {
+                    return res.status(http_status_codes_1.StatusCodes.FORBIDDEN).json({
+                        message: "You are forbidden to access this route. Only vendors are allowed.",
+                    });
+                }
+                //find product
+                const product = yield (0, services_1.findInfluencerProductById)(productId);
+                if (!product) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "Product not found" });
+                }
+                //check if product belong to user
+                if (((_b = product.influencer) === null || _b === void 0 ? void 0 : _b.toString()) !== userId.toString()) {
+                    return res.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).json({
+                        message: "Oops! It looks like you can't edit this product. Only the author can make changes.",
+                    });
+                }
+                // proceed to update product
+                if (body.productPrice && body.productPrice.basePrice) {
+                    const discountedPrice = (1 - (body.productPrice.discount || 0)) * body.productPrice.basePrice;
+                    body.productPrice.discountPrice = Number(discountedPrice.toFixed(2));
+                    body.productPrice.price = body.productPrice.discountPrice;
+                    yield (0, services_1.updateInfluencerProduct)(productId, body);
+                    res.status(http_status_codes_1.StatusCodes.OK).json({
+                        success: true,
+                        message: "Product successfully updated",
+                    });
+                }
+                else {
+                    yield (0, services_1.updateInfluencerProduct)(productId, body);
+                    res.status(http_status_codes_1.StatusCodes.OK).json({
+                        success: true,
+                        message: "Product successfully updated",
+                    });
+                }
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                if (error instanceof Error) {
+                    if (error.message.indexOf("Cast to ObjectId failed") !== -1) {
+                        return res
+                            .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
+                            .json({ message: "Wrong Id format" });
+                    }
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: `Unable to create product due to: ${error.message}`,
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An unknown error occurred while creating the product",
+                    });
+                }
+            }
+        });
+    }
 }
 exports.InfluencerProductController = InfluencerProductController;

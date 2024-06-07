@@ -31,9 +31,10 @@ export const updateVendorProduct = async (
 	productId: string,
 	updates: Partial<VendorProductInputs>,
 ) => {
-	return await VendorProductModel.updateOne(
+	return await VendorProductModel.findOneAndUpdate(
 		{ _id: productId },
-		{ $set: updates },
+		updates,
+		{ new: true, runValidators: true },
 	);
 };
 
