@@ -21,8 +21,9 @@ export interface UserInputs {
 	followings?: string[];
 	carts?: string[];
 	orderHistory?: string[];
+	numOfProducts?: number;
 	products?: string[];
-	productsDelivered?: { [key: string]: any }[];
+	productsDelivered?: string[];
 	contracts?: string[];
 	store?: string;
 	productsSold?: string[];
@@ -72,6 +73,10 @@ const UserSchema = new mongoose.Schema(
 			type: Number,
 			default: 0,
 		},
+		numOfProducts: {
+			type: Number,
+			default: 0,
+		},
 		profileViews: {
 			type: Number,
 			default: 0,
@@ -104,10 +109,7 @@ const UserSchema = new mongoose.Schema(
 		contracts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Contract" }],
 		orderHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
 		productsDelivered: [
-			{
-				product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
-				details: { type: mongoose.Schema.Types.Mixed },
-			},
+			{ type: mongoose.Schema.Types.ObjectId, ref: "Product" },
 		],
 		productsSold: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
 	},

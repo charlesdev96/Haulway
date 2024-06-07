@@ -21,3 +21,5 @@ __exportStar(require("./commentSchema"), exports);
 __exportStar(require("./replyCommentSchema"), exports);
 __exportStar(require("./userActivitiesSchema"), exports);
 __exportStar(require("./userSchema"), exports);
+__exportStar(require("./vendorProductSchema"), exports);
+__exportStar(require("./influencerProductSchema"), exports);

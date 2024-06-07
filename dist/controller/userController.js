@@ -91,6 +91,7 @@ class UserController {
                         status = "following";
                     }
                     // Remove the followers field from postedBy
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     const _b = data._doc, { followers } = _b, userDetails = __rest(_b, ["followers"]);
                     return Object.assign({ status: status }, userDetails);
                 });

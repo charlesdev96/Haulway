@@ -51,6 +51,10 @@ const UserSchema = new mongoose_1.default.Schema({
         type: Number,
         default: 0,
     },
+    numOfProducts: {
+        type: Number,
+        default: 0,
+    },
     profileViews: {
         type: Number,
         default: 0,
@@ -83,10 +87,7 @@ const UserSchema = new mongoose_1.default.Schema({
     contracts: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Contract" }],
     orderHistory: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Order" }],
     productsDelivered: [
-        {
-            product: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "Product" },
-            details: { type: mongoose_1.default.Schema.Types.Mixed },
-        },
+        { type: mongoose_1.default.Schema.Types.ObjectId, ref: "Product" },
     ],
     productsSold: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Product" }],
 }, { timestamps: true });

@@ -1,0 +1,55 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.vendorProductSchema = void 0;
+const zod_1 = require("zod");
+const validSizes = ["xs", "s", "m", "l", "xl", "xxl"];
+const prodVarSchema = zod_1.z.object({
+    variantColour: zod_1.z.array(zod_1.z.string()).optional(),
+    variantQuantity: zod_1.z.number().optional(),
+    variantSize: zod_1.z.array(zod_1.z.enum(validSizes)).optional(),
+});
+const generalInformationSchema = zod_1.z.object({
+    name: zod_1.z.string({ required_error: "product name is required" }),
+    brand: zod_1.z.string({ required_error: "product brand is required" }),
+    colour: zod_1.z.array(zod_1.z.string({ required_error: "product colour is required" })),
+    desc: zod_1.z
+        .string({ required_error: "product desc is required" })
+        .min(3)
+        .max(500),
+    category: zod_1.z.string({ required_error: "product category is required" }),
+    size: zod_1.z.array(zod_1.z.enum(validSizes), {
+        required_error: "product size is required",
+    }),
+    gender: zod_1.z.enum(["male", "female", "unisex"]),
+    productVar: prodVarSchema,
+});
+const priceSchema = zod_1.z.object({
+    basePrice: zod_1.z.number({ required_error: "base price is required" }),
+    discount: zod_1.z.number().optional(),
+    discountPrice: zod_1.z.number().optional(),
+    discountType: zod_1.z.string().optional(),
+    price: zod_1.z.number().optional(),
+});
+const shippingSchema = zod_1.z.object({
+    shippingOptions: zod_1.z.enum(["dhl", "fedx", "ups"]),
+    refundPolicy: zod_1.z.string().optional(),
+});
+const inventorySchema = zod_1.z.object({
+    quantity: zod_1.z.number({ required_error: "product quantity is required" }),
+    stockStatus: zod_1.z.string({ required_error: "stock status is required" }),
+    productTags: zod_1.z.array(zod_1.z.string()).optional(),
+});
+const productSchema = zod_1.z.object({
+    products: zod_1.z.array(zod_1.z.string({ required_error: "product " })),
+});
+exports.vendorProductSchema = zod_1.z.object({
+    body: zod_1.z.object({
+        genInfo: generalInformationSchema,
+        productPrice: priceSchema,
+        shippingAndDelivery: shippingSchema,
+        inventory: inventorySchema,
+        productReview: productSchema,
+        vendor: zod_1.z.string().optional(),
+        status: zod_1.z.enum(["published", "unpublished"]).optional(),
+    }),
+});

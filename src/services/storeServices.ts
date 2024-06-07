@@ -7,3 +7,7 @@ export const createStore = async (input: StoreInputs) => {
 export const findStoreByName = async (storeName: string) => {
 	return await StoreModel.findOne({ storeName: storeName });
 };
+
+export const findStoreByUserId = async (userId: string) => {
+	return await StoreModel.findOne({ owner: userId });
+};

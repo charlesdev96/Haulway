@@ -7,6 +7,8 @@ import { commentRouter } from "./commentRoute";
 import { ReplyCommentRouter } from "./replyCommentRoute";
 import { UserActivityRouter } from "./userActivityRoute";
 import { UserRouter } from "./userRoute";
+import { VendorRouter } from "./vendorRoute";
+import { InfluencerRouter } from "./influencerRoute";
 
 class RouterConfig {
 	private router: Router;
@@ -51,6 +53,15 @@ class RouterConfig {
 		);
 		//user router
 		this.router.use(`${baseUrl}/user`, new UserRouter().getAllUserRouter());
+
+		//vendor router
+		this.router.use(`${baseUrl}/vendor`, new VendorRouter().getVendorRouter());
+
+		//influencer route
+		this.router.use(
+			`${baseUrl}/influencer`,
+			new InfluencerRouter().getInfluencerRoute(),
+		);
 	}
 
 	public getRouter(): Router {
