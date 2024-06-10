@@ -19,9 +19,16 @@ const StoreSchema = new mongoose_1.default.Schema({
     storeLogo: {
         type: String,
     },
+    storeDesc: {
+        type: String,
+        default: "",
+    },
     role: { type: String },
     owner: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" },
-    products: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Product" }],
+    products: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "VendorProduct" }],
+    influencerProducts: [
+        { type: mongoose_1.default.Schema.Types.ObjectId, ref: "InfluencerProduct" },
+    ],
 }, {
     timestamps: true,
     toJSON: { virtuals: true },

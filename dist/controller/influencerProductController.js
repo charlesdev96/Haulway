@@ -62,7 +62,7 @@ class InfluencerProductController {
                 user.numOfProducts = (_c = user.products) === null || _c === void 0 ? void 0 : _c.length;
                 yield user.save();
                 //find user store and push product to it
-                (_d = store.products) === null || _d === void 0 ? void 0 : _d.push(product._id);
+                (_d = store.influencerProducts) === null || _d === void 0 ? void 0 : _d.push(product._id);
                 yield store.save();
                 res.status(http_status_codes_1.StatusCodes.CREATED).json({
                     success: true,

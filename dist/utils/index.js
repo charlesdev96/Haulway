@@ -19,3 +19,4 @@ __exportStar(require("./connectDB"), exports);
 __exportStar(require("./jwt"), exports);
 __exportStar(require("./sendEmail"), exports);
 __exportStar(require("./deleteUnverifiedUser"), exports);
+__exportStar(require("./paymentInit"), exports);

@@ -12,7 +12,7 @@ const PostSchema = new mongoose_1.default.Schema({
             required: true,
         },
     ],
-    desc: {
+    caption: {
         type: String,
     },
     postedBy: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" },
@@ -36,21 +36,15 @@ const PostSchema = new mongoose_1.default.Schema({
         type: Number,
         default: 0,
     },
+    options: { type: String, enum: ["haul", "lookbook", "diy", "grwm"] },
     tagPeople: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" }],
     likes: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" }],
+    products: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Product" }],
+    numOfProducts: { type: Number, default: 0 },
     comments: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Comment" }],
-    addMusic: {
-        type: String,
-        default: null,
-    },
     addCategory: {
         type: Array,
         default: [],
-    },
-    products: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Product" }],
-    addLocation: {
-        type: mongoose_1.default.Schema.Types.Mixed,
-        default: null,
     },
 }, {
     timestamps: true,

@@ -45,11 +45,13 @@ export const getSinglePostSchema = z.object({
 export const updatePostSchema = z.object({
 	body: z.object({
 		content: z.array(z.string()).optional(),
-		desc: z.string().optional(),
+		caption: z.string().optional(),
+		options: z.enum(["haul", "lookbook", "diy", "grwm"]).optional(),
 		tagPeople: z.array(z.string()).optional(),
 		numOfPeopleTag: z.number().optional(),
 		addCategory: z.array(z.string()).optional(),
 		products: z.array(z.string()).optional(),
+		numOfProducts: z.number().optional(),
 	}),
 	params: z.object({
 		postId: z.string({

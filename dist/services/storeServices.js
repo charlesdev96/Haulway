@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findStoreByUserId = exports.findStoreByName = exports.createStore = void 0;
+exports.findStoreById = exports.findStoreByUserId = exports.findStoreByName = exports.createStore = void 0;
 const model_1 = require("../model");
 const createStore = (input) => __awaiter(void 0, void 0, void 0, function* () {
     return yield model_1.StoreModel.create(input);
@@ -23,3 +23,7 @@ const findStoreByUserId = (userId) => __awaiter(void 0, void 0, void 0, function
     return yield model_1.StoreModel.findOne({ owner: userId });
 });
 exports.findStoreByUserId = findStoreByUserId;
+const findStoreById = (storeId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield model_1.StoreModel.findById(storeId);
+});
+exports.findStoreById = findStoreById;

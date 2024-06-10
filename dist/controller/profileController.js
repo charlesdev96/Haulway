@@ -214,6 +214,66 @@ class profiles {
             }
         });
     }
+    updateStore(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const body = req.body;
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                const user = yield (0, services_1.findUserById)(userId);
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found." });
+                }
+                //find user store
+                const store = yield (0, services_1.findStoreByUserId)(userId);
+                if (!store) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "Store not found" });
+                }
+                //if store exist update the store
+                if (body.storeDesc)
+                    store.storeDesc = body.storeDesc;
+                if (body.storeLogo)
+                    store.storeLogo = body.storeLogo;
+                if (body.storeName)
+                    store.storeName = body.storeName;
+                //save the newly updated store
+                yield store.save();
+                res.status(http_status_codes_1.StatusCodes.OK).json({
+                    success: true,
+                    message: "Congratulations, the store has been successfully updated.",
+                });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                if (error instanceof Error) {
+                    if (error.message.indexOf("Cast to ObjectId failed") !== -1) {
+                        return res
+                            .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
+                            .json({ message: "Wrong Id format" });
+                    }
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: `Unable to update store due to: ${error.message}`,
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An unknown error occurred while updating store",
+                    });
+                }
+            }
+        });
+    }
     deleteAccount(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

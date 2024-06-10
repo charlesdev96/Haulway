@@ -222,9 +222,19 @@ export class PostController {
 			}
 			//then procceds to update the post
 			if (body.content) post.content = body.content;
-			if (body.desc) post.caption = body.desc;
+			if (body.caption) post.caption = body.caption;
+			if (body.options) post.options = body.options;
+			if (body.addCategory) post.addCategory = body.addCategory;
+			if (body.tagPeople) {
+				post.tagPeople = body.tagPeople;
+				post.numOfPeopleTag = body.tagPeople.length;
+			}
+			if (body.products) {
+				post.products = body.products;
+				post.numOfProducts = body.products.length;
+			}
 			//save updated post
-			post.save();
+			await post.save();
 			res
 				.status(StatusCodes.OK)
 				.json({ suceess: true, message: "Your post has been updated." });

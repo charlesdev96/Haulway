@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateInfluencerProduct = exports.updateVendorProduct = exports.createNewInfluencerProduct = exports.createNewVendorProduct = exports.findInfluencerProductById = exports.findVendorProductById = void 0;
+exports.getVendorProductsByUserId = exports.updateInfluencerProduct = exports.updateVendorProduct = exports.createNewInfluencerProduct = exports.createNewVendorProduct = exports.findInfluencerProductById = exports.findVendorProductById = void 0;
 const model_1 = require("../model");
 const findVendorProductById = (productId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield model_1.VendorProductModel.findById(productId);
@@ -35,3 +35,22 @@ const updateInfluencerProduct = (productId, updates) => __awaiter(void 0, void 0
     return yield model_1.InfluencerProductModel.updateOne({ _id: productId }, { $set: updates });
 });
 exports.updateInfluencerProduct = updateInfluencerProduct;
+const getVendorProductsByUserId = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const stores = yield model_1.StoreModel.find({ owner: userId })
+        .select("products")
+        .populate({
+        path: "products",
+        select: "_id genInfo.name productPrice.price productReview",
+    });
+    const products = stores.flatMap((store) => {
+        var _a;
+        return ((_a = store.products) === null || _a === void 0 ? void 0 : _a.map((product) => ({
+            _id: product._id,
+            name: product.genInfo.name,
+            price: product.productPrice.price,
+            products: product.productReview.products,
+        }))) || [];
+    });
+    return products;
+});
+exports.getVendorProductsByUserId = getVendorProductsByUserId;

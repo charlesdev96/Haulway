@@ -26,7 +26,7 @@ const utils_1 = require("../utils");
 const http_status_codes_1 = require("http-status-codes");
 const model_1 = require("../model");
 class PostController {
-    createPost(req, res) {
+    createUserPost(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b, _c, _d;
             try {
@@ -41,6 +41,12 @@ class PostController {
                     return res
                         .status(http_status_codes_1.StatusCodes.NOT_FOUND)
                         .json({ message: "User not found" });
+                }
+                //check if user role is not user
+                if (user.role !== "user") {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.FORBIDDEN)
+                        .json({ message: "Route is for users only." });
                 }
                 const body = req.body;
                 body.postedBy = userId;
@@ -60,7 +66,61 @@ class PostController {
                 utils_1.log.info(error.message);
                 res
                     .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
-                    .json({ success: false, message: "Unable to create post" });
+                    .json({ success: false, message: "Unable to create user post" });
+            }
+        });
+    }
+    createVendorPost(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b, _c, _d, _e;
+            try {
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                const body = req.body;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                const user = yield (0, services_1.findUserById)(userId);
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found" });
+                }
+                //check if user role is not user
+                if (user.role === "user") {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.FORBIDDEN)
+                        .json({ message: "Route is for vendors and influencers only." });
+                }
+                body.postedBy = userId;
+                body.numOfPeopleTag = (_b = body.tagPeople) === null || _b === void 0 ? void 0 : _b.length;
+                body.numOfProducts = (_c = body.products) === null || _c === void 0 ? void 0 : _c.length;
+                const post = yield (0, services_1.createPosts)(body);
+                //push post._id
+                yield ((_d = user.posts) === null || _d === void 0 ? void 0 : _d.push(post._id));
+                user.numOfPosts = (_e = user.posts) === null || _e === void 0 ? void 0 : _e.length;
+                yield user.save();
+                res.status(http_status_codes_1.StatusCodes.CREATED).json({
+                    success: true,
+                    message: "Post created successfully!",
+                    data: post,
+                });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                if (error instanceof Error) {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: `Unable to create vendor post due to: ${error.message}`,
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An unknown error occurred while creating vendor post",
+                    });
+                }
             }
         });
     }
@@ -177,10 +237,22 @@ class PostController {
                 //then procceds to update the post
                 if (body.content)
                     post.content = body.content;
-                if (body.desc)
-                    post.desc = body.desc;
+                if (body.caption)
+                    post.caption = body.caption;
+                if (body.options)
+                    post.options = body.options;
+                if (body.addCategory)
+                    post.addCategory = body.addCategory;
+                if (body.tagPeople) {
+                    post.tagPeople = body.tagPeople;
+                    post.numOfPeopleTag = body.tagPeople.length;
+                }
+                if (body.products) {
+                    post.products = body.products;
+                    post.numOfProducts = body.products.length;
+                }
                 //save updated post
-                post.save();
+                yield post.save();
                 res
                     .status(http_status_codes_1.StatusCodes.OK)
                     .json({ suceess: true, message: "Your post has been updated." });
