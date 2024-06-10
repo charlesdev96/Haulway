@@ -11,3 +11,7 @@ export const findStoreByName = async (storeName: string) => {
 export const findStoreByUserId = async (userId: string) => {
 	return await StoreModel.findOne({ owner: userId });
 };
+
+export const findStoreById = async (storeId: string) => {
+	return await StoreModel.findById(storeId);
+};

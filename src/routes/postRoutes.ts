@@ -2,10 +2,11 @@ import { Router } from "express";
 import { PostController } from "../controller/postController";
 import { authorizeUser, validateInputs } from "../middleware";
 import {
-	createPostSchema,
+	createUserPostSchema,
 	updatePostSchema,
 	deletePostSchema,
 	getSinglePostSchema,
+	createVendorPostSchema,
 } from "../schema";
 
 export class PostRouter {
@@ -25,10 +26,17 @@ export class PostRouter {
 		);
 		//create post
 		this.router.post(
-			"/create-post",
+			"/create-user-post",
 			authorizeUser,
-			validateInputs(createPostSchema),
-			this.postController.createPost.bind(this.postController),
+			validateInputs(createUserPostSchema),
+			this.postController.createUserPost.bind(this.postController),
+		);
+		//create vendor influencer
+		this.router.post(
+			"/create-vendor-influencer-post",
+			authorizeUser,
+			validateInputs(createVendorPostSchema),
+			this.postController.createVendorPost.bind(this.postController),
 		);
 		//get single post
 		this.router.get(

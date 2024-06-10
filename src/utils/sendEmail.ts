@@ -2,7 +2,6 @@ import { config } from "dotenv";
 config();
 import request from "request";
 import { log } from "./logger";
-import axios from "axios";
 
 export const sendMail = async (email: string, code: number) => {
 	const data = {

@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
-import { ManualLocation, GoogleLocation } from "../types";
 
 export interface PostInputs {
 	content?: string[];
-	desc?: string;
+	caption?: string;
 	postedBy?: string;
 	numOfShares?: number;
 	views?: number;
@@ -11,14 +10,13 @@ export interface PostInputs {
 	numOfComments?: number;
 	comments?: string[];
 	likes?: string[];
+	options?: "haul" | "lookbook" | "diy" | "grwm";
 	tagPeople?: string[] | null;
+	products?: string[] | [];
+	numOfProducts?: number | 0;
 	numOfPeopleTag?: number;
-	addLocation?: ManualLocation | GoogleLocation | null;
-	addMusic?: string | null;
 	addCategory?: string[] | null;
-	products?: string[] | null;
 }
-// addLocation?: { [key: string]: any } | string | null;
 
 export interface PostDocument extends PostInputs, mongoose.Document {
 	_id?: string;
@@ -34,7 +32,7 @@ const PostSchema = new mongoose.Schema(
 				required: true,
 			},
 		],
-		desc: {
+		caption: {
 			type: String,
 		},
 		postedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
@@ -58,21 +56,15 @@ const PostSchema = new mongoose.Schema(
 			type: Number,
 			default: 0,
 		},
+		options: { type: String, enum: ["haul", "lookbook", "diy", "grwm"] },
 		tagPeople: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 		likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+		products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+		numOfProducts: { type: Number, default: 0 },
 		comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
-		addMusic: {
-			type: String,
-			default: null,
-		},
 		addCategory: {
 			type: Array,
 			default: [],
-		},
-		products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
-		addLocation: {
-			type: mongoose.Schema.Types.Mixed,
-			default: null,
 		},
 	},
 	{

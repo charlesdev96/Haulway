@@ -21,6 +21,22 @@ export class VendorRouter {
 				this.vendorProductController,
 			),
 		);
+		//get all products
+		this.router.get(
+			"/get-vendor-products",
+			authorizeUser,
+			this.vendorProductController.getAllVendorProducts.bind(
+				this.vendorProductController,
+			),
+		);
+		//buy product
+		this.router.post(
+			"/buy-product/:productId",
+			authorizeUser,
+			this.vendorProductController.buyProduct.bind(
+				this.vendorProductController,
+			),
+		);
 		//update product
 		this.router.patch(
 			"/update-product/:productId",

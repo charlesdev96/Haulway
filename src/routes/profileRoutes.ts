@@ -5,6 +5,7 @@ import {
 	updateProfileSchema,
 	deleteAccountSchema,
 	upgradeAccountSchema,
+	updateStoreSchema,
 } from "../schema";
 
 export class profileRoute {
@@ -36,6 +37,13 @@ export class profileRoute {
 			authorizeUser,
 			validateInputs(updateProfileSchema),
 			this.profileController.updateProfile.bind(this.profileController),
+		);
+		//update store
+		this.router.patch(
+			"/update-store",
+			authorizeUser,
+			validateInputs(updateStoreSchema),
+			this.profileController.updateStore.bind(this.profileController),
 		);
 		//delete account
 		this.router.delete(

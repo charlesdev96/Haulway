@@ -8,11 +8,13 @@ import {
 	existingUser,
 	createStore,
 	findStoreByName,
+	findStoreByUserId,
 } from "../services";
 import {
 	updateProfileInputs,
 	deleteAccountInputs,
 	upgradeAccountInputs,
+	updateStoreInputs,
 } from "../schema";
 import { StatusCodes } from "http-status-codes";
 import { log } from "../utils";
@@ -213,6 +215,60 @@ export class profiles {
 				error: error,
 				message: "Unable to update account.",
 			});
+		}
+	}
+
+	public async updateStore(req: CustomRequest, res: Response) {
+		try {
+			const body = req.body as updateStoreInputs;
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const user = await findUserById(userId);
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found." });
+			}
+			//find user store
+			const store = await findStoreByUserId(userId);
+			if (!store) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "Store not found" });
+			}
+
+			//if store exist update the store
+			if (body.storeDesc) store.storeDesc = body.storeDesc;
+			if (body.storeLogo) store.storeLogo = body.storeLogo;
+			if (body.storeName) store.storeName = body.storeName;
+			//save the newly updated store
+			await store.save();
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "Congratulations, the store has been successfully updated.",
+			});
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				if (error.message.indexOf("Cast to ObjectId failed") !== -1) {
+					return res
+						.status(StatusCodes.INTERNAL_SERVER_ERROR)
+						.json({ message: "Wrong Id format" });
+				}
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `Unable to update store due to: ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An unknown error occurred while updating store",
+				});
+			}
 		}
 	}
 

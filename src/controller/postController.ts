@@ -1,9 +1,10 @@
 import { Response } from "express";
 import {
-	createPostInputs,
+	createUserPostInputs,
 	updatePostInputs,
 	deletePostInputs,
 	getSinglePostInputs,
+	createVendorPostInputs,
 } from "../schema";
 import {
 	CustomRequest,
@@ -21,7 +22,7 @@ import { StatusCodes } from "http-status-codes";
 import { ReplyModel, CommentModel } from "../model";
 
 export class PostController {
-	public async createPost(req: CustomRequest, res: Response) {
+	public async createUserPost(req: CustomRequest, res: Response) {
 		try {
 			const userId = req.user?.userId;
 			if (!userId) {
@@ -35,7 +36,13 @@ export class PostController {
 					.status(StatusCodes.NOT_FOUND)
 					.json({ message: "User not found" });
 			}
-			const body = req.body as createPostInputs;
+			//check if user role is not user
+			if (user.role !== "user") {
+				return res
+					.status(StatusCodes.FORBIDDEN)
+					.json({ message: "Route is for users only." });
+			}
+			const body = req.body as createUserPostInputs;
 			body.postedBy = userId;
 			body.numOfPeopleTag = body.tagPeople?.length;
 			const post = await createPosts(body);
@@ -52,7 +59,57 @@ export class PostController {
 			log.info(error.message);
 			res
 				.status(StatusCodes.INTERNAL_SERVER_ERROR)
-				.json({ success: false, message: "Unable to create post" });
+				.json({ success: false, message: "Unable to create user post" });
+		}
+	}
+
+	public async createVendorPost(req: CustomRequest, res: Response) {
+		try {
+			const userId = req.user?.userId;
+			const body = req.body as createVendorPostInputs;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const user = await findUserById(userId);
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found" });
+			}
+			//check if user role is not user
+			if (user.role === "user") {
+				return res
+					.status(StatusCodes.FORBIDDEN)
+					.json({ message: "Route is for vendors and influencers only." });
+			}
+			body.postedBy = userId;
+			body.numOfPeopleTag = body.tagPeople?.length;
+			body.numOfProducts = body.products?.length;
+			const post = await createPosts(body);
+			//push post._id
+			await user.posts?.push(post._id);
+			user.numOfPosts = user.posts?.length;
+			await user.save();
+			res.status(StatusCodes.CREATED).json({
+				success: true,
+				message: "Post created successfully!",
+				data: post,
+			});
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `Unable to create vendor post due to: ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An unknown error occurred while creating vendor post",
+				});
+			}
 		}
 	}
 
@@ -165,7 +222,7 @@ export class PostController {
 			}
 			//then procceds to update the post
 			if (body.content) post.content = body.content;
-			if (body.desc) post.desc = body.desc;
+			if (body.desc) post.caption = body.desc;
 			//save updated post
 			post.save();
 			res

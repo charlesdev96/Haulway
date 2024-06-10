@@ -5,7 +5,10 @@ import {
 	InfluencerProductInputs,
 	InfluencerProductDocument,
 	InfluencerProductModel,
+	StoreModel,
 } from "../model";
+
+import { VendorProductOutPut } from "../types";
 
 export const findVendorProductById = async (productId: string) => {
 	return await VendorProductModel.findById(productId);
@@ -46,4 +49,24 @@ export const updateInfluencerProduct = async (
 		{ _id: productId },
 		{ $set: updates },
 	);
+};
+
+export const getVendorProductsByUserId = async (userId: string) => {
+	const stores = await StoreModel.find({ owner: userId })
+		.select("products")
+		.populate({
+			path: "products",
+			select: "_id genInfo.name productPrice.price productReview",
+		});
+	const products: VendorProductOutPut[] = stores.flatMap(
+		(store) =>
+			store.products?.map((product: any) => ({
+				_id: product._id,
+				name: product.genInfo.name,
+				price: product.productPrice.price,
+				products: product.productReview.products,
+			})) || [],
+	);
+
+	return products;
 };

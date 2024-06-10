@@ -1,32 +1,36 @@
 import { z } from "zod";
 
-const GoogleLocationSchema = z.object({
-	address: z.string().optional(),
-});
-const LocationSchema = z.object({
-	zipCode: z.string().optional(),
-	landMark: z.string().optional(),
-	city: z.string().optional(),
-	state: z.string().optional(),
-	country: z.string().optional(),
-});
-const AddLocationSchema = z
-	.union([LocationSchema, GoogleLocationSchema])
-	.nullable();
-
-export const createPostSchema = z.object({
+export const createUserPostSchema = z.object({
 	body: z.object({
 		content: z
-			.array(z.string())
+			.array(z.string({ required_error: "post content is required" }))
 			.nonempty({ message: "Content Can't be empty!" }),
-		desc: z.string().optional(),
+		caption: z.string().optional(),
+		options: z.enum(["haul", "lookbook", "diy", "grwm"], {
+			required_error: "please choose an option",
+		}),
 		postedBy: z.string().optional(),
 		tagPeople: z.array(z.string()).optional(),
 		numOfPeopleTag: z.number().optional(),
-		addLocation: AddLocationSchema.optional(),
-		addMusic: z.string().optional(),
+		addCategory: z.array(z.string()).optional(),
+	}),
+});
+
+export const createVendorPostSchema = z.object({
+	body: z.object({
+		content: z
+			.array(z.string({ required_error: "post content is required" }))
+			.nonempty({ message: "Content Can't be empty!" }),
+		caption: z.string().optional(),
+		options: z.enum(["haul", "lookbook", "diy", "grwm"], {
+			required_error: "please choose an option",
+		}),
+		postedBy: z.string().optional(),
+		tagPeople: z.array(z.string()).optional(),
+		numOfPeopleTag: z.number().optional(),
 		addCategory: z.array(z.string()).optional(),
 		products: z.array(z.string()).optional(),
+		numOfProducts: z.number().optional(),
 	}),
 });
 
@@ -44,8 +48,6 @@ export const updatePostSchema = z.object({
 		desc: z.string().optional(),
 		tagPeople: z.array(z.string()).optional(),
 		numOfPeopleTag: z.number().optional(),
-		addLocation: AddLocationSchema.optional(),
-		addMusic: z.string().optional(),
 		addCategory: z.array(z.string()).optional(),
 		products: z.array(z.string()).optional(),
 	}),
@@ -64,7 +66,11 @@ export const deletePostSchema = z.object({
 	}),
 });
 
-export type createPostInputs = z.infer<typeof createPostSchema>["body"];
+export type createUserPostInputs = z.infer<typeof createUserPostSchema>["body"];
+
+export type createVendorPostInputs = z.infer<
+	typeof createVendorPostSchema
+>["body"];
 
 export type getSinglePostInputs = z.infer<typeof getSinglePostSchema>["params"];
 

@@ -43,3 +43,16 @@ export interface Inventory {
 	stockStatus?: string;
 	productTags?: string[] | [];
 }
+
+export interface VendorProductOutPut {
+	_id?: string;
+	genInfo?: {
+		name?: string;
+	};
+	productPrice?: {
+		price?: number;
+	};
+	productReview?: {
+		products?: string[];
+	};
+}

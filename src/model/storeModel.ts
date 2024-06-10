@@ -2,9 +2,11 @@ import mongoose from "mongoose";
 
 export interface StoreInputs {
 	products?: string[];
+	influencerProducts?: string[];
 	storeName?: string;
 	currency?: string;
 	storeLogo?: string;
+	storeDesc?: string | "";
 	owner?: string;
 	role?: string;
 }
@@ -30,9 +32,16 @@ const StoreSchema = new mongoose.Schema(
 		storeLogo: {
 			type: String,
 		},
+		storeDesc: {
+			type: String,
+			default: "",
+		},
 		role: { type: String },
 		owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-		products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+		products: [{ type: mongoose.Schema.Types.ObjectId, ref: "VendorProduct" }],
+		influencerProducts: [
+			{ type: mongoose.Schema.Types.ObjectId, ref: "InfluencerProduct" },
+		],
 	},
 	{
 		timestamps: true,

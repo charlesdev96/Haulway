@@ -27,9 +27,19 @@ export const createStoreSchema = z.object({
 		.string({
 			required_error: "Please provide a name for your store",
 		})
+		.min(3)
+		.max(50)
 		.trim(),
 	storeLogo: z.string({ required_error: "store logo is required" }),
 	currency: z.string().optional(),
+});
+
+export const updateStoreSchema = z.object({
+	body: z.object({
+		storeName: z.string().min(3).max(50).optional(),
+		storeLogo: z.string().optional(),
+		storeDesc: z.string().min(3).max(100).optional(),
+	}),
 });
 
 export const upgradeAccountSchema = z.object({
@@ -44,3 +54,4 @@ export const upgradeAccountSchema = z.object({
 export type updateProfileInputs = z.infer<typeof updateProfileSchema>["body"];
 export type deleteAccountInputs = z.infer<typeof deleteAccountSchema>["body"];
 export type upgradeAccountInputs = z.infer<typeof upgradeAccountSchema>["body"];
+export type updateStoreInputs = z.infer<typeof updateStoreSchema>["body"];

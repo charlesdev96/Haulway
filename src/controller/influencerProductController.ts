@@ -63,7 +63,7 @@ export class InfluencerProductController {
 			user.numOfProducts = user.products?.length;
 			await user.save();
 			//find user store and push product to it
-			store.products?.push(product._id);
+			store.influencerProducts?.push(product._id);
 			await store.save();
 			res.status(StatusCodes.CREATED).json({
 				success: true,
