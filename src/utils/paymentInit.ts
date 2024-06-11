@@ -11,6 +11,68 @@ if (!stripeApiKey) {
 }
 const stripe = new Stripe(stripeApiKey);
 
+export const createStripeAccount = async (email: string) => {
+	try {
+		const account = await stripe.accounts.create({
+			type: "express",
+			email: email,
+			capabilities: {
+				card_payments: { requested: true },
+				transfers: { requested: true },
+			},
+		});
+		return account.id; // Return the Stripe account ID
+	} catch (error) {
+		log.info("Error creating Stripe account:", error);
+		throw error;
+	}
+};
+
+export const generateStripeDashboardLink = async (accountId: string) => {
+	try {
+		const loginLink = await stripe.accounts.createLoginLink(accountId);
+		return loginLink.url;
+	} catch (error) {
+		log.info("Error generating Stripe dashboard link:", error);
+		throw error;
+	}
+};
+
+export const generateStripeAccountLink = async (accountId: string) => {
+	try {
+		const accountLink = await stripe.accountLinks.create({
+			account: accountId,
+			refresh_url: "https://your-app.com/reauth",
+			return_url: "https://your-app.com/dashboard",
+			type: "account_onboarding",
+		});
+		return accountLink.url; // Return the URL for the user to verify their account
+	} catch (error) {
+		log.info("Error generating Stripe account link:", error);
+		throw error;
+	}
+};
+
+export const checkAccountStatus = async (accountId: string) => {
+	try {
+		const account = await stripe.accounts.retrieve(accountId);
+		return account.details_submitted;
+	} catch (error) {
+		log.error("Error checking account status:", error);
+		throw error;
+	}
+};
+
+export const deleteStripeAccount = async (accountId: string) => {
+	try {
+		const deletedAccount = await stripe.accounts.del(accountId);
+		return deletedAccount; // Returns the deleted account object
+	} catch (error) {
+		console.error("Error deleting Stripe account:", error);
+		throw error;
+	}
+};
+
 export const paymentInitializationFunction = async (
 	price: number,
 	quantity: number,

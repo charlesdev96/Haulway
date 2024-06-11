@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createPaymentIntent = exports.paymentInitializationFunction = void 0;
+exports.createPaymentIntent = exports.paymentInitializationFunction = exports.deleteStripeAccount = exports.checkAccountStatus = exports.generateStripeAccountLink = exports.generateStripeDashboardLink = exports.createStripeAccount = void 0;
 const dotenv_1 = require("dotenv");
 (0, dotenv_1.config)();
 const utils_1 = require("../utils");
@@ -23,6 +23,73 @@ if (!stripeApiKey) {
     throw new Error("Missing Stripe API Secret in environment variables");
 }
 const stripe = new stripe_1.default(stripeApiKey);
+const createStripeAccount = (email) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const account = yield stripe.accounts.create({
+            type: "express",
+            email: email,
+            capabilities: {
+                card_payments: { requested: true },
+                transfers: { requested: true },
+            },
+        });
+        return account.id; // Return the Stripe account ID
+    }
+    catch (error) {
+        utils_1.log.info("Error creating Stripe account:", error);
+        throw error;
+    }
+});
+exports.createStripeAccount = createStripeAccount;
+const generateStripeDashboardLink = (accountId) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const loginLink = yield stripe.accounts.createLoginLink(accountId);
+        return loginLink.url;
+    }
+    catch (error) {
+        utils_1.log.info("Error generating Stripe dashboard link:", error);
+        throw error;
+    }
+});
+exports.generateStripeDashboardLink = generateStripeDashboardLink;
+const generateStripeAccountLink = (accountId) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const accountLink = yield stripe.accountLinks.create({
+            account: accountId,
+            refresh_url: "https://your-app.com/reauth",
+            return_url: "https://your-app.com/dashboard",
+            type: "account_onboarding",
+        });
+        return accountLink.url; // Return the URL for the user to verify their account
+    }
+    catch (error) {
+        utils_1.log.info("Error generating Stripe account link:", error);
+        throw error;
+    }
+});
+exports.generateStripeAccountLink = generateStripeAccountLink;
+const checkAccountStatus = (accountId) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const account = yield stripe.accounts.retrieve(accountId);
+        return account.details_submitted;
+    }
+    catch (error) {
+        utils_1.log.error("Error checking account status:", error);
+        throw error;
+    }
+});
+exports.checkAccountStatus = checkAccountStatus;
+const deleteStripeAccount = (accountId) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const deletedAccount = yield stripe.accounts.del(accountId);
+        return deletedAccount; // Returns the deleted account object
+    }
+    catch (error) {
+        console.error("Error deleting Stripe account:", error);
+        throw error;
+    }
+});
+exports.deleteStripeAccount = deleteStripeAccount;
 const paymentInitializationFunction = (price, quantity, productName) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const session = yield stripe.checkout.sessions.create({

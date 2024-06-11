@@ -11,6 +11,7 @@ const userActivityRoute_1 = require("./userActivityRoute");
 const userRoute_1 = require("./userRoute");
 const vendorRoute_1 = require("./vendorRoute");
 const influencerRoute_1 = require("./influencerRoute");
+const stripeRoutes_1 = require("./stripeRoutes");
 class RouterConfig {
     constructor() {
         this.router = (0, express_1.Router)();
@@ -38,6 +39,8 @@ class RouterConfig {
         this.router.use(`${baseUrl}/vendor`, new vendorRoute_1.VendorRouter().getVendorRouter());
         //influencer route
         this.router.use(`${baseUrl}/influencer`, new influencerRoute_1.InfluencerRouter().getInfluencerRoute());
+        //stripe router
+        this.router.use(`${baseUrl}/stripe`, new stripeRoutes_1.StripeRouter().getAllStripeRoute());
     }
     getRouter() {
         return this.router;

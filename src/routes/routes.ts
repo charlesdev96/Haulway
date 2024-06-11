@@ -9,6 +9,7 @@ import { UserActivityRouter } from "./userActivityRoute";
 import { UserRouter } from "./userRoute";
 import { VendorRouter } from "./vendorRoute";
 import { InfluencerRouter } from "./influencerRoute";
+import { StripeRouter } from "./stripeRoutes";
 
 class RouterConfig {
 	private router: Router;
@@ -61,6 +62,11 @@ class RouterConfig {
 		this.router.use(
 			`${baseUrl}/influencer`,
 			new InfluencerRouter().getInfluencerRoute(),
+		);
+		//stripe router
+		this.router.use(
+			`${baseUrl}/stripe`,
+			new StripeRouter().getAllStripeRoute(),
 		);
 	}
 
