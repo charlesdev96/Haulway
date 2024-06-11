@@ -31,6 +31,12 @@ export class profileRoute {
 			authorizeUser,
 			this.profileController.userProfile.bind(this.profileController),
 		);
+		//vendor profile
+		this.router.get(
+			"/vendor-profile",
+			authorizeUser,
+			this.profileController.vendorProfile.bind(this.profileController),
+		);
 		//update profile
 		this.router.patch(
 			"/update-profile",

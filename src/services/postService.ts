@@ -24,7 +24,7 @@ export const deleteReplyByPost = async (postId: string) => {
 export const timeLinePost = async (userId: string) => {
 	const posts = await PostModel.find({})
 		.select(
-			"_id content desc views numOfLikes numOfComments comments products addMusic postedBy createdAt updatedAt tagPeople numOfPeopleTag addLocation addMusic addCategory numOfShares",
+			"_id content caption views numOfLikes numOfComments comments products addMusic postedBy createdAt updatedAt tagPeople numOfPeopleTag addCategory numOfShares",
 		)
 		.populate({
 			path: "postedBy",

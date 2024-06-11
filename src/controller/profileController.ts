@@ -9,6 +9,7 @@ import {
 	createStore,
 	findStoreByName,
 	findStoreByUserId,
+	getVendorProfile,
 } from "../services";
 import {
 	updateProfileInputs,
@@ -293,6 +294,40 @@ export class profiles {
 			res
 				.status(StatusCodes.INTERNAL_SERVER_ERROR)
 				.json({ success: false, message: "Unable to delete account" });
+		}
+	}
+
+	public async vendorProfile(req: CustomRequest, res: Response) {
+		try {
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const user = await findUserById(userId);
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found." });
+			}
+			const profile = await getVendorProfile(userId);
+			res
+				.status(StatusCodes.OK)
+				.json({ success: true, message: "Vendor profile", data: profile });
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `Unable to update store due to: ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An unknown error occurred while updating store",
+				});
+			}
 		}
 	}
 }

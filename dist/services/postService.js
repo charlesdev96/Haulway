@@ -44,7 +44,7 @@ const deleteReplyByPost = (postId) => __awaiter(void 0, void 0, void 0, function
 exports.deleteReplyByPost = deleteReplyByPost;
 const timeLinePost = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const posts = yield model_1.PostModel.find({})
-        .select("_id content desc views numOfLikes numOfComments comments products addMusic postedBy createdAt updatedAt tagPeople numOfPeopleTag addLocation addMusic addCategory numOfShares")
+        .select("_id content caption views numOfLikes numOfComments comments products addMusic postedBy createdAt updatedAt tagPeople numOfPeopleTag addCategory numOfShares")
         .populate({
         path: "postedBy",
         select: "_id fullName profilePic userName numOfFollowings numOfFollowers followers",

@@ -4,3 +4,4 @@ export * from "./commentService";
 export * from "./replyCommentServices";
 export * from "./storeServices";
 export * from "./productService";
+export * from "./profileService";

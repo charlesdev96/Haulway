@@ -23,8 +23,11 @@ export interface UserInputs {
 	orderHistory?: string[];
 	numOfProducts?: number;
 	products?: string[];
+	influencerPro?: string[];
 	productsDelivered?: string[];
 	contracts?: string[];
+	requests?: string[] | [];
+	savedPosts?: string[] | [];
 	store?: string;
 	productsSold?: string[];
 }
@@ -92,8 +95,14 @@ const UserSchema = new mongoose.Schema(
 		},
 		otpExpirationDate: { type: Date, default: null },
 		posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Post" }],
+		savedPosts: [
+			{ type: mongoose.Schema.Types.ObjectId, ref: "Post", default: [] },
+		],
 		address: [{ type: mongoose.Schema.Types.ObjectId, ref: "Address" }],
-		products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+		products: [{ type: mongoose.Schema.Types.ObjectId, ref: "VendorProduct" }],
+		influencerPro: [
+			{ type: mongoose.Schema.Types.ObjectId, ref: "InfluencerProduct" },
+		],
 		store: { type: mongoose.Schema.Types.ObjectId, ref: "Store" },
 		numOfFollowers: {
 			type: Number,
@@ -107,11 +116,16 @@ const UserSchema = new mongoose.Schema(
 		followings: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 		carts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Cart" }],
 		contracts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Contract" }],
+		requests: [
+			{ type: mongoose.Schema.Types.ObjectId, ref: "Contract", default: [] },
+		],
 		orderHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
 		productsDelivered: [
-			{ type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+			{ type: mongoose.Schema.Types.ObjectId, ref: "VendorProduct" },
 		],
-		productsSold: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+		productsSold: [
+			{ type: mongoose.Schema.Types.ObjectId, ref: "VendorProduct" },
+		],
 	},
 	{ timestamps: true },
 );

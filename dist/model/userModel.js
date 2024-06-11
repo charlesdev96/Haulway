@@ -70,8 +70,14 @@ const UserSchema = new mongoose_1.default.Schema({
     },
     otpExpirationDate: { type: Date, default: null },
     posts: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Post" }],
+    savedPosts: [
+        { type: mongoose_1.default.Schema.Types.ObjectId, ref: "Post", default: [] },
+    ],
     address: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Address" }],
-    products: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Product" }],
+    products: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "VendorProduct" }],
+    influencerPro: [
+        { type: mongoose_1.default.Schema.Types.ObjectId, ref: "InfluencerProduct" },
+    ],
     store: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "Store" },
     numOfFollowers: {
         type: Number,
@@ -85,11 +91,16 @@ const UserSchema = new mongoose_1.default.Schema({
     followings: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" }],
     carts: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Cart" }],
     contracts: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Contract" }],
+    requests: [
+        { type: mongoose_1.default.Schema.Types.ObjectId, ref: "Contract", default: [] },
+    ],
     orderHistory: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Order" }],
     productsDelivered: [
-        { type: mongoose_1.default.Schema.Types.ObjectId, ref: "Product" },
+        { type: mongoose_1.default.Schema.Types.ObjectId, ref: "VendorProduct" },
     ],
-    productsSold: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Product" }],
+    productsSold: [
+        { type: mongoose_1.default.Schema.Types.ObjectId, ref: "VendorProduct" },
+    ],
 }, { timestamps: true });
 UserSchema.pre("save", function (next) {
     return __awaiter(this, void 0, void 0, function* () {

@@ -39,7 +39,7 @@ const PostSchema = new mongoose_1.default.Schema({
     options: { type: String, enum: ["haul", "lookbook", "diy", "grwm"] },
     tagPeople: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" }],
     likes: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" }],
-    products: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Product" }],
+    products: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "VendorProduct" }],
     numOfProducts: { type: Number, default: 0 },
     comments: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Comment" }],
     addCategory: {

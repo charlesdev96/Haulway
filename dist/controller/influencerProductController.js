@@ -58,8 +58,8 @@ class InfluencerProductController {
                         .json({ message: "Unable to create product" });
                 }
                 //update user that created the product
-                (_b = user.products) === null || _b === void 0 ? void 0 : _b.push(product._id);
-                user.numOfProducts = (_c = user.products) === null || _c === void 0 ? void 0 : _c.length;
+                (_b = user.influencerPro) === null || _b === void 0 ? void 0 : _b.push(product._id);
+                user.numOfProducts = (_c = user.influencerPro) === null || _c === void 0 ? void 0 : _c.length;
                 yield user.save();
                 //find user store and push product to it
                 (_d = store.influencerProducts) === null || _d === void 0 ? void 0 : _d.push(product._id);

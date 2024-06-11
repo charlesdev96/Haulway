@@ -59,8 +59,8 @@ export class InfluencerProductController {
 					.json({ message: "Unable to create product" });
 			}
 			//update user that created the product
-			user.products?.push(product._id);
-			user.numOfProducts = user.products?.length;
+			user.influencerPro?.push(product._id);
+			user.numOfProducts = user.influencerPro?.length;
 			await user.save();
 			//find user store and push product to it
 			store.influencerProducts?.push(product._id);
