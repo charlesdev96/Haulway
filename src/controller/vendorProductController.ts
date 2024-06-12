@@ -46,6 +46,7 @@ export class VendorProductController {
 			}
 			//proceed to create product
 			body.vendor = userId;
+			body.store = store._id;
 			const discountedPrice: number =
 				(1 - (body.productPrice.discount || 0)) * body.productPrice.basePrice;
 			body.productPrice.discountPrice = Number(discountedPrice.toFixed(2));

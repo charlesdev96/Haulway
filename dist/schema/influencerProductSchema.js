@@ -26,6 +26,7 @@ exports.influencerProductSchema = zod_1.z.object({
         genInfo: generalInformationSchema,
         productPrice: priceSchema,
         productReview: productSchema,
+        store: zod_1.z.string().optional(),
         influencer: zod_1.z.string().optional(),
         status: zod_1.z.enum(["published", "unpublished"]).optional(),
     }),

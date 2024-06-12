@@ -56,6 +56,7 @@ export const vendorProductSchema = z.object({
 		productReview: productSchema,
 		vendor: z.string().optional(),
 		status: z.enum(["published", "unpublished"]).optional(),
+		store: z.string().optional(),
 	}),
 });
 

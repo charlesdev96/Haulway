@@ -21,15 +21,15 @@ export interface UserInputs {
 	numOfFollowings?: number;
 	followers?: string[];
 	followings?: string[];
-	carts?: string[];
+	carts?: string;
 	orderHistory?: string[];
 	numOfProducts?: number;
 	products?: string[];
 	influencerPro?: string[];
 	productsDelivered?: string[];
 	contracts?: string[];
-	requests?: string[] | [];
-	savedPosts?: string[] | [];
+	requests?: string[];
+	savedPosts?: string[];
 	store?: string;
 	productsSold?: string[];
 }
@@ -124,11 +124,9 @@ const UserSchema = new mongoose.Schema(
 		},
 		followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 		followings: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-		carts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Cart" }],
+		carts: { type: mongoose.Schema.Types.ObjectId, ref: "Cart" },
 		contracts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Contract" }],
-		requests: [
-			{ type: mongoose.Schema.Types.ObjectId, ref: "Contract", default: [] },
-		],
+		requests: [{ type: mongoose.Schema.Types.ObjectId, ref: "Contract" }],
 		orderHistory: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
 		productsDelivered: [
 			{ type: mongoose.Schema.Types.ObjectId, ref: "VendorProduct" },

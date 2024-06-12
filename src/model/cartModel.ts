@@ -2,8 +2,7 @@ import mongoose from "mongoose";
 
 export interface CartInputs {
 	user?: string;
-	store?: string;
-	items?: string[];
+	cartItems?: string[];
 }
 
 export interface CartDocuments extends CartInputs, mongoose.Document {
@@ -15,8 +14,7 @@ export interface CartDocuments extends CartInputs, mongoose.Document {
 const CartSchema = new mongoose.Schema(
 	{
 		user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-		store: { type: mongoose.Schema.Types.ObjectId, ref: "Store" },
-		items: [{ type: mongoose.Schema.Types.ObjectId, ref: "CartItem" }],
+		cartItems: [{ type: mongoose.Schema.Types.ObjectId, ref: "CartItem" }],
 	},
 	{ timestamps: true },
 );

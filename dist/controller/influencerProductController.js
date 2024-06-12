@@ -48,6 +48,7 @@ class InfluencerProductController {
                 }
                 //proceed to create product
                 body.influencer = userId;
+                body.store = store._id;
                 const discountedPrice = (1 - (body.productPrice.discount || 0)) * body.productPrice.basePrice;
                 body.productPrice.discountPrice = Number(discountedPrice.toFixed(2));
                 body.productPrice.price = body.productPrice.discountPrice;

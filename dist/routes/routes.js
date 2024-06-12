@@ -12,6 +12,7 @@ const userRoute_1 = require("./userRoute");
 const vendorRoute_1 = require("./vendorRoute");
 const influencerRoute_1 = require("./influencerRoute");
 const stripeRoutes_1 = require("./stripeRoutes");
+const cartRoute_1 = require("./cartRoute");
 class RouterConfig {
     constructor() {
         this.router = (0, express_1.Router)();
@@ -41,6 +42,8 @@ class RouterConfig {
         this.router.use(`${baseUrl}/influencer`, new influencerRoute_1.InfluencerRouter().getInfluencerRoute());
         //stripe router
         this.router.use(`${baseUrl}/stripe`, new stripeRoutes_1.StripeRouter().getAllStripeRoute());
+        //cart router
+        this.router.use(`${baseUrl}/cart`, new cartRoute_1.CartRouter().getCartRouter());
     }
     getRouter() {
         return this.router;

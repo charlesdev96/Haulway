@@ -97,11 +97,9 @@ const UserSchema = new mongoose_1.default.Schema({
     },
     followers: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" }],
     followings: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" }],
-    carts: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Cart" }],
+    carts: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "Cart" },
     contracts: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Contract" }],
-    requests: [
-        { type: mongoose_1.default.Schema.Types.ObjectId, ref: "Contract", default: [] },
-    ],
+    requests: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Contract" }],
     orderHistory: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Order" }],
     productsDelivered: [
         { type: mongoose_1.default.Schema.Types.ObjectId, ref: "VendorProduct" },

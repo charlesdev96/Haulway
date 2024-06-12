@@ -10,6 +10,7 @@ import { UserRouter } from "./userRoute";
 import { VendorRouter } from "./vendorRoute";
 import { InfluencerRouter } from "./influencerRoute";
 import { StripeRouter } from "./stripeRoutes";
+import { CartRouter } from "./cartRoute";
 
 class RouterConfig {
 	private router: Router;
@@ -68,6 +69,8 @@ class RouterConfig {
 			`${baseUrl}/stripe`,
 			new StripeRouter().getAllStripeRoute(),
 		);
+		//cart router
+		this.router.use(`${baseUrl}/cart`, new CartRouter().getCartRouter());
 	}
 
 	public getRouter(): Router {

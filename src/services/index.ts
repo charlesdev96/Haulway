@@ -5,3 +5,4 @@ export * from "./replyCommentServices";
 export * from "./storeServices";
 export * from "./productService";
 export * from "./profileService";
+export * from "./cartService";

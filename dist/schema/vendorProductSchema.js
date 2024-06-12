@@ -51,6 +51,7 @@ exports.vendorProductSchema = zod_1.z.object({
         productReview: productSchema,
         vendor: zod_1.z.string().optional(),
         status: zod_1.z.enum(["published", "unpublished"]).optional(),
+        store: zod_1.z.string().optional(),
     }),
 });
 exports.updateVendorProductSchema = zod_1.z.object({

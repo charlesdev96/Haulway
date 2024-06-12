@@ -16,6 +16,7 @@ export interface VendorProductInputs {
 	vendor?: string;
 	numOfProReviews?: number | 0;
 	reviews?: string[];
+	store?: string;
 	status?: "published" | "unpublished";
 }
 
@@ -77,6 +78,7 @@ const ProductSchema = new mongoose.Schema(
 		},
 		productReview: { products: [{ type: String, required: true }] },
 		vendor: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+		store: { type: mongoose.Schema.Types.ObjectId, ref: "Store" },
 		status: {
 			type: String,
 			enum: ["published", "unpublished"],

@@ -206,11 +206,19 @@ class profiles {
             }
             catch (error) {
                 utils_1.log.info(error);
-                res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
-                    success: false,
-                    error: error,
-                    message: "Unable to update account.",
-                });
+                if (error.code === 11000) {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "store name already exist",
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        error: error,
+                        message: "Unable to update account.",
+                    });
+                }
             }
         });
     }

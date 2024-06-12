@@ -12,7 +12,7 @@ export interface PostInputs {
 	likes?: string[];
 	options?: "haul" | "lookbook" | "diy" | "grwm";
 	tagPeople?: string[] | null;
-	products?: string[] | [];
+	products?: string[];
 	numOfProducts?: number | 0;
 	numOfPeopleTag?: number;
 	addCategory?: string[] | null;

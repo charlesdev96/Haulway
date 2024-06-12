@@ -211,11 +211,18 @@ export class profiles {
 			}
 		} catch (error: any) {
 			log.info(error);
-			res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-				success: false,
-				error: error,
-				message: "Unable to update account.",
-			});
+			if (error.code === 11000) {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "store name already exist",
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					error: error,
+					message: "Unable to update account.",
+				});
+			}
 		}
 	}
 

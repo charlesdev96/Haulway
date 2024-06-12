@@ -21,3 +21,4 @@ __exportStar(require("./replyCommentServices"), exports);
 __exportStar(require("./storeServices"), exports);
 __exportStar(require("./productService"), exports);
 __exportStar(require("./profileService"), exports);
+__exportStar(require("./cartService"), exports);

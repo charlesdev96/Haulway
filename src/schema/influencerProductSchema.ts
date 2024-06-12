@@ -27,6 +27,7 @@ export const influencerProductSchema = z.object({
 		genInfo: generalInformationSchema,
 		productPrice: priceSchema,
 		productReview: productSchema,
+		store: z.string().optional(),
 		influencer: z.string().optional(),
 		status: z.enum(["published", "unpublished"]).optional(),
 	}),
