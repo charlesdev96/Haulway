@@ -7,3 +7,4 @@ export * from "./userActivitiesSchema";
 export * from "./userSchema";
 export * from "./vendorProductSchema";
 export * from "./influencerProductSchema";
+export * from "./stripeSchema";

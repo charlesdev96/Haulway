@@ -23,7 +23,7 @@ if (!stripeApiKey) {
     throw new Error("Missing Stripe API Secret in environment variables");
 }
 const stripe = new stripe_1.default(stripeApiKey);
-const createStripeAccount = (email) => __awaiter(void 0, void 0, void 0, function* () {
+const createStripeAccount = (email, country) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const account = yield stripe.accounts.create({
             type: "express",
@@ -32,8 +32,9 @@ const createStripeAccount = (email) => __awaiter(void 0, void 0, void 0, functio
                 card_payments: { requested: true },
                 transfers: { requested: true },
             },
+            country: country,
         });
-        return account.id; // Return the Stripe account ID
+        return account.id;
     }
     catch (error) {
         utils_1.log.info("Error creating Stripe account:", error);

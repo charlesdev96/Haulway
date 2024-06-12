@@ -8,6 +8,7 @@ import {
 	generateStripeDashboardLink,
 	checkAccountStatus,
 } from "../utils";
+import { onboardUserInputs } from "../schema";
 import { findUserById } from "../services";
 import { StatusCodes } from "http-status-codes";
 import { UserModel } from "../model";
@@ -15,6 +16,7 @@ import { UserModel } from "../model";
 export class StripeController {
 	public async stripeOnBoarding(req: CustomRequest, res: Response) {
 		try {
+			const body = req.body as onboardUserInputs;
 			const userId = req.user?.userId;
 			if (!userId) {
 				return res
@@ -51,7 +53,7 @@ export class StripeController {
 				});
 			}
 			//generate stripe account for user
-			const stripeAccount = await createStripeAccount(user.email);
+			const stripeAccount = await createStripeAccount(user.email, body.country);
 			//return verification link if successful
 			if (stripeAccount) {
 				const link = await generateStripeAccountLink(stripeAccount.toString());
@@ -112,6 +114,34 @@ export class StripeController {
 				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 					success: false,
 					message: "An unknown error occurred while deleting stripe account",
+				});
+			}
+		}
+	}
+
+	public async checkOnboardingStatus(req: Request, res: Response) {
+		try {
+			const { stripeId } = req.params;
+			const user = await UserModel.findOne({ stripe_id: stripeId });
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found" });
+			}
+			const status = await checkAccountStatus(stripeId);
+			res.status(StatusCodes.OK).json({ data: status });
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `Unable to check stripe account status due to: ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message:
+						"An unknown error occurred while checking stripe account status",
 				});
 			}
 		}

@@ -11,7 +11,7 @@ if (!stripeApiKey) {
 }
 const stripe = new Stripe(stripeApiKey);
 
-export const createStripeAccount = async (email: string) => {
+export const createStripeAccount = async (email: string, country: string) => {
 	try {
 		const account = await stripe.accounts.create({
 			type: "express",
@@ -20,8 +20,9 @@ export const createStripeAccount = async (email: string) => {
 				card_payments: { requested: true },
 				transfers: { requested: true },
 			},
+			country: country,
 		});
-		return account.id; // Return the Stripe account ID
+		return account.id;
 	} catch (error) {
 		log.info("Error creating Stripe account:", error);
 		throw error;

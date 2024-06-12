@@ -19,6 +19,7 @@ class StripeController {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
+                const body = req.body;
                 const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
                 if (!userId) {
                     return res
@@ -52,7 +53,7 @@ class StripeController {
                     });
                 }
                 //generate stripe account for user
-                const stripeAccount = yield (0, utils_1.createStripeAccount)(user.email);
+                const stripeAccount = yield (0, utils_1.createStripeAccount)(user.email, body.country);
                 //return verification link if successful
                 if (stripeAccount) {
                     const link = yield (0, utils_1.generateStripeAccountLink)(stripeAccount.toString());
@@ -119,6 +120,36 @@ class StripeController {
                     res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
                         success: false,
                         message: "An unknown error occurred while deleting stripe account",
+                    });
+                }
+            }
+        });
+    }
+    checkOnboardingStatus(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { stripeId } = req.params;
+                const user = yield model_1.UserModel.findOne({ stripe_id: stripeId });
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found" });
+                }
+                const status = yield (0, utils_1.checkAccountStatus)(stripeId);
+                res.status(http_status_codes_1.StatusCodes.OK).json({ data: status });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                if (error instanceof Error) {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: `Unable to check stripe account status due to: ${error.message}`,
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An unknown error occurred while checking stripe account status",
                     });
                 }
             }

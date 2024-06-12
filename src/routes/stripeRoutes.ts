@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { StripeController } from "../controller/stripeController";
-import { authorizeUser } from "../middleware";
+import { authorizeUser, validateInputs } from "../middleware";
+import { onboardUserSchema } from "../schema";
 
 export class StripeRouter {
 	private router: Router;
@@ -15,7 +16,13 @@ export class StripeRouter {
 		this.router.post(
 			"/stripe-onboarding",
 			authorizeUser,
+			validateInputs(onboardUserSchema),
 			this.stripeController.stripeOnBoarding.bind(this.stripeController),
+		);
+
+		this.router.get(
+			"/check-status/:stripeId",
+			this.stripeController.checkOnboardingStatus.bind(this.stripeController),
 		);
 
 		//delete stripe account
