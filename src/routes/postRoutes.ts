@@ -7,6 +7,7 @@ import {
 	deletePostSchema,
 	getSinglePostSchema,
 	createVendorPostSchema,
+	savePostSchema,
 } from "../schema";
 
 export class PostRouter {
@@ -37,6 +38,13 @@ export class PostRouter {
 			authorizeUser,
 			validateInputs(createVendorPostSchema),
 			this.postController.createVendorPost.bind(this.postController),
+		);
+		//save post
+		this.router.post(
+			"/save-post/:postId",
+			authorizeUser,
+			validateInputs(savePostSchema),
+			this.postController.savePost.bind(this.postController),
 		);
 		//get single post
 		this.router.get(

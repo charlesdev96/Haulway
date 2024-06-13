@@ -68,6 +68,12 @@ export const deletePostSchema = z.object({
 	}),
 });
 
+export const savePostSchema = z.object({
+	params: z.object({
+		postId: z.string({ required_error: "post id required" }),
+	}),
+});
+
 export type createUserPostInputs = z.infer<typeof createUserPostSchema>["body"];
 
 export type createVendorPostInputs = z.infer<
@@ -79,3 +85,5 @@ export type getSinglePostInputs = z.infer<typeof getSinglePostSchema>["params"];
 export type updatePostInputs = z.infer<typeof updatePostSchema>;
 
 export type deletePostInputs = z.infer<typeof deletePostSchema>["params"];
+
+export type savePostInputs = z.infer<typeof savePostSchema>["params"];

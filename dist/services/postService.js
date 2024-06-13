@@ -44,32 +44,10 @@ const deleteReplyByPost = (postId) => __awaiter(void 0, void 0, void 0, function
 exports.deleteReplyByPost = deleteReplyByPost;
 const timeLinePost = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const posts = yield model_1.PostModel.find({})
-        .select("_id content caption views numOfLikes numOfComments comments products addMusic postedBy createdAt updatedAt tagPeople numOfPeopleTag addCategory numOfShares")
+        .select("_id content caption views numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares")
         .populate({
         path: "postedBy",
         select: "_id fullName profilePic userName numOfFollowings numOfFollowers followers",
-    })
-        .populate({
-        path: "tagPeople",
-        select: "_id fullName userName profilePic",
-    })
-        .populate({
-        path: "comments",
-        select: "_id comment numOfReplies replies createdAt updatedAt commentedBy",
-        populate: [
-            {
-                path: "replies",
-                select: "_id reply replier createdAt updatedAt",
-                populate: {
-                    path: "replier",
-                    select: "_id fullName userName profilePic",
-                },
-            },
-            {
-                path: "commentedBy",
-                select: "_id fullName userName profilePic",
-            },
-        ],
     })
         .sort({ updatedAt: -1 });
     const postsData = (posts || []).map((post) => {
@@ -124,3 +102,22 @@ const singlePost = (postId) => __awaiter(void 0, void 0, void 0, function* () {
         .sort({ updatedAt: -1 });
 });
 exports.singlePost = singlePost;
+// .populate({
+// 	path: "comments",
+// 	select:
+// 		"_id comment numOfReplies replies createdAt updatedAt commentedBy",
+// 	populate: [
+// 		{
+// 			path: "replies",
+// 			select: "_id reply replier createdAt updatedAt",
+// 			populate: {
+// 				path: "replier",
+// 				select: "_id fullName userName profilePic",
+// 			},
+// 		},
+// 		{
+// 			path: "commentedBy",
+// 			select: "_id fullName userName profilePic",
+// 		},
+// 	],
+// })

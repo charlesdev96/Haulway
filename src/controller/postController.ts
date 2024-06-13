@@ -5,6 +5,7 @@ import {
 	deletePostInputs,
 	getSinglePostInputs,
 	createVendorPostInputs,
+	savePostInputs,
 } from "../schema";
 import {
 	CustomRequest,
@@ -36,12 +37,7 @@ export class PostController {
 					.status(StatusCodes.NOT_FOUND)
 					.json({ message: "User not found" });
 			}
-			//check if user role is not user
-			if (user.role !== "user") {
-				return res
-					.status(StatusCodes.FORBIDDEN)
-					.json({ message: "Route is for users only." });
-			}
+
 			const body = req.body as createUserPostInputs;
 			body.postedBy = userId;
 			body.numOfPeopleTag = body.tagPeople?.length;
@@ -78,12 +74,7 @@ export class PostController {
 					.status(StatusCodes.NOT_FOUND)
 					.json({ message: "User not found" });
 			}
-			//check if user role is not user
-			if (user.role === "user") {
-				return res
-					.status(StatusCodes.FORBIDDEN)
-					.json({ message: "Route is for vendors and influencers only." });
-			}
+
 			body.postedBy = userId;
 			body.numOfPeopleTag = body.tagPeople?.length;
 			body.numOfProducts = body.products?.length;
@@ -137,6 +128,64 @@ export class PostController {
 				success: false,
 				message: `Unable to display all posts: error: ${error.message}`,
 			});
+		}
+	}
+
+	public async savePost(req: CustomRequest, res: Response) {
+		try {
+			const { postId } = req.params as savePostInputs;
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const user = await findUserById(userId);
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found" });
+			}
+			const post = await findPostById(postId);
+			if (!post) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "Post not found" });
+			}
+			//check if user have already saved the post
+			const alreadySavedPost = user.savedPosts?.includes(postId.toString());
+			if (alreadySavedPost) {
+				//if user have already saved the post, remove the saved post
+				user.savedPosts = user.savedPosts?.filter(
+					(postSaved) => postSaved.toString() !== postId.toString(),
+				);
+				await user.save();
+				return res.status(StatusCodes.OK).json({
+					success: true,
+					message: "Successfully removed from your saved post collection.",
+				});
+			} else {
+				//procced to save post
+				await user.savedPosts?.push(postId);
+				await user.save();
+				res.status(StatusCodes.OK).json({
+					success: true,
+					message: "Post successfully saved to your profile",
+				});
+			}
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `Unable to save post due to: ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An unknown error occurred while saving post",
+				});
+			}
 		}
 	}
 

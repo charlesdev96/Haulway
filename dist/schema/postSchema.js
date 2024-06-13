@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletePostSchema = exports.updatePostSchema = exports.getSinglePostSchema = exports.createVendorPostSchema = exports.createUserPostSchema = void 0;
+exports.savePostSchema = exports.deletePostSchema = exports.updatePostSchema = exports.getSinglePostSchema = exports.createVendorPostSchema = exports.createUserPostSchema = void 0;
 const zod_1 = require("zod");
 exports.createUserPostSchema = zod_1.z.object({
     body: zod_1.z.object({
@@ -63,5 +63,10 @@ exports.deletePostSchema = zod_1.z.object({
         postId: zod_1.z.string({
             required_error: "Please provide the id of the post to be deleted",
         }),
+    }),
+});
+exports.savePostSchema = zod_1.z.object({
+    params: zod_1.z.object({
+        postId: zod_1.z.string({ required_error: "post id required" }),
     }),
 });

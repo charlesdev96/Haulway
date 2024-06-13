@@ -24,35 +24,12 @@ export const deleteReplyByPost = async (postId: string) => {
 export const timeLinePost = async (userId: string) => {
 	const posts = await PostModel.find({})
 		.select(
-			"_id content caption views numOfLikes numOfComments comments products addMusic postedBy createdAt updatedAt tagPeople numOfPeopleTag addCategory numOfShares",
+			"_id content caption views numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares",
 		)
 		.populate({
 			path: "postedBy",
 			select:
 				"_id fullName profilePic userName numOfFollowings numOfFollowers followers",
-		})
-		.populate({
-			path: "tagPeople",
-			select: "_id fullName userName profilePic",
-		})
-		.populate({
-			path: "comments",
-			select:
-				"_id comment numOfReplies replies createdAt updatedAt commentedBy",
-			populate: [
-				{
-					path: "replies",
-					select: "_id reply replier createdAt updatedAt",
-					populate: {
-						path: "replier",
-						select: "_id fullName userName profilePic",
-					},
-				},
-				{
-					path: "commentedBy",
-					select: "_id fullName userName profilePic",
-				},
-			],
 		})
 		.sort({ updatedAt: -1 });
 	const postsData: Post[] = (posts || []).map((post: any) => {
@@ -113,3 +90,23 @@ export const singlePost = async (postId: string) => {
 		})
 		.sort({ updatedAt: -1 });
 };
+
+// .populate({
+// 	path: "comments",
+// 	select:
+// 		"_id comment numOfReplies replies createdAt updatedAt commentedBy",
+// 	populate: [
+// 		{
+// 			path: "replies",
+// 			select: "_id reply replier createdAt updatedAt",
+// 			populate: {
+// 				path: "replier",
+// 				select: "_id fullName userName profilePic",
+// 			},
+// 		},
+// 		{
+// 			path: "commentedBy",
+// 			select: "_id fullName userName profilePic",
+// 		},
+// 	],
+// })

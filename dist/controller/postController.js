@@ -42,12 +42,6 @@ class PostController {
                         .status(http_status_codes_1.StatusCodes.NOT_FOUND)
                         .json({ message: "User not found" });
                 }
-                //check if user role is not user
-                if (user.role !== "user") {
-                    return res
-                        .status(http_status_codes_1.StatusCodes.FORBIDDEN)
-                        .json({ message: "Route is for users only." });
-                }
                 const body = req.body;
                 body.postedBy = userId;
                 body.numOfPeopleTag = (_b = body.tagPeople) === null || _b === void 0 ? void 0 : _b.length;
@@ -86,12 +80,6 @@ class PostController {
                     return res
                         .status(http_status_codes_1.StatusCodes.NOT_FOUND)
                         .json({ message: "User not found" });
-                }
-                //check if user role is not user
-                if (user.role === "user") {
-                    return res
-                        .status(http_status_codes_1.StatusCodes.FORBIDDEN)
-                        .json({ message: "Route is for vendors and influencers only." });
                 }
                 body.postedBy = userId;
                 body.numOfPeopleTag = (_b = body.tagPeople) === null || _b === void 0 ? void 0 : _b.length;
@@ -151,6 +139,67 @@ class PostController {
                     success: false,
                     message: `Unable to display all posts: error: ${error.message}`,
                 });
+            }
+        });
+    }
+    savePost(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b, _c, _d;
+            try {
+                const { postId } = req.params;
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                const user = yield (0, services_1.findUserById)(userId);
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found" });
+                }
+                const post = yield (0, services_1.findPostById)(postId);
+                if (!post) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "Post not found" });
+                }
+                //check if user have already saved the post
+                const alreadySavedPost = (_b = user.savedPosts) === null || _b === void 0 ? void 0 : _b.includes(postId.toString());
+                if (alreadySavedPost) {
+                    //if user have already saved the post, remove the saved post
+                    user.savedPosts = (_c = user.savedPosts) === null || _c === void 0 ? void 0 : _c.filter((postSaved) => postSaved.toString() !== postId.toString());
+                    yield user.save();
+                    return res.status(http_status_codes_1.StatusCodes.OK).json({
+                        success: true,
+                        message: "Successfully removed from your saved post collection.",
+                    });
+                }
+                else {
+                    //procced to save post
+                    yield ((_d = user.savedPosts) === null || _d === void 0 ? void 0 : _d.push(postId));
+                    yield user.save();
+                    res.status(http_status_codes_1.StatusCodes.OK).json({
+                        success: true,
+                        message: "Post successfully saved to your profile",
+                    });
+                }
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                if (error instanceof Error) {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: `Unable to save post due to: ${error.message}`,
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An unknown error occurred while saving post",
+                    });
+                }
             }
         });
     }

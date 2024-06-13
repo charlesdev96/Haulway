@@ -18,6 +18,8 @@ class PostRouter {
         this.router.post("/create-user-post", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.createUserPostSchema), this.postController.createUserPost.bind(this.postController));
         //create vendor influencer
         this.router.post("/create-vendor-influencer-post", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.createVendorPostSchema), this.postController.createVendorPost.bind(this.postController));
+        //save post
+        this.router.post("/save-post/:postId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.savePostSchema), this.postController.savePost.bind(this.postController));
         //get single post
         this.router.get("/get-post/:postId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.getSinglePostSchema), this.postController.getSinglePost.bind(this.postController));
         //update post
