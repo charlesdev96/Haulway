@@ -145,13 +145,13 @@ class profiles {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
+                const body = req.body;
                 const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
                 if (!userId) {
                     return res
                         .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
                         .json({ message: "Unauthorized: Missing authentication token." });
                 }
-                const body = req.body;
                 const user = yield (0, services_1.findUserById)(userId);
                 if (!user) {
                     return res

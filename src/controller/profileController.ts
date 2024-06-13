@@ -150,13 +150,14 @@ export class profiles {
 
 	public async upgradeAccount(req: CustomRequest, res: Response) {
 		try {
+			const body = req.body as upgradeAccountInputs;
 			const userId = req.user?.userId;
 			if (!userId) {
 				return res
 					.status(StatusCodes.UNAUTHORIZED)
 					.json({ message: "Unauthorized: Missing authentication token." });
 			}
-			const body = req.body as upgradeAccountInputs;
+
 			const user = await findUserById(userId);
 			if (!user) {
 				return res

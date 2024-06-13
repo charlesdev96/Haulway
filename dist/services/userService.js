@@ -72,7 +72,7 @@ const singleUser = (searchedUserId) => __awaiter(void 0, void 0, void 0, functio
         .select("_id profilePic fullName userName numOfFollowers numOfFollowings numOfPosts followers posts products")
         .populate({
         path: "posts",
-        select: "_id content",
+        select: "_id caption",
     });
 });
 exports.singleUser = singleUser;

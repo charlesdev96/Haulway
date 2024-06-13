@@ -59,7 +59,7 @@ export const singleUser = async (searchedUserId: string) => {
 		)
 		.populate({
 			path: "posts",
-			select: "_id content",
+			select: "_id caption",
 		});
 };
 
