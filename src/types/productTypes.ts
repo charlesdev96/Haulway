@@ -56,3 +56,10 @@ export interface VendorProductOutPut {
 		products?: string[];
 	};
 }
+
+export interface ProductReviewInputs {
+	reviewer?: string;
+	product?: string;
+	rating?: number;
+	comment?: string;
+}

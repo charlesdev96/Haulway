@@ -7,3 +7,4 @@ export * from "./influencerProductModel";
 export * from "./vendorProductModel";
 export * from "./cartItemModel";
 export * from "./cartModel";
+export * from "./productReviewModel";

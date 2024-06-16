@@ -3,6 +3,7 @@ import {
 	createCommentInputs,
 	updateCommentInputs,
 	deletecommentInputs,
+	getPostReviewInputs,
 } from "../schema";
 import {
 	CustomRequest,
@@ -11,6 +12,7 @@ import {
 	createcomment,
 	findCommentById,
 	deleteRepliesByCommentId,
+	getAllCommentsByPostId,
 } from "../services";
 import { StatusCodes } from "http-status-codes";
 import { log } from "../utils";
@@ -58,6 +60,57 @@ export class CommentController {
 				success: false,
 				message: `Unable to comment on post: ${error.message}`,
 			});
+		}
+	}
+
+	public async getPostComments(req: CustomRequest, res: Response) {
+		try {
+			const { postId } = req.params as getPostReviewInputs;
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			//find logged in user
+			const user = await findUserById(userId);
+			//check if user exist
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found" });
+			}
+			const post = await findPostById(postId);
+			if (!post) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "Post not found" });
+			}
+			const postComments = await getAllCommentsByPostId(postId);
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "List of post comments",
+				data: postComments,
+			});
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				if (error.name === "CastError") {
+					return res.status(StatusCodes.BAD_REQUEST).json({
+						success: false,
+						message: "Invalid review ID format.",
+					});
+				}
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `Unable to create a review on product due to: ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An unknown error occurred while reviewing product",
+				});
+			}
 		}
 	}
 

@@ -58,7 +58,7 @@ export const singlePost = async (postId: string) => {
 	await PostModel.updateOne({ _id: postId }, { $inc: { views: 1 } });
 	return await PostModel.findOne({ _id: postId })
 		.select(
-			"_id content desc views numOfLikes numOfComments comments products addMusic postedBy createdAt updatedAt tagPeople numOfPeopleTag addLocation addMusic addCategory numOfShares",
+			"_id content caption postedBy numOfShares views numOfLikes numOfComments options products numOfProducts numOfPeopleTag addCategory",
 		)
 		.populate({
 			path: "postedBy",
@@ -66,47 +66,22 @@ export const singlePost = async (postId: string) => {
 				"_id fullName profilePic userName numOfFollowings numOfFollowers followers",
 		})
 		.populate({
-			path: "tagPeople",
-			select: "_id fullName userName profilePic",
-		})
-		.populate({
-			path: "comments",
-			select:
-				"_id comment numOfReplies replies createdAt updatedAt commentedBy",
+			path: "products",
+			select: "_id genInfo productPrice productReview store reviews",
 			populate: [
 				{
-					path: "replies",
-					select: "_id reply replier createdAt updatedAt",
-					populate: {
-						path: "replier",
-						select: "_id fullName userName profilePic",
-					},
+					path: "store",
+					select: "_id storeName storeLogo",
 				},
 				{
-					path: "commentedBy",
-					select: "_id fullName userName profilePic",
+					path: "reviews",
+					select: "_id comment rating reviewer",
+					populate: {
+						path: "reviewer",
+						select: "_id fullName profilePic userName",
+					},
 				},
 			],
 		})
 		.sort({ updatedAt: -1 });
 };
-
-// .populate({
-// 	path: "comments",
-// 	select:
-// 		"_id comment numOfReplies replies createdAt updatedAt commentedBy",
-// 	populate: [
-// 		{
-// 			path: "replies",
-// 			select: "_id reply replier createdAt updatedAt",
-// 			populate: {
-// 				path: "replier",
-// 				select: "_id fullName userName profilePic",
-// 			},
-// 		},
-// 		{
-// 			path: "commentedBy",
-// 			select: "_id fullName userName profilePic",
-// 		},
-// 	],
-// })

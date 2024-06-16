@@ -8,6 +8,7 @@ export interface InfluencerProductInputs {
 	influencer?: string;
 	store?: string;
 	status?: "published" | "unpublished";
+	buyers?: string[];
 }
 
 export interface InfluencerProductDocument
@@ -41,6 +42,7 @@ const ProductSchema = new mongoose.Schema(
 		productReview: { products: [{ type: String, required: true }] },
 		influencer: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 		store: { type: mongoose.Schema.Types.ObjectId, ref: "Store" },
+		buyers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 	},
 	{
 		timestamps: true,

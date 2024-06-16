@@ -25,3 +25,4 @@ __exportStar(require("./vendorProductSchema"), exports);
 __exportStar(require("./influencerProductSchema"), exports);
 __exportStar(require("./stripeSchema"), exports);
 __exportStar(require("./cartSchema"), exports);
+__exportStar(require("./reviewProductSchema"), exports);

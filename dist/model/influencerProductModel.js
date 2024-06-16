@@ -27,6 +27,7 @@ const ProductSchema = new mongoose_1.default.Schema({
     productReview: { products: [{ type: String, required: true }] },
     influencer: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" },
     store: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "Store" },
+    buyers: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" }],
 }, {
     timestamps: true,
     toJSON: { virtuals: true },

@@ -14,6 +14,8 @@ class commentRouter {
     initializeRoutes() {
         //comment on a post
         this.router.post("/create-comment/:postId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.createCommentSchema), this.commentController.createComment.bind(this.commentController));
+        //get all comments in a post
+        this.router.get("/post-comment/:postId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.getPostReviewSchema), this.commentController.getPostComments.bind(this.commentController));
         //update comment
         this.router.patch("/edit-comment/:commentId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.updateCommentSchema), this.commentController.editComment.bind(this.commentController));
         //delete comment

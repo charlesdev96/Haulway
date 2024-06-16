@@ -9,3 +9,4 @@ export * from "./vendorProductSchema";
 export * from "./influencerProductSchema";
 export * from "./stripeSchema";
 export * from "./cartSchema";
+export * from "./reviewProductSchema";

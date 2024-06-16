@@ -11,6 +11,7 @@ import { VendorRouter } from "./vendorRoute";
 import { InfluencerRouter } from "./influencerRoute";
 import { StripeRouter } from "./stripeRoutes";
 import { CartRouter } from "./cartRoute";
+import { ReviewProductRouter } from "./reviewProductRoute";
 
 class RouterConfig {
 	private router: Router;
@@ -71,6 +72,12 @@ class RouterConfig {
 		);
 		//cart router
 		this.router.use(`${baseUrl}/cart`, new CartRouter().getCartRouter());
+
+		//review product router
+		this.router.use(
+			`${baseUrl}/review`,
+			new ReviewProductRouter().getReviewProductRouter(),
+		);
 	}
 
 	public getRouter(): Router {

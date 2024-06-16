@@ -7,3 +7,20 @@ export const createcomment = async (input: commentInput) => {
 export const findCommentById = async (commentId: string) => {
 	return await CommentModel.findOne({ _id: commentId });
 };
+
+export const getAllCommentsByPostId = async (postId: string) => {
+	return await CommentModel.find({ post: postId })
+		.select("_id comment commentedBy numOfReplies")
+		.populate({
+			path: "commentedBy",
+			select: "_id fullName profilePic",
+		})
+		.populate({
+			path: "replies",
+			select: "_id reply replier",
+			populate: {
+				path: "replier",
+				select: "_id fullName profilePic",
+			},
+		});
+};

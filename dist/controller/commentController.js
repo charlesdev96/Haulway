@@ -62,6 +62,61 @@ class CommentController {
             }
         });
     }
+    getPostComments(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const { postId } = req.params;
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                //find logged in user
+                const user = yield (0, services_1.findUserById)(userId);
+                //check if user exist
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found" });
+                }
+                const post = yield (0, services_1.findPostById)(postId);
+                if (!post) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "Post not found" });
+                }
+                const postComments = yield (0, services_1.getAllCommentsByPostId)(postId);
+                res.status(http_status_codes_1.StatusCodes.OK).json({
+                    success: true,
+                    message: "List of post comments",
+                    data: postComments,
+                });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                if (error instanceof Error) {
+                    if (error.name === "CastError") {
+                        return res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({
+                            success: false,
+                            message: "Invalid review ID format.",
+                        });
+                    }
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: `Unable to create a review on product due to: ${error.message}`,
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An unknown error occurred while reviewing product",
+                    });
+                }
+            }
+        });
+    }
     editComment(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b;

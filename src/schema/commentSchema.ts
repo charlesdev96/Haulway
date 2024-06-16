@@ -32,8 +32,16 @@ export const deletecommentSchema = z.object({
 	}),
 });
 
+export const getPostReviewSchema = z.object({
+	params: z.object({
+		postId: z.string({ required_error: "post id required" }),
+	}),
+});
+
 export type createCommentInputs = z.infer<typeof createCommentSchema>;
 
 export type updateCommentInputs = z.infer<typeof updateCommentSchema>;
 
 export type deletecommentInputs = z.infer<typeof deletecommentSchema>["params"];
+
+export type getPostReviewInputs = z.infer<typeof getPostReviewSchema>["params"];

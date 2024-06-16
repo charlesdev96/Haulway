@@ -18,6 +18,9 @@ export interface VendorProductInputs {
 	reviews?: string[];
 	store?: string;
 	status?: "published" | "unpublished";
+	buyers?: string[];
+	reviewers?: string[];
+	averageRating?: number | 0;
 }
 
 export interface VendorProductDocument
@@ -78,6 +81,7 @@ const ProductSchema = new mongoose.Schema(
 		},
 		productReview: { products: [{ type: String, required: true }] },
 		vendor: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+		buyers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 		store: { type: mongoose.Schema.Types.ObjectId, ref: "Store" },
 		status: {
 			type: String,
@@ -86,6 +90,8 @@ const ProductSchema = new mongoose.Schema(
 		},
 		numOfProReviews: { type: Number, default: 0 },
 		reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "ProductReview" }],
+		reviewers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+		averageRating: { type: Number, default: 0 },
 	},
 	{
 		timestamps: true,

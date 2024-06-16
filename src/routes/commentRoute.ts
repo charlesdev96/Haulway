@@ -4,6 +4,7 @@ import {
 	createCommentSchema,
 	updateCommentSchema,
 	deletecommentSchema,
+	getPostReviewSchema,
 } from "../schema";
 import { authorizeUser, validateInputs } from "../middleware";
 
@@ -23,6 +24,13 @@ export class commentRouter {
 			authorizeUser,
 			validateInputs(createCommentSchema),
 			this.commentController.createComment.bind(this.commentController),
+		);
+		//get all comments in a post
+		this.router.get(
+			"/post-comment/:postId",
+			authorizeUser,
+			validateInputs(getPostReviewSchema),
+			this.commentController.getPostComments.bind(this.commentController),
 		);
 		//update comment
 		this.router.patch(

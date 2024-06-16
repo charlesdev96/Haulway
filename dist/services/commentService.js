@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findCommentById = exports.createcomment = void 0;
+exports.getAllCommentsByPostId = exports.findCommentById = exports.createcomment = void 0;
 const model_1 = require("../model");
 const createcomment = (input) => __awaiter(void 0, void 0, void 0, function* () {
     return yield model_1.CommentModel.create(input);
@@ -19,3 +19,20 @@ const findCommentById = (commentId) => __awaiter(void 0, void 0, void 0, functio
     return yield model_1.CommentModel.findOne({ _id: commentId });
 });
 exports.findCommentById = findCommentById;
+const getAllCommentsByPostId = (postId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield model_1.CommentModel.find({ post: postId })
+        .select("_id comment commentedBy numOfReplies")
+        .populate({
+        path: "commentedBy",
+        select: "_id fullName profilePic",
+    })
+        .populate({
+        path: "replies",
+        select: "_id reply replier",
+        populate: {
+            path: "replier",
+            select: "_id fullName profilePic",
+        },
+    });
+});
+exports.getAllCommentsByPostId = getAllCommentsByPostId;
