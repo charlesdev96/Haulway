@@ -28,6 +28,12 @@ const ProductSchema = new mongoose_1.default.Schema({
     influencer: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" },
     store: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "Store" },
     buyers: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" }],
+    numOfProReviews: { type: Number, default: 0 },
+    reviews: [
+        { type: mongoose_1.default.Schema.Types.ObjectId, ref: "InfluencerProReview" },
+    ],
+    reviewers: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" }],
+    averageRating: { type: Number, default: 0 },
 }, {
     timestamps: true,
     toJSON: { virtuals: true },

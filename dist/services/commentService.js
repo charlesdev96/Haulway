@@ -21,14 +21,14 @@ const findCommentById = (commentId) => __awaiter(void 0, void 0, void 0, functio
 exports.findCommentById = findCommentById;
 const getAllCommentsByPostId = (postId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield model_1.CommentModel.find({ post: postId })
-        .select("_id comment commentedBy numOfReplies")
+        .select("_id comment commentedBy numOfReplies createdAt updatedAt")
         .populate({
         path: "commentedBy",
         select: "_id fullName profilePic",
     })
         .populate({
         path: "replies",
-        select: "_id reply replier",
+        select: "_id reply replier createdAt updatedAt",
         populate: {
             path: "replier",
             select: "_id fullName profilePic",

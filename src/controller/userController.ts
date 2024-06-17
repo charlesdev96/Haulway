@@ -77,7 +77,7 @@ export class UserController {
 			});
 			res.status(StatusCodes.OK).json({
 				success: true,
-				message: "All users retrieved successfully.",
+				message: "User retrieved successfully.",
 				data: outputData,
 			});
 		} catch (error: any) {

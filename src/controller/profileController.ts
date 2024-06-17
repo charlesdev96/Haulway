@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import {
 	CustomRequest,
 	findUserById,
-	userData,
 	validatePassword,
 	userNameExist,
 	existingUser,
@@ -10,6 +9,7 @@ import {
 	findStoreByName,
 	findStoreByUserId,
 	getVendorProfile,
+	getUserProfile,
 } from "../services";
 import {
 	updateProfileInputs,
@@ -36,7 +36,7 @@ export class profiles {
 					.status(StatusCodes.UNAUTHORIZED)
 					.json({ message: "Unauthorized: Missing authentication token." });
 			}
-			const user = await userData(role.toString(), userId.toString());
+			const user = await getUserProfile(userId);
 			res.status(StatusCodes.OK).json({
 				success: true,
 				message: "User profile retrieved successfully.",
@@ -216,6 +216,10 @@ export class profiles {
 				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 					success: false,
 					message: "store name already exist",
+				});
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An error occured while trying to update account",
 				});
 			} else {
 				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({

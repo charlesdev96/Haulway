@@ -87,26 +87,50 @@ exports.validatePassword = validatePassword;
 const userData = (role, userId) => __awaiter(void 0, void 0, void 0, function* () {
     if (role === "vendor") {
         return yield model_1.UserModel.findById(userId)
-            .select("_id profilePic userName role numOfPosts fullName profileViews numOfPosts numOfFollowers numOfFollowings store posts products contracts")
+            .select("_id profilePic userName role numOfPosts fullName profileViews numOfPosts numOfFollowers numOfFollowings store posts products")
             .populate({
             path: "posts",
-            select: "_id content caption",
+            select: "_id content caption products",
+            populate: {
+                path: "products",
+                select: "_id genInfo productPrice productReview numOfProReviews",
+            },
         })
             .populate({
             path: "store",
             select: "_id storeName storeLogo currency products",
+            populate: {
+                path: "products",
+                select: "_id genInfo productPrice productReview numOfProReviews",
+            },
+        })
+            .populate({
+            path: "products",
+            select: "_id genInfo productPrice productReview numOfProReviews averageRating",
         });
     }
     else if (role === "influencer") {
         return yield model_1.UserModel.findById(userId)
-            .select("_id profilePic userName role numOfPosts fullName profileViews numOfPosts numOfFollowers numOfFollowings store posts products contracts")
+            .select("_id profilePic userName role numOfPosts fullName profileViews numOfPosts numOfFollowers numOfFollowings store posts influencerPro")
             .populate({
             path: "posts",
-            select: "_id content caption",
+            select: "_id content caption products",
+            populate: {
+                path: "products",
+                select: "_id genInfo productPrice productReview numOfProReviews averageRating",
+            },
         })
             .populate({
             path: "store",
-            select: "_id storeName currency videos",
+            select: "_id storeName storeLogo currency videos influencerProducts",
+            populate: {
+                path: "influencerProducts",
+                select: "_id genInfo productPrice productReview numOfProReviews averageRating",
+            },
+        })
+            .populate({
+            path: "influencerPro",
+            select: "_id genInfo productPrice productReview averageRating numOfProReviews",
         });
     }
     else {

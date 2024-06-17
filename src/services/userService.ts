@@ -88,28 +88,56 @@ export const userData = async (role: string, userId: string) => {
 	if (role === "vendor") {
 		return await UserModel.findById(userId)
 			.select(
-				"_id profilePic userName role numOfPosts fullName profileViews numOfPosts numOfFollowers numOfFollowings store posts products contracts",
+				"_id profilePic userName role numOfPosts fullName profileViews numOfPosts numOfFollowers numOfFollowings store posts products",
 			)
 			.populate({
 				path: "posts",
-				select: "_id content caption",
+				select: "_id content caption products",
+				populate: {
+					path: "products",
+					select: "_id genInfo productPrice productReview numOfProReviews",
+				},
 			})
 			.populate({
 				path: "store",
 				select: "_id storeName storeLogo currency products",
+				populate: {
+					path: "products",
+					select: "_id genInfo productPrice productReview numOfProReviews",
+				},
+			})
+			.populate({
+				path: "products",
+				select:
+					"_id genInfo productPrice productReview numOfProReviews averageRating",
 			});
 	} else if (role === "influencer") {
 		return await UserModel.findById(userId)
 			.select(
-				"_id profilePic userName role numOfPosts fullName profileViews numOfPosts numOfFollowers numOfFollowings store posts products contracts",
+				"_id profilePic userName role numOfPosts fullName profileViews numOfPosts numOfFollowers numOfFollowings store posts influencerPro",
 			)
 			.populate({
 				path: "posts",
-				select: "_id content caption",
+				select: "_id content caption products",
+				populate: {
+					path: "products",
+					select:
+						"_id genInfo productPrice productReview numOfProReviews averageRating",
+				},
 			})
 			.populate({
 				path: "store",
-				select: "_id storeName currency videos",
+				select: "_id storeName storeLogo currency videos influencerProducts",
+				populate: {
+					path: "influencerProducts",
+					select:
+						"_id genInfo productPrice productReview numOfProReviews averageRating",
+				},
+			})
+			.populate({
+				path: "influencerPro",
+				select:
+					"_id genInfo productPrice productReview averageRating numOfProReviews",
 			});
 	} else {
 		return await UserModel.findById(userId)

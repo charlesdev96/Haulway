@@ -6,9 +6,13 @@ export interface InfluencerProductInputs {
 	productReview?: ProductReview;
 	productPrice?: Price;
 	influencer?: string;
+	numOfProReviews?: number | 0;
+	reviews?: string[];
 	store?: string;
 	status?: "published" | "unpublished";
 	buyers?: string[];
+	reviewers?: string[];
+	averageRating?: number | 0;
 }
 
 export interface InfluencerProductDocument
@@ -43,6 +47,12 @@ const ProductSchema = new mongoose.Schema(
 		influencer: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 		store: { type: mongoose.Schema.Types.ObjectId, ref: "Store" },
 		buyers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+		numOfProReviews: { type: Number, default: 0 },
+		reviews: [
+			{ type: mongoose.Schema.Types.ObjectId, ref: "InfluencerProReview" },
+		],
+		reviewers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+		averageRating: { type: Number, default: 0 },
 	},
 	{
 		timestamps: true,

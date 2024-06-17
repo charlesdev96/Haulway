@@ -75,7 +75,7 @@ export const singlePost = async (postId: string) => {
 				},
 				{
 					path: "reviews",
-					select: "_id comment rating reviewer",
+					select: "_id comment rating reviewer createdAt updatedAt",
 					populate: {
 						path: "reviewer",
 						select: "_id fullName profilePic userName",

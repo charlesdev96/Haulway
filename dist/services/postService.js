@@ -87,7 +87,7 @@ const singlePost = (postId) => __awaiter(void 0, void 0, void 0, function* () {
             },
             {
                 path: "reviews",
-                select: "_id comment rating reviewer",
+                select: "_id comment rating reviewer createdAt updatedAt",
                 populate: {
                     path: "reviewer",
                     select: "_id fullName profilePic userName",

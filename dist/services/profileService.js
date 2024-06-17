@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getVendorProfile = void 0;
+exports.getUserProfile = exports.getVendorProfile = void 0;
 const model_1 = require("../model");
 const getVendorProfile = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield model_1.UserModel.findById(userId)
@@ -54,3 +54,40 @@ const getVendorProfile = (userId) => __awaiter(void 0, void 0, void 0, function*
     });
 });
 exports.getVendorProfile = getVendorProfile;
+const getUserProfile = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield model_1.UserModel.findById(userId)
+        .select("_id profilePic fullName userName role numOfFollowers numOfFollowings numOfPosts posts savedPosts")
+        .populate({
+        path: "posts",
+        select: "_id content caption postedBy views numOfLikes numOfComments comments options tagPeople",
+        populate: [
+            {
+                path: "postedBy",
+                select: "_id fullName profilePic userName numOfFollowings numOfFollowers followers",
+            },
+            {
+                path: "tagPeople",
+                select: "_id fullName userName profilePic",
+            },
+            {
+                path: "comments",
+                select: "_id comment numOfReplies replies createdAt updatedAt commentedBy",
+                populate: [
+                    {
+                        path: "replies",
+                        select: "_id reply replier createdAt updatedAt",
+                        populate: {
+                            path: "replier",
+                            select: "_id fullName userName profilePic",
+                        },
+                    },
+                    {
+                        path: "commentedBy",
+                        select: "_id fullName userName profilePic",
+                    },
+                ],
+            },
+        ],
+    });
+});
+exports.getUserProfile = getUserProfile;

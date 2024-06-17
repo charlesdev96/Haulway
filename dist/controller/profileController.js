@@ -30,7 +30,7 @@ class profiles {
                         .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
                         .json({ message: "Unauthorized: Missing authentication token." });
                 }
-                const user = yield (0, services_1.userData)(role.toString(), userId.toString());
+                const user = yield (0, services_1.getUserProfile)(userId);
                 res.status(http_status_codes_1.StatusCodes.OK).json({
                     success: true,
                     message: "User profile retrieved successfully.",
@@ -210,6 +210,10 @@ class profiles {
                     res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
                         success: false,
                         message: "store name already exist",
+                    });
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An error occured while trying to update account",
                     });
                 }
                 else {
