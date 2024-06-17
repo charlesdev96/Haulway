@@ -31,7 +31,7 @@ const priceSchema = zod_1.z.object({
     price: zod_1.z.number().optional(),
 });
 const shippingSchema = zod_1.z.object({
-    shippingOptions: zod_1.z.enum(["dhl", "fedx", "ups"]),
+    shippingOptions: zod_1.z.enum(["dhl", "fedex", "ups"]),
     refundPolicy: zod_1.z.string().optional(),
 });
 const inventorySchema = zod_1.z.object({
@@ -40,7 +40,7 @@ const inventorySchema = zod_1.z.object({
     productTags: zod_1.z.array(zod_1.z.string()).optional(),
 });
 const productSchema = zod_1.z.object({
-    products: zod_1.z.array(zod_1.z.string({ required_error: "product " })),
+    products: zod_1.z.array(zod_1.z.string({ required_error: "product is required" })),
 });
 exports.vendorProductSchema = zod_1.z.object({
     body: zod_1.z.object({
@@ -79,7 +79,7 @@ exports.updateVendorProductSchema = zod_1.z.object({
             .optional(),
         shippingAndDelivery: zod_1.z
             .object({
-            shippingOptions: zod_1.z.enum(["dhl", "fedx", "ups"]).optional(),
+            shippingOptions: zod_1.z.enum(["dhl", "fedex", "ups"]).optional(),
             refundPolicy: zod_1.z.string().optional(),
         })
             .optional(),

@@ -19,7 +19,7 @@ const ProductSchema = new mongoose_1.default.Schema({
         },
         gender: {
             type: String,
-            enum: ["male", "femaile", "unisex"],
+            enum: ["male", "female", "unisex"],
             required: true,
         },
         productVar: {
@@ -41,7 +41,7 @@ const ProductSchema = new mongoose_1.default.Schema({
     shippingAndDelivery: {
         shippingOptions: {
             type: String,
-            enum: ["dhl", "fedx", "ups"],
+            enum: ["dhl", "fedex", "ups"],
         },
         refundPolicy: { type: String, default: null },
     },

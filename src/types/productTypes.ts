@@ -31,7 +31,7 @@ export interface Price {
 }
 
 export interface Shipping {
-	shippingOptions?: "dhl" | "fedx" | "ups";
+	shippingOptions?: "dhl" | "fedex" | "ups";
 	refundPolicy?: string;
 }
 

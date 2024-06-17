@@ -33,7 +33,7 @@ const priceSchema = z.object({
 });
 
 const shippingSchema = z.object({
-	shippingOptions: z.enum(["dhl", "fedx", "ups"]),
+	shippingOptions: z.enum(["dhl", "fedex", "ups"]),
 	refundPolicy: z.string().optional(),
 });
 
@@ -44,7 +44,7 @@ const inventorySchema = z.object({
 });
 
 const productSchema = z.object({
-	products: z.array(z.string({ required_error: "product " })),
+	products: z.array(z.string({ required_error: "product is required" })),
 });
 
 export const vendorProductSchema = z.object({
@@ -85,7 +85,7 @@ export const updateVendorProductSchema = z.object({
 			.optional(),
 		shippingAndDelivery: z
 			.object({
-				shippingOptions: z.enum(["dhl", "fedx", "ups"]).optional(),
+				shippingOptions: z.enum(["dhl", "fedex", "ups"]).optional(),
 				refundPolicy: z.string().optional(),
 			})
 			.optional(),
