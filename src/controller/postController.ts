@@ -16,6 +16,7 @@ import {
 	singlePost,
 	deleteCommentByPost,
 	deleteReplyByPost,
+	getTrendingPosts,
 } from "../services";
 import { Post } from "../types";
 import { log } from "../utils";
@@ -128,6 +129,42 @@ export class PostController {
 				success: false,
 				message: `Unable to display all posts: error: ${error.message}`,
 			});
+		}
+	}
+
+	public async getAllTrendingPost(req: CustomRequest, res: Response) {
+		try {
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const user = await findUserById(userId);
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found" });
+			}
+			const posts = await getTrendingPosts(userId);
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "List of all trending posts",
+				data: posts,
+			});
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `Unable to get treanding post due to: ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An unknown error occurred while getting trending post",
+				});
+			}
 		}
 	}
 

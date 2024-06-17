@@ -142,6 +142,46 @@ class PostController {
             }
         });
     }
+    getAllTrendingPost(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                const user = yield (0, services_1.findUserById)(userId);
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found" });
+                }
+                const posts = yield (0, services_1.getTrendingPosts)(userId);
+                res.status(http_status_codes_1.StatusCodes.OK).json({
+                    success: true,
+                    message: "List of all trending posts",
+                    data: posts,
+                });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                if (error instanceof Error) {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: `Unable to get treanding post due to: ${error.message}`,
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An unknown error occurred while getting trending post",
+                    });
+                }
+            }
+        });
+    }
     savePost(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b, _c, _d;

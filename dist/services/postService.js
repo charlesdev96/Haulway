@@ -20,7 +20,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.singlePost = exports.timeLinePost = exports.deleteReplyByPost = exports.deleteCommentByPost = exports.findPostByUser = exports.findPostById = exports.createPosts = void 0;
+exports.singlePost = exports.getTrendingPosts = exports.timeLinePost = exports.deleteReplyByPost = exports.deleteCommentByPost = exports.findPostByUser = exports.findPostById = exports.createPosts = void 0;
 const model_1 = require("../model");
 const createPosts = (input) => __awaiter(void 0, void 0, void 0, function* () {
     return yield model_1.PostModel.create(input);
@@ -49,6 +49,14 @@ const timeLinePost = (userId) => __awaiter(void 0, void 0, void 0, function* () 
         path: "postedBy",
         select: "_id fullName profilePic userName numOfFollowings numOfFollowers followers",
     })
+        .populate({
+        path: "products",
+        select: "_id genInfo productPrice productReview store",
+        populate: {
+            path: "store",
+            select: "_id storeName storeLogo",
+        },
+    })
         .sort({ updatedAt: -1 });
     const postsData = (posts || []).map((post) => {
         let status = "follow";
@@ -68,6 +76,40 @@ const timeLinePost = (userId) => __awaiter(void 0, void 0, void 0, function* () 
     return postsData;
 });
 exports.timeLinePost = timeLinePost;
+const getTrendingPosts = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const posts = yield model_1.PostModel.find({})
+        .select("_id content caption views numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares")
+        .populate({
+        path: "postedBy",
+        select: "_id fullName profilePic userName numOfFollowings numOfFollowers followers",
+    })
+        .populate({
+        path: "products",
+        select: "_id genInfo productPrice productReview store",
+        populate: {
+            path: "store",
+            select: "_id storeName storeLogo",
+        },
+    })
+        .sort({ views: -1, numOfLikes: -1, numOfComments: -1, numOfShares: -1 });
+    const postsData = (posts || []).map((post) => {
+        let status = "follow";
+        // Check if userId is the owner of the post
+        if (post.postedBy._id.toString() === userId.toString()) {
+            status = "owner";
+        }
+        // Check if userId is in the followers array
+        if (post.postedBy.followers.includes(userId.toString())) {
+            status = "following";
+        }
+        // Remove the followers field from postedBy
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const _a = post.postedBy._doc, { followers } = _a, postedBy = __rest(_a, ["followers"]);
+        return Object.assign(Object.assign({ status: status }, post._doc), { postedBy });
+    });
+    return postsData;
+});
+exports.getTrendingPosts = getTrendingPosts;
 const singlePost = (postId) => __awaiter(void 0, void 0, void 0, function* () {
     // Increment the views by 1
     yield model_1.PostModel.updateOne({ _id: postId }, { $inc: { views: 1 } });
@@ -94,7 +136,6 @@ const singlePost = (postId) => __awaiter(void 0, void 0, void 0, function* () {
                 },
             },
         ],
-    })
-        .sort({ updatedAt: -1 });
+    });
 });
 exports.singlePost = singlePost;

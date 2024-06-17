@@ -25,6 +25,12 @@ export class PostRouter {
 			authorizeUser,
 			this.postController.getAllPost.bind(this.postController),
 		);
+		//display trending post
+		this.router.get(
+			"/trending-posts",
+			authorizeUser,
+			this.postController.getAllTrendingPost.bind(this.postController),
+		);
 		//create post
 		this.router.post(
 			"/create-user-post",
