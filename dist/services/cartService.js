@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findCartItemById = exports.checkIfUserCartExist = exports.checkIfProductInUserCart = exports.addItemToCart = exports.createCartFirstTime = void 0;
+exports.getUserCartItems = exports.findCartItemById = exports.checkIfUserCartExist = exports.checkIfProductInUserCart = exports.addItemToCart = exports.createCartFirstTime = void 0;
 const model_1 = require("../model");
 const createCartFirstTime = (inputs) => __awaiter(void 0, void 0, void 0, function* () {
     return yield model_1.CartModel.create(inputs);
@@ -31,3 +31,22 @@ const findCartItemById = (cartItemId) => __awaiter(void 0, void 0, void 0, funct
     return yield model_1.CartItemModel.findById(cartItemId);
 });
 exports.findCartItemById = findCartItemById;
+const getUserCartItems = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield model_1.CartModel.findOne({ user: userId })
+        .select("_id cartItems")
+        .populate({
+        path: "cartItems",
+        select: "store product quantity",
+        populate: [
+            {
+                path: "store",
+                select: "_id storeName storeLogo",
+            },
+            {
+                path: "product",
+                select: "genInfo productPrice productReview",
+            },
+        ],
+    });
+});
+exports.getUserCartItems = getUserCartItems;

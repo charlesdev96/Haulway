@@ -225,5 +225,54 @@ class CartController {
             }
         });
     }
+    getUserCart(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                //find logged in user
+                const user = yield (0, services_1.findUserById)(userId);
+                //check if user exist
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found" });
+                }
+                const cart = yield (0, services_1.getUserCartItems)(userId);
+                if (!cart) {
+                    return res.status(http_status_codes_1.StatusCodes.OK).json({
+                        success: true,
+                        message: "Your cart is currently empty.",
+                        data: [],
+                    });
+                }
+                res.status(http_status_codes_1.StatusCodes.OK).json({
+                    success: true,
+                    message: "Your cart has been successfully retrieved.",
+                    data: cart,
+                });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                if (error instanceof Error) {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: `Unable to get user cart: ${error.message}`,
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An unknown error occurred while getting user cart",
+                    });
+                }
+            }
+        });
+    }
 }
 exports.CartController = CartController;

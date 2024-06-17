@@ -92,7 +92,7 @@ export const userData = async (role: string, userId: string) => {
 			)
 			.populate({
 				path: "posts",
-				select: "_id content desc",
+				select: "_id content caption",
 			})
 			.populate({
 				path: "store",
@@ -105,7 +105,7 @@ export const userData = async (role: string, userId: string) => {
 			)
 			.populate({
 				path: "posts",
-				select: "_id content desc",
+				select: "_id content caption",
 			})
 			.populate({
 				path: "store",
@@ -118,7 +118,7 @@ export const userData = async (role: string, userId: string) => {
 			)
 			.populate({
 				path: "posts",
-				select: "_id content desc",
+				select: "_id content caption",
 			});
 	}
 };

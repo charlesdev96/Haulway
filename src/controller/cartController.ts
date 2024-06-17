@@ -7,6 +7,7 @@ import {
 	checkIfUserCartExist,
 	CustomRequest,
 	findVendorProductById,
+	getUserCartItems,
 } from "../services";
 import {
 	addItemToCartInputs,
@@ -202,7 +203,7 @@ export class CartController {
 			res
 				.status(StatusCodes.OK)
 				.json({ success: true, message: "Cart item successfully removed" });
-		} catch (error) {
+		} catch (error: unknown) {
 			log.info(error);
 			if (error instanceof Error) {
 				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -213,6 +214,51 @@ export class CartController {
 				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 					success: false,
 					message: "An unknown error occurred while removing item from cart",
+				});
+			}
+		}
+	}
+
+	public async getUserCart(req: CustomRequest, res: Response) {
+		try {
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			//find logged in user
+			const user = await findUserById(userId);
+			//check if user exist
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found" });
+			}
+			const cart = await getUserCartItems(userId);
+			if (!cart) {
+				return res.status(StatusCodes.OK).json({
+					success: true,
+					message: "Your cart is currently empty.",
+					data: [],
+				});
+			}
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "Your cart has been successfully retrieved.",
+				data: cart,
+			});
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `Unable to get user cart: ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An unknown error occurred while getting user cart",
 				});
 			}
 		}

@@ -33,3 +33,22 @@ export const checkIfUserCartExist = async (userId: string) => {
 export const findCartItemById = async (cartItemId: string) => {
 	return await CartItemModel.findById(cartItemId);
 };
+
+export const getUserCartItems = async (userId: string) => {
+	return await CartModel.findOne({ user: userId })
+		.select("_id cartItems")
+		.populate({
+			path: "cartItems",
+			select: "store product quantity",
+			populate: [
+				{
+					path: "store",
+					select: "_id storeName storeLogo",
+				},
+				{
+					path: "product",
+					select: "genInfo productPrice productReview",
+				},
+			],
+		});
+};

@@ -17,6 +17,12 @@ export class CartRouter {
 	}
 
 	private initializeRoute() {
+		//get user cart
+		this.router.get(
+			"/user-cart",
+			authorizeUser,
+			this.cartController.getUserCart.bind(this.cartController),
+		);
 		//add item to cart
 		this.router.post(
 			"/add-item/:productId",

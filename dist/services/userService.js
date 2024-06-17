@@ -90,7 +90,7 @@ const userData = (role, userId) => __awaiter(void 0, void 0, void 0, function* (
             .select("_id profilePic userName role numOfPosts fullName profileViews numOfPosts numOfFollowers numOfFollowings store posts products contracts")
             .populate({
             path: "posts",
-            select: "_id content desc",
+            select: "_id content caption",
         })
             .populate({
             path: "store",
@@ -102,7 +102,7 @@ const userData = (role, userId) => __awaiter(void 0, void 0, void 0, function* (
             .select("_id profilePic userName role numOfPosts fullName profileViews numOfPosts numOfFollowers numOfFollowings store posts products contracts")
             .populate({
             path: "posts",
-            select: "_id content desc",
+            select: "_id content caption",
         })
             .populate({
             path: "store",
@@ -114,7 +114,7 @@ const userData = (role, userId) => __awaiter(void 0, void 0, void 0, function* (
             .select("_id profilePic userName role numOfPosts fullName profileViews numOfPosts numOfFollowers numOfFollowings posts")
             .populate({
             path: "posts",
-            select: "_id content desc",
+            select: "_id content caption",
         });
     }
 });

@@ -12,6 +12,8 @@ class CartRouter {
         this.initializeRoute();
     }
     initializeRoute() {
+        //get user cart
+        this.router.get("/user-cart", middleware_1.authorizeUser, this.cartController.getUserCart.bind(this.cartController));
         //add item to cart
         this.router.post("/add-item/:productId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.addItemToCartSchema), this.cartController.addProductToCart.bind(this.cartController));
         //update cart item
