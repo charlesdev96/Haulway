@@ -18,6 +18,18 @@ export class UserRouter {
 			authorizeUser,
 			this.userController.getAllUsers.bind(this.userController),
 		);
+		//get all vendors
+		this.router.get(
+			"/get-all-vendors",
+			authorizeUser,
+			this.userController.getAllVendors.bind(this.userController),
+		);
+		//get all influencers
+		this.router.get(
+			"/get-all-influencers",
+			authorizeUser,
+			this.userController.getAllInfluencers.bind(this.userController),
+		);
 		//get single user route
 		this.router.get(
 			"/get-single-user/:id",

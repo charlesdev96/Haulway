@@ -14,6 +14,10 @@ class UserRouter {
     initializeRoutes() {
         //get all users
         this.router.get("/get-all-users", middleware_1.authorizeUser, this.userController.getAllUsers.bind(this.userController));
+        //get all vendors
+        this.router.get("/get-all-vendors", middleware_1.authorizeUser, this.userController.getAllVendors.bind(this.userController));
+        //get all influencers
+        this.router.get("/get-all-influencers", middleware_1.authorizeUser, this.userController.getAllInfluencers.bind(this.userController));
         //get single user route
         this.router.get("/get-single-user/:id", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.getSingleUserSchema), this.userController.getSingleUser.bind(this.userController));
     }

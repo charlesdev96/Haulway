@@ -47,6 +47,16 @@ export const getAllUser = async (userId: string) => {
 	return data;
 };
 
+export const getAllUsersByRole = async (role: string, userId: string) => {
+	//exclude the user from the list returned
+	return await UserModel.find({ role: role, _id: { $ne: userId } })
+		.select("_id profilePic role userName fullName store")
+		.populate({
+			path: "store",
+			select: "_id storeLogo storeName",
+		});
+};
+
 export const singleUser = async (searchedUserId: string) => {
 	// Increment the profileViews by 1
 	await UserModel.updateOne(

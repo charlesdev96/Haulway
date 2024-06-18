@@ -45,7 +45,8 @@ const UserSchema = new mongoose.Schema(
 	{
 		profilePic: {
 			type: String,
-			default: "",
+			default:
+				"https://res.cloudinary.com/dvrg4hiwx/image/upload/v1718703125/haulway/ddzlj729yaczckzznrws.png",
 		},
 		stripe_id: {
 			type: String,

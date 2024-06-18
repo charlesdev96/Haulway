@@ -20,7 +20,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userData = exports.validatePassword = exports.userNameExist = exports.singleUser = exports.getAllUser = exports.findUserById = exports.existingUser = exports.userProfile = exports.registerUser = void 0;
+exports.userData = exports.validatePassword = exports.userNameExist = exports.singleUser = exports.getAllUsersByRole = exports.getAllUser = exports.findUserById = exports.existingUser = exports.userProfile = exports.registerUser = void 0;
 const model_1 = require("../model");
 const lodash_1 = require("lodash");
 const bcryptjs_1 = require("bcryptjs");
@@ -65,6 +65,16 @@ const getAllUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     return data;
 });
 exports.getAllUser = getAllUser;
+const getAllUsersByRole = (role, userId) => __awaiter(void 0, void 0, void 0, function* () {
+    //exclude the user from the list returned
+    return yield model_1.UserModel.find({ role: role, _id: { $ne: userId } })
+        .select("_id profilePic role userName fullName store")
+        .populate({
+        path: "store",
+        select: "_id storeLogo storeName",
+    });
+});
+exports.getAllUsersByRole = getAllUsersByRole;
 const singleUser = (searchedUserId) => __awaiter(void 0, void 0, void 0, function* () {
     // Increment the profileViews by 1
     yield model_1.UserModel.updateOne({ _id: searchedUserId }, { $inc: { profileViews: 1 } });
