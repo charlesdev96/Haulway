@@ -15,7 +15,7 @@ import {
 	findUserById,
 	CustomRequest,
 	validatePassword,
-	userData,
+	loginData,
 } from "../services";
 import { log, createJWT, sendMail } from "../utils";
 import { StatusCodes } from "http-status-codes";
@@ -235,7 +235,7 @@ export class authController {
 
 			const token = createJWT({ payload });
 			// const data = await userProfile(body.email);
-			const data = await userData(role.toString(), _id.toString());
+			const data = await loginData(user._id);
 			res.status(200).json({
 				success: true,
 				message: `Welcome back ${user.fullName} to Haulway App.`,

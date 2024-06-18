@@ -20,7 +20,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchUsersByRole = exports.searchForUsers = exports.userData = exports.validatePassword = exports.userNameExist = exports.singleUser = exports.getAllUsersByRole = exports.getAllUser = exports.findUserById = exports.existingUser = exports.userProfile = exports.registerUser = void 0;
+exports.loginData = exports.searchUsersByRole = exports.searchForUsers = exports.userData = exports.validatePassword = exports.userNameExist = exports.singleUser = exports.getAllUsersByRole = exports.getAllUser = exports.findUserById = exports.existingUser = exports.userProfile = exports.registerUser = void 0;
 const model_1 = require("../model");
 const lodash_1 = require("lodash");
 const bcryptjs_1 = require("bcryptjs");
@@ -97,7 +97,7 @@ exports.validatePassword = validatePassword;
 const userData = (role, userId) => __awaiter(void 0, void 0, void 0, function* () {
     if (role === "vendor") {
         return yield model_1.UserModel.findById(userId)
-            .select("_id profilePic userName role numOfPosts fullName profileViews numOfPosts numOfFollowers numOfFollowings store posts products")
+            .select("_id profilePic userName role numOfPosts fullName profileViews numOfPosts numOfFollowers numOfFollowings posts store products")
             .populate({
             path: "posts",
             select: "_id content caption products",
@@ -184,3 +184,7 @@ const searchUsersByRole = (search, role, userId) => __awaiter(void 0, void 0, vo
     }).select("_id profilePic fullName userName role");
 });
 exports.searchUsersByRole = searchUsersByRole;
+const loginData = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield model_1.UserModel.findOne({ _id: userId }).select("_id profilePic userName role numOfPosts fullName profileViews numOfPosts numOfFollowers numOfFollowings");
+});
+exports.loginData = loginData;

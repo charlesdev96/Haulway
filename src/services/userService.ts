@@ -98,7 +98,7 @@ export const userData = async (role: string, userId: string) => {
 	if (role === "vendor") {
 		return await UserModel.findById(userId)
 			.select(
-				"_id profilePic userName role numOfPosts fullName profileViews numOfPosts numOfFollowers numOfFollowings store posts products",
+				"_id profilePic userName role numOfPosts fullName profileViews numOfPosts numOfFollowers numOfFollowings posts store products",
 			)
 			.populate({
 				path: "posts",
@@ -194,4 +194,10 @@ export const searchUsersByRole = async (
 			{ _id: { $ne: userId } }, // Exclude the logged-in user
 		],
 	}).select("_id profilePic fullName userName role");
+};
+
+export const loginData = async (userId: string) => {
+	return await UserModel.findOne({ _id: userId }).select(
+		"_id profilePic userName role numOfPosts fullName profileViews numOfPosts numOfFollowers numOfFollowings",
+	);
 };

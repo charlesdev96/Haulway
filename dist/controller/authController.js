@@ -226,7 +226,7 @@ class authController {
                 };
                 const token = (0, utils_1.createJWT)({ payload });
                 // const data = await userProfile(body.email);
-                const data = yield (0, services_1.userData)(role.toString(), _id.toString());
+                const data = yield (0, services_1.loginData)(user._id);
                 res.status(200).json({
                     success: true,
                     message: `Welcome back ${user.fullName} to Haulway App.`,
