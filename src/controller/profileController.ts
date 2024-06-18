@@ -6,10 +6,14 @@ import {
 	userNameExist,
 	existingUser,
 	createStore,
+	createInfluencerStore,
 	findStoreByName,
+	findInfluencerStoreByName,
 	findStoreByUserId,
+	findInfluencerStoreByUserId,
 	getVendorProfile,
 	getUserProfile,
+	getVendorStore,
 } from "../services";
 import {
 	updateProfileInputs,
@@ -172,7 +176,7 @@ export class profiles {
 					message: `You have already changed your role once to ${updateUser.role}. Further changes are not permitted.`,
 				});
 			}
-			if (body.role === "vendor" || body.role === "influencer") {
+			if (body.role === "vendor") {
 				//create a store for vendor
 				if (!body.store) {
 					return res
@@ -193,6 +197,35 @@ export class profiles {
 					body.store.role = body.role;
 					const newStore = await createStore(body.store);
 					updateUser.store = newStore._id;
+					//update user account
+					updateUser.role = body.role;
+					await updateUser.save();
+					res.status(StatusCodes.OK).json({
+						success: true,
+						message: `Congratulations, Your account has been successfully upgraded to ${body.role}!!!`,
+					});
+				}
+			} else if (body.role === "influencer") {
+				//create a store for vendor
+				if (!body.store) {
+					return res
+						.status(StatusCodes.BAD_REQUEST)
+						.json({ message: "Please fill up store properties" });
+				} else {
+					//store name must be unique
+					const storeNameExist = await findInfluencerStoreByName(
+						body.store.storeName.toString().toUpperCase(),
+					);
+					if (storeNameExist) {
+						return res.status(StatusCodes.BAD_REQUEST).json({
+							mesage: `Store name ${body.store.storeName} already exist, please choose another name`,
+						});
+					}
+					//if store name does not exist, proceed to create store
+					body.store.owner = userId.toString();
+					body.store.role = body.role;
+					const newStore = await createInfluencerStore(body.store);
+					updateUser.influencerStore = newStore._id;
 					//update user account
 					updateUser.role = body.role;
 					await updateUser.save();
@@ -247,23 +280,43 @@ export class profiles {
 					.json({ message: "User not found." });
 			}
 			//find user store
-			const store = await findStoreByUserId(userId);
-			if (!store) {
-				return res
-					.status(StatusCodes.NOT_FOUND)
-					.json({ message: "Store not found" });
-			}
+			if (user.role === "vendor") {
+				const store = await findStoreByUserId(userId);
+				if (!store) {
+					return res
+						.status(StatusCodes.NOT_FOUND)
+						.json({ message: "Store not found" });
+				}
 
-			//if store exist update the store
-			if (body.storeDesc) store.storeDesc = body.storeDesc;
-			if (body.storeLogo) store.storeLogo = body.storeLogo;
-			if (body.storeName) store.storeName = body.storeName;
-			//save the newly updated store
-			await store.save();
-			res.status(StatusCodes.OK).json({
-				success: true,
-				message: "Congratulations, the store has been successfully updated.",
-			});
+				//if store exist update the store
+				if (body.storeDesc) store.storeDesc = body.storeDesc;
+				if (body.storeLogo) store.storeLogo = body.storeLogo;
+				if (body.storeName) store.storeName = body.storeName;
+				//save the newly updated store
+				await store.save();
+				res.status(StatusCodes.OK).json({
+					success: true,
+					message: "Congratulations, the store has been successfully updated.",
+				});
+			} else {
+				const store = await findInfluencerStoreByUserId(userId);
+				if (!store) {
+					return res
+						.status(StatusCodes.NOT_FOUND)
+						.json({ message: "Store not found" });
+				}
+
+				//if store exist update the store
+				if (body.storeDesc) store.storeDesc = body.storeDesc;
+				if (body.storeLogo) store.storeLogo = body.storeLogo;
+				if (body.storeName) store.storeName = body.storeName;
+				//save the newly updated store
+				await store.save();
+				res.status(StatusCodes.OK).json({
+					success: true,
+					message: "Congratulations, the store has been successfully updated.",
+				});
+			}
 		} catch (error: unknown) {
 			log.info(error);
 			if (error instanceof Error) {
@@ -338,6 +391,49 @@ export class profiles {
 				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 					success: false,
 					message: "An unknown error occurred while updating store",
+				});
+			}
+		}
+	}
+
+	public async vendorStore(req: CustomRequest, res: Response) {
+		try {
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+
+			const user = await findUserById(userId);
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found." });
+			}
+			if (!user.store) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "You are not allowed to access this route" });
+			}
+			const userStore = await getVendorStore(user.store);
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "Vendor store successfully retrieved",
+				data: userStore,
+			});
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An error occured while trying to get vendor store",
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					error: error,
+					message: "Unable to get vendor store.",
 				});
 			}
 		}

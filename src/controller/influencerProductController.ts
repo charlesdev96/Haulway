@@ -7,7 +7,7 @@ import {
 	CustomRequest,
 	findUserById,
 	createNewInfluencerProduct,
-	findStoreByUserId,
+	findInfluencerStoreByUserId,
 	findInfluencerProductById,
 	updateInfluencerProduct,
 } from "../services";
@@ -40,7 +40,7 @@ export class InfluencerProductController {
 				});
 			}
 			//find user store
-			const store = await findStoreByUserId(userId.toString());
+			const store = await findInfluencerStoreByUserId(userId.toString());
 			if (!store) {
 				return res
 					.status(StatusCodes.BAD_REQUEST)

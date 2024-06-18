@@ -1,14 +1,17 @@
 import { Router } from "express";
 import { VendorProductController } from "../controller/vendorProductController";
+import { profiles } from "../controller/profileController";
 import { validateInputs, authorizeUser } from "../middleware";
 import { vendorProductSchema, updateVendorProductSchema } from "../schema";
 
 export class VendorRouter {
 	private router: Router;
 	private vendorProductController: VendorProductController;
+	private profile: profiles;
 	constructor() {
 		this.router = Router();
 		this.vendorProductController = new VendorProductController();
+		this.profile = new profiles();
 		this.initializeRoute();
 	}
 
@@ -28,6 +31,12 @@ export class VendorRouter {
 			this.vendorProductController.getAllVendorProducts.bind(
 				this.vendorProductController,
 			),
+		);
+		//vendor store
+		this.router.get(
+			"/vendor-store",
+			authorizeUser,
+			this.profile.vendorStore.bind(this.profile),
 		);
 		//buy product
 		this.router.post(

@@ -24,3 +24,4 @@ __exportStar(require("./vendorProductModel"), exports);
 __exportStar(require("./cartItemModel"), exports);
 __exportStar(require("./cartModel"), exports);
 __exportStar(require("./productReviewModel"), exports);
+__exportStar(require("./influencerStoreModel"), exports);

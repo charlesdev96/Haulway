@@ -165,7 +165,7 @@ class profiles {
                         message: `You have already changed your role once to ${updateUser.role}. Further changes are not permitted.`,
                     });
                 }
-                if (body.role === "vendor" || body.role === "influencer") {
+                if (body.role === "vendor") {
                     //create a store for vendor
                     if (!body.store) {
                         return res
@@ -185,6 +185,35 @@ class profiles {
                         body.store.role = body.role;
                         const newStore = yield (0, services_1.createStore)(body.store);
                         updateUser.store = newStore._id;
+                        //update user account
+                        updateUser.role = body.role;
+                        yield updateUser.save();
+                        res.status(http_status_codes_1.StatusCodes.OK).json({
+                            success: true,
+                            message: `Congratulations, Your account has been successfully upgraded to ${body.role}!!!`,
+                        });
+                    }
+                }
+                else if (body.role === "influencer") {
+                    //create a store for vendor
+                    if (!body.store) {
+                        return res
+                            .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+                            .json({ message: "Please fill up store properties" });
+                    }
+                    else {
+                        //store name must be unique
+                        const storeNameExist = yield (0, services_1.findInfluencerStoreByName)(body.store.storeName.toString().toUpperCase());
+                        if (storeNameExist) {
+                            return res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).json({
+                                mesage: `Store name ${body.store.storeName} already exist, please choose another name`,
+                            });
+                        }
+                        //if store name does not exist, proceed to create store
+                        body.store.owner = userId.toString();
+                        body.store.role = body.role;
+                        const newStore = yield (0, services_1.createInfluencerStore)(body.store);
+                        updateUser.influencerStore = newStore._id;
                         //update user account
                         updateUser.role = body.role;
                         yield updateUser.save();
@@ -244,25 +273,48 @@ class profiles {
                         .json({ message: "User not found." });
                 }
                 //find user store
-                const store = yield (0, services_1.findStoreByUserId)(userId);
-                if (!store) {
-                    return res
-                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
-                        .json({ message: "Store not found" });
+                if (user.role === "vendor") {
+                    const store = yield (0, services_1.findStoreByUserId)(userId);
+                    if (!store) {
+                        return res
+                            .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                            .json({ message: "Store not found" });
+                    }
+                    //if store exist update the store
+                    if (body.storeDesc)
+                        store.storeDesc = body.storeDesc;
+                    if (body.storeLogo)
+                        store.storeLogo = body.storeLogo;
+                    if (body.storeName)
+                        store.storeName = body.storeName;
+                    //save the newly updated store
+                    yield store.save();
+                    res.status(http_status_codes_1.StatusCodes.OK).json({
+                        success: true,
+                        message: "Congratulations, the store has been successfully updated.",
+                    });
                 }
-                //if store exist update the store
-                if (body.storeDesc)
-                    store.storeDesc = body.storeDesc;
-                if (body.storeLogo)
-                    store.storeLogo = body.storeLogo;
-                if (body.storeName)
-                    store.storeName = body.storeName;
-                //save the newly updated store
-                yield store.save();
-                res.status(http_status_codes_1.StatusCodes.OK).json({
-                    success: true,
-                    message: "Congratulations, the store has been successfully updated.",
-                });
+                else {
+                    const store = yield (0, services_1.findInfluencerStoreByUserId)(userId);
+                    if (!store) {
+                        return res
+                            .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                            .json({ message: "Store not found" });
+                    }
+                    //if store exist update the store
+                    if (body.storeDesc)
+                        store.storeDesc = body.storeDesc;
+                    if (body.storeLogo)
+                        store.storeLogo = body.storeLogo;
+                    if (body.storeName)
+                        store.storeName = body.storeName;
+                    //save the newly updated store
+                    yield store.save();
+                    res.status(http_status_codes_1.StatusCodes.OK).json({
+                        success: true,
+                        message: "Congratulations, the store has been successfully updated.",
+                    });
+                }
             }
             catch (error) {
                 utils_1.log.info(error);
@@ -342,6 +394,52 @@ class profiles {
                     res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
                         success: false,
                         message: "An unknown error occurred while updating store",
+                    });
+                }
+            }
+        });
+    }
+    vendorStore(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                const user = yield (0, services_1.findUserById)(userId);
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found." });
+                }
+                if (!user.store) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "You are not allowed to access this route" });
+                }
+                const userStore = yield (0, services_1.getVendorStore)(user.store);
+                res.status(http_status_codes_1.StatusCodes.OK).json({
+                    success: true,
+                    message: "Vendor store successfully retrieved",
+                    data: userStore,
+                });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                if (error instanceof Error) {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An error occured while trying to get vendor store",
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        error: error,
+                        message: "Unable to get vendor store.",
                     });
                 }
             }

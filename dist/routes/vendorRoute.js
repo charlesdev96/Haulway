@@ -3,18 +3,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.VendorRouter = void 0;
 const express_1 = require("express");
 const vendorProductController_1 = require("../controller/vendorProductController");
+const profileController_1 = require("../controller/profileController");
 const middleware_1 = require("../middleware");
 const schema_1 = require("../schema");
 class VendorRouter {
     constructor() {
         this.router = (0, express_1.Router)();
         this.vendorProductController = new vendorProductController_1.VendorProductController();
+        this.profile = new profileController_1.profiles();
         this.initializeRoute();
     }
     initializeRoute() {
         this.router.post("/create-product", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.vendorProductSchema), this.vendorProductController.createProduct.bind(this.vendorProductController));
         //get all products
         this.router.get("/get-vendor-products", middleware_1.authorizeUser, this.vendorProductController.getAllVendorProducts.bind(this.vendorProductController));
+        //vendor store
+        this.router.get("/vendor-store", middleware_1.authorizeUser, this.profile.vendorStore.bind(this.profile));
         //buy product
         this.router.post("/buy-product/:productId", middleware_1.authorizeUser, this.vendorProductController.buyProduct.bind(this.vendorProductController));
         //update product

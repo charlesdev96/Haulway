@@ -40,7 +40,7 @@ class InfluencerProductController {
                     });
                 }
                 //find user store
-                const store = yield (0, services_1.findStoreByUserId)(userId.toString());
+                const store = yield (0, services_1.findInfluencerStoreByUserId)(userId.toString());
                 if (!store) {
                     return res
                         .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
