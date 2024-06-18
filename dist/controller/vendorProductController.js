@@ -16,7 +16,7 @@ const http_status_codes_1 = require("http-status-codes");
 class VendorProductController {
     createProduct(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d;
+            var _a, _b, _c, _d, _e;
             try {
                 const body = req.body;
                 const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
@@ -64,6 +64,7 @@ class VendorProductController {
                 yield user.save();
                 //find user store and push product to it
                 (_d = store.products) === null || _d === void 0 ? void 0 : _d.push(product._id);
+                store.numOfProducts = (_e = store.products) === null || _e === void 0 ? void 0 : _e.length;
                 yield store.save();
                 res.status(http_status_codes_1.StatusCodes.CREATED).json({
                     success: true,

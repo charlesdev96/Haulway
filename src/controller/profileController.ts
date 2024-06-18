@@ -417,10 +417,44 @@ export class profiles {
 					.json({ message: "You are not allowed to access this route" });
 			}
 			const userStore = await getVendorStore(user.store);
+			if (!userStore) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "Store not found" });
+			}
+
+			const {
+				productSales,
+				totalOrders,
+				totalOrdersDelivered,
+				numOfPendingOrders,
+				totalSales,
+				totalOrderAmount,
+				...remainingData
+			} = userStore.toObject();
+
+			const stats: object = {
+				productSales,
+				totalOrders,
+				totalOrdersDelivered,
+				numOfPendingOrders,
+			};
+
+			const overview: object = {
+				totalSales,
+				totalOrderAmount,
+			};
+
+			const vendorStore: object = {
+				stats,
+				overview,
+				...remainingData,
+			};
+
 			res.status(StatusCodes.OK).json({
 				success: true,
 				message: "Vendor store successfully retrieved",
-				data: userStore,
+				data: vendorStore,
 			});
 		} catch (error: unknown) {
 			log.info(error);
