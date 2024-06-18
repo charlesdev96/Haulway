@@ -427,5 +427,46 @@ class PostController {
             }
         });
     }
+    postByOption(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const { option } = req.query;
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                const user = yield (0, services_1.findUserById)(userId);
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found" });
+                }
+                const posts = yield (0, services_1.getPostByOption)(option, userId);
+                res.status(http_status_codes_1.StatusCodes.OK).json({
+                    success: true,
+                    message: `List of ${option} posts`,
+                    data: posts,
+                });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                if (error instanceof Error) {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: `Unable to get posts by options due to: ${error.message}`,
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An unknown error occurred while getting posts by options",
+                    });
+                }
+            }
+        });
+    }
 }
 exports.PostController = PostController;

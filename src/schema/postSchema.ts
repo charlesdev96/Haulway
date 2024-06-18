@@ -74,6 +74,14 @@ export const savePostSchema = z.object({
 	}),
 });
 
+export const getPostByOptionSchema = z.object({
+	query: z.object({
+		option: z.enum(["haul", "lookbook", "diy", "grwm"], {
+			required_error: "please choose one of the available option",
+		}),
+	}),
+});
+
 export type createUserPostInputs = z.infer<typeof createUserPostSchema>["body"];
 
 export type createVendorPostInputs = z.infer<
@@ -87,3 +95,7 @@ export type updatePostInputs = z.infer<typeof updatePostSchema>;
 export type deletePostInputs = z.infer<typeof deletePostSchema>["params"];
 
 export type savePostInputs = z.infer<typeof savePostSchema>["params"];
+
+export type getPostByOptionInputs = z.infer<
+	typeof getPostByOptionSchema
+>["query"];

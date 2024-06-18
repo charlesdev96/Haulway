@@ -6,6 +6,7 @@ import {
 	getSinglePostInputs,
 	createVendorPostInputs,
 	savePostInputs,
+	getPostByOptionInputs,
 } from "../schema";
 import {
 	CustomRequest,
@@ -17,6 +18,7 @@ import {
 	deleteCommentByPost,
 	deleteReplyByPost,
 	getTrendingPosts,
+	getPostByOption,
 } from "../services";
 import { Post } from "../types";
 import { log } from "../utils";
@@ -403,6 +405,43 @@ export class PostController {
 				success: false,
 				message: `Unable to delete post due to error: ${error.message}`,
 			});
+		}
+	}
+
+	public async postByOption(req: CustomRequest, res: Response) {
+		try {
+			const { option } = req.query as getPostByOptionInputs;
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const user = await findUserById(userId);
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found" });
+			}
+			const posts = await getPostByOption(option, userId);
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: `List of ${option} posts`,
+				data: posts,
+			});
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `Unable to get posts by options due to: ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An unknown error occurred while getting posts by options",
+				});
+			}
 		}
 	}
 }

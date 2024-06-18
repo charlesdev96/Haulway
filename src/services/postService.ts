@@ -131,3 +131,43 @@ export const singlePost = async (postId: string) => {
 			],
 		});
 };
+
+export const getPostByOption = async (options: string, userId: string) => {
+	const posts = await PostModel.find({ options: options })
+		.select(
+			"_id content caption views numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares",
+		)
+		.populate({
+			path: "postedBy",
+			select:
+				"_id fullName profilePic userName numOfFollowings numOfFollowers followers",
+		})
+		.populate({
+			path: "products",
+			select: "_id genInfo productPrice productReview store",
+			populate: {
+				path: "store",
+				select: "_id storeName storeLogo",
+			},
+		})
+		.sort({ updatedAt: -1 });
+	const postsData: Post[] = (posts || []).map((post: any) => {
+		let status = "follow";
+
+		// Check if userId is the owner of the post
+		if (post.postedBy._id.toString() === userId.toString()) {
+			status = "owner";
+		}
+
+		// Check if userId is in the followers array
+		if (post.postedBy.followers.includes(userId.toString())) {
+			status = "following";
+		}
+		// Remove the followers field from postedBy
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { followers, ...postedBy } = post.postedBy._doc;
+		return { status: status, ...post._doc, postedBy };
+	});
+
+	return postsData;
+};

@@ -8,6 +8,7 @@ import {
 	getSinglePostSchema,
 	createVendorPostSchema,
 	savePostSchema,
+	getPostByOptionSchema,
 } from "../schema";
 
 export class PostRouter {
@@ -30,6 +31,13 @@ export class PostRouter {
 			"/trending-posts",
 			authorizeUser,
 			this.postController.getAllTrendingPost.bind(this.postController),
+		);
+		//get post by option
+		this.router.get(
+			"/post-option",
+			authorizeUser,
+			validateInputs(getPostByOptionSchema),
+			this.postController.postByOption.bind(this.postController),
 		);
 		//create post
 		this.router.post(

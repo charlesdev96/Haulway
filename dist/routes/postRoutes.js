@@ -16,6 +16,8 @@ class PostRouter {
         this.router.get("/display-posts", middleware_1.authorizeUser, this.postController.getAllPost.bind(this.postController));
         //display trending post
         this.router.get("/trending-posts", middleware_1.authorizeUser, this.postController.getAllTrendingPost.bind(this.postController));
+        //get post by option
+        this.router.get("/post-option", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.getPostByOptionSchema), this.postController.postByOption.bind(this.postController));
         //create post
         this.router.post("/create-user-post", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.createUserPostSchema), this.postController.createUserPost.bind(this.postController));
         //create vendor influencer
