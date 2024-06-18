@@ -160,3 +160,38 @@ export const userData = async (role: string, userId: string) => {
 			});
 	}
 };
+
+export const searchForUsers = async (search: any, userId: string) => {
+	const searchRegex = new RegExp(search, "i"); // 'i' for case-insensitive search
+	return await UserModel.find({
+		$and: [
+			{
+				$or: [
+					{ userName: { $regex: searchRegex } },
+					{ fullName: { $regex: searchRegex } },
+				],
+			},
+			{ _id: { $ne: userId } }, // Exclude the logged-in user
+		],
+	}).select("_id profilePic fullName role userName");
+};
+
+export const searchUsersByRole = async (
+	search: string,
+	role: string,
+	userId: string,
+) => {
+	const searchRegex = new RegExp(search, "i"); // 'i' for case-insensitive search
+	return await UserModel.find({
+		$and: [
+			{ role: role }, // Match the role
+			{
+				$or: [
+					{ userName: { $regex: searchRegex } },
+					{ fullName: { $regex: searchRegex } },
+				],
+			},
+			{ _id: { $ne: userId } }, // Exclude the logged-in user
+		],
+	}).select("_id profilePic fullName userName role");
+};

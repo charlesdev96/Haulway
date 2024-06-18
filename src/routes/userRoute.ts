@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authorizeUser, validateInputs } from "../middleware";
 import { UserController } from "../controller/userController";
-import { getSingleUserSchema } from "../schema";
+import { getSingleUserSchema, searchUserSchema } from "../schema";
 
 export class UserRouter {
 	private router: Router;
@@ -29,6 +29,27 @@ export class UserRouter {
 			"/get-all-influencers",
 			authorizeUser,
 			this.userController.getAllInfluencers.bind(this.userController),
+		);
+		//search for users
+		this.router.get(
+			"/search-users",
+			authorizeUser,
+			validateInputs(searchUserSchema),
+			this.userController.searchUsers.bind(this.userController),
+		);
+		//search for vendors
+		this.router.get(
+			"/search-vendor",
+			authorizeUser,
+			validateInputs(searchUserSchema),
+			this.userController.searchForVendors.bind(this.userController),
+		);
+		//search for influencers
+		this.router.get(
+			"/search-influencer",
+			authorizeUser,
+			validateInputs(searchUserSchema),
+			this.userController.searchForInfluencers.bind(this.userController),
 		);
 		//get single user route
 		this.router.get(

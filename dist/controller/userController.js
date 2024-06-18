@@ -188,5 +188,158 @@ class UserController {
             }
         });
     }
+    searchUsers(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const { search } = req.query;
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                const user = yield (0, services_1.findUserById)(userId);
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found." });
+                }
+                const users = yield (0, services_1.searchForUsers)(search, userId);
+                //if nothing is found return empty array
+                if (!users ||
+                    users.length === 0 ||
+                    search === null ||
+                    search === undefined ||
+                    search === "") {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.OK)
+                        .json({ success: true, message: "No user found", data: [] });
+                }
+                res.status(http_status_codes_1.StatusCodes.OK).json({
+                    success: true,
+                    message: "List of searched users",
+                    data: users,
+                });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                if (error instanceof Error) {
+                    return res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: `An error occured while searching for users ${error.message}`,
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An unknown error occurred while getting searched users",
+                    });
+                }
+            }
+        });
+    }
+    searchForVendors(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const { search } = req.query;
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                const user = yield (0, services_1.findUserById)(userId);
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found." });
+                }
+                const vendors = yield (0, services_1.searchUsersByRole)(search, "vendor", userId);
+                //if nothing is found return empty array
+                if (!vendors ||
+                    vendors.length === 0 ||
+                    search === null ||
+                    search === undefined ||
+                    search === "") {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.OK)
+                        .json({ success: true, message: "No vendor found", data: [] });
+                }
+                res.status(http_status_codes_1.StatusCodes.OK).json({
+                    success: true,
+                    message: "List of searched vendors",
+                    data: vendors,
+                });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                if (error instanceof Error) {
+                    return res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: `An error occured while searching for vendors ${error.message}`,
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An unknown error occurred while getting searched vendors",
+                    });
+                }
+            }
+        });
+    }
+    searchForInfluencers(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const { search } = req.query;
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                const user = yield (0, services_1.findUserById)(userId);
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found." });
+                }
+                const influencers = yield (0, services_1.searchUsersByRole)(search, "influencer", userId);
+                //if nothing is found return empty array
+                if (!influencers ||
+                    influencers.length === 0 ||
+                    search === null ||
+                    search === undefined ||
+                    search === "") {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.OK)
+                        .json({ success: true, message: "No influencer found", data: [] });
+                }
+                res.status(http_status_codes_1.StatusCodes.OK).json({
+                    success: true,
+                    message: "List of searched influencer",
+                    data: influencers,
+                });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                if (error instanceof Error) {
+                    return res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: `An error occured while searching for influencer ${error.message}`,
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An unknown error occurred while getting searched influencer",
+                    });
+                }
+            }
+        });
+    }
 }
 exports.UserController = UserController;

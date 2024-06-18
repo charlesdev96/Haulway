@@ -5,8 +5,10 @@ import {
 	findUserById,
 	singleUser,
 	getAllUsersByRole,
+	searchForUsers,
+	searchUsersByRole,
 } from "../services";
-import { getSingleUserInputs } from "../schema";
+import { getSingleUserInputs, searchUserInputs } from "../schema";
 import { UserData } from "../types";
 import { StatusCodes } from "http-status-codes";
 import { log } from "../utils";
@@ -155,6 +157,156 @@ export class UserController {
 				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 					success: false,
 					message: "An unknown error occurred while getting all influencers",
+				});
+			}
+		}
+	}
+
+	public async searchUsers(req: CustomRequest, res: Response) {
+		try {
+			const { search } = req.query as searchUserInputs;
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const user = await findUserById(userId);
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found." });
+			}
+			const users = await searchForUsers(search, userId);
+			//if nothing is found return empty array
+			if (
+				!users ||
+				users.length === 0 ||
+				search === null ||
+				search === undefined ||
+				search === ""
+			) {
+				return res
+					.status(StatusCodes.OK)
+					.json({ success: true, message: "No user found", data: [] });
+			}
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "List of searched users",
+				data: users,
+			});
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `An error occured while searching for users ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An unknown error occurred while getting searched users",
+				});
+			}
+		}
+	}
+
+	public async searchForVendors(req: CustomRequest, res: Response) {
+		try {
+			const { search } = req.query as searchUserInputs;
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const user = await findUserById(userId);
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found." });
+			}
+			const vendors = await searchUsersByRole(search, "vendor", userId);
+			//if nothing is found return empty array
+			if (
+				!vendors ||
+				vendors.length === 0 ||
+				search === null ||
+				search === undefined ||
+				search === ""
+			) {
+				return res
+					.status(StatusCodes.OK)
+					.json({ success: true, message: "No vendor found", data: [] });
+			}
+
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "List of searched vendors",
+				data: vendors,
+			});
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `An error occured while searching for vendors ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An unknown error occurred while getting searched vendors",
+				});
+			}
+		}
+	}
+
+	public async searchForInfluencers(req: CustomRequest, res: Response) {
+		try {
+			const { search } = req.query as searchUserInputs;
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const user = await findUserById(userId);
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found." });
+			}
+			const influencers = await searchUsersByRole(search, "influencer", userId);
+			//if nothing is found return empty array
+			if (
+				!influencers ||
+				influencers.length === 0 ||
+				search === null ||
+				search === undefined ||
+				search === ""
+			) {
+				return res
+					.status(StatusCodes.OK)
+					.json({ success: true, message: "No influencer found", data: [] });
+			}
+
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "List of searched influencer",
+				data: influencers,
+			});
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `An error occured while searching for influencer ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message:
+						"An unknown error occurred while getting searched influencer",
 				});
 			}
 		}

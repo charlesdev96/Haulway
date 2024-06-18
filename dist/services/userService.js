@@ -20,7 +20,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userData = exports.validatePassword = exports.userNameExist = exports.singleUser = exports.getAllUsersByRole = exports.getAllUser = exports.findUserById = exports.existingUser = exports.userProfile = exports.registerUser = void 0;
+exports.searchUsersByRole = exports.searchForUsers = exports.userData = exports.validatePassword = exports.userNameExist = exports.singleUser = exports.getAllUsersByRole = exports.getAllUser = exports.findUserById = exports.existingUser = exports.userProfile = exports.registerUser = void 0;
 const model_1 = require("../model");
 const lodash_1 = require("lodash");
 const bcryptjs_1 = require("bcryptjs");
@@ -153,3 +153,34 @@ const userData = (role, userId) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.userData = userData;
+const searchForUsers = (search, userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const searchRegex = new RegExp(search, "i"); // 'i' for case-insensitive search
+    return yield model_1.UserModel.find({
+        $and: [
+            {
+                $or: [
+                    { userName: { $regex: searchRegex } },
+                    { fullName: { $regex: searchRegex } },
+                ],
+            },
+            { _id: { $ne: userId } }, // Exclude the logged-in user
+        ],
+    }).select("_id profilePic fullName role userName");
+});
+exports.searchForUsers = searchForUsers;
+const searchUsersByRole = (search, role, userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const searchRegex = new RegExp(search, "i"); // 'i' for case-insensitive search
+    return yield model_1.UserModel.find({
+        $and: [
+            { role: role }, // Match the role
+            {
+                $or: [
+                    { userName: { $regex: searchRegex } },
+                    { fullName: { $regex: searchRegex } },
+                ],
+            },
+            { _id: { $ne: userId } }, // Exclude the logged-in user
+        ],
+    }).select("_id profilePic fullName userName role");
+});
+exports.searchUsersByRole = searchUsersByRole;

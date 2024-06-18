@@ -18,6 +18,12 @@ class UserRouter {
         this.router.get("/get-all-vendors", middleware_1.authorizeUser, this.userController.getAllVendors.bind(this.userController));
         //get all influencers
         this.router.get("/get-all-influencers", middleware_1.authorizeUser, this.userController.getAllInfluencers.bind(this.userController));
+        //search for users
+        this.router.get("/search-users", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.searchUserSchema), this.userController.searchUsers.bind(this.userController));
+        //search for vendors
+        this.router.get("/search-vendor", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.searchUserSchema), this.userController.searchForVendors.bind(this.userController));
+        //search for influencers
+        this.router.get("/search-influencer", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.searchUserSchema), this.userController.searchForInfluencers.bind(this.userController));
         //get single user route
         this.router.get("/get-single-user/:id", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.getSingleUserSchema), this.userController.getSingleUser.bind(this.userController));
     }
