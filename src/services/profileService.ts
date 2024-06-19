@@ -13,7 +13,7 @@ export const getVendorProfile = async (userId: string) => {
 				{
 					path: "postedBy",
 					select:
-						"_id fullName profilePic userName numOfFollowings numOfFollowers followers",
+						"_id fullName profilePic userName numOfFollowings numOfFollowers",
 				},
 				{
 					path: "tagPeople",
@@ -40,11 +40,36 @@ export const getVendorProfile = async (userId: string) => {
 				},
 				{
 					path: "products",
+					select:
+						"_id genInfo productPrice productReview numOfProReviews reviews",
+					populate: {
+						path: "reviews",
+						select: "_id comment rating reviewer",
+						populate: {
+							path: "reviewer",
+							select: "_id fullName profilePic userName",
+						},
+					},
 				},
 			],
 		})
 		.populate({
 			path: "products",
+			select: "-__v -reviewers",
+			populate: [
+				{
+					path: "reviews",
+					select: "_id comment rating reviewer",
+					populate: {
+						path: "reviewer",
+						select: "_id fullName profilePic userName",
+					},
+				},
+				{
+					path: "buyers",
+					select: "_id fullName profilePic userName",
+				},
+			],
 		});
 };
 

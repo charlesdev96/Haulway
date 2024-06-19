@@ -20,7 +20,7 @@ const getVendorProfile = (userId) => __awaiter(void 0, void 0, void 0, function*
         populate: [
             {
                 path: "postedBy",
-                select: "_id fullName profilePic userName numOfFollowings numOfFollowers followers",
+                select: "_id fullName profilePic userName numOfFollowings numOfFollowers",
             },
             {
                 path: "tagPeople",
@@ -46,11 +46,35 @@ const getVendorProfile = (userId) => __awaiter(void 0, void 0, void 0, function*
             },
             {
                 path: "products",
+                select: "_id genInfo productPrice productReview numOfProReviews reviews",
+                populate: {
+                    path: "reviews",
+                    select: "_id comment rating reviewer",
+                    populate: {
+                        path: "reviewer",
+                        select: "_id fullName profilePic userName",
+                    },
+                },
             },
         ],
     })
         .populate({
         path: "products",
+        select: "-__v -reviewers",
+        populate: [
+            {
+                path: "reviews",
+                select: "_id comment rating reviewer",
+                populate: {
+                    path: "reviewer",
+                    select: "_id fullName profilePic userName",
+                },
+            },
+            {
+                path: "buyers",
+                select: "_id fullName profilePic userName",
+            },
+        ],
     });
 });
 exports.getVendorProfile = getVendorProfile;
