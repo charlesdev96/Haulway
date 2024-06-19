@@ -6,6 +6,7 @@ import {
 	InfluencerProductDocument,
 	InfluencerProductModel,
 	StoreModel,
+	ProductReviewModel,
 } from "../model";
 
 import { VendorProductOutPut } from "../types";
@@ -69,4 +70,12 @@ export const getVendorProductsByUserId = async (userId: string) => {
 	);
 
 	return products;
+};
+
+export const deleteVendorProduct = async (productId: string) => {
+	return await VendorProductModel.deleteOne({ _id: productId });
+};
+
+export const deleteVendorProductReview = async (productId: string) => {
+	return await ProductReviewModel.deleteMany({ product: productId });
 };

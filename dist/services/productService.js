@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getVendorProductsByUserId = exports.updateInfluencerProduct = exports.updateVendorProduct = exports.createNewInfluencerProduct = exports.createNewVendorProduct = exports.findInfluencerProductById = exports.findVendorProductById = void 0;
+exports.deleteVendorProductReview = exports.deleteVendorProduct = exports.getVendorProductsByUserId = exports.updateInfluencerProduct = exports.updateVendorProduct = exports.createNewInfluencerProduct = exports.createNewVendorProduct = exports.findInfluencerProductById = exports.findVendorProductById = void 0;
 const model_1 = require("../model");
 const findVendorProductById = (productId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield model_1.VendorProductModel.findById(productId);
@@ -54,3 +54,11 @@ const getVendorProductsByUserId = (userId) => __awaiter(void 0, void 0, void 0, 
     return products;
 });
 exports.getVendorProductsByUserId = getVendorProductsByUserId;
+const deleteVendorProduct = (productId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield model_1.VendorProductModel.deleteOne({ _id: productId });
+});
+exports.deleteVendorProduct = deleteVendorProduct;
+const deleteVendorProductReview = (productId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield model_1.ProductReviewModel.deleteMany({ product: productId });
+});
+exports.deleteVendorProductReview = deleteVendorProductReview;

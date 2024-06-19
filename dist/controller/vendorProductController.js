@@ -205,13 +205,13 @@ class VendorProductController {
                 if (error instanceof Error) {
                     res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
                         success: false,
-                        message: `Unable to create vendor post due to: ${error.message}`,
+                        message: `Unable to get all vendor product due to: ${error.message}`,
                     });
                 }
                 else {
                     res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
                         success: false,
-                        message: "An unknown error occurred while creating vendor post",
+                        message: "An unknown error occurred while getting vendor product",
                     });
                 }
             }
@@ -267,6 +267,62 @@ class VendorProductController {
                     res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
                         success: false,
                         message: "An unknown error occurred while creating the product payment link",
+                    });
+                }
+            }
+        });
+    }
+    deleteProduct(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b;
+            try {
+                const { productId } = req.params;
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                //find logged in user
+                const user = yield (0, services_1.findUserById)(userId);
+                //check if user exist
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found" });
+                }
+                const product = yield (0, services_1.findVendorProductById)(productId);
+                if (!product) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "product not found" });
+                }
+                //check if product belongs to user
+                if (((_b = product.vendor) === null || _b === void 0 ? void 0 : _b.toString()) !== userId.toString()) {
+                    return res.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).json({
+                        message: "Oops! It looks like you can't delete this product.",
+                    });
+                }
+                //delete reviews
+                yield (0, services_1.deleteVendorProductReview)(productId);
+                //delete product
+                yield (0, services_1.deleteVendorProduct)(productId);
+                res
+                    .status(http_status_codes_1.StatusCodes.OK)
+                    .json({ success: true, message: "Product successfully deleted" });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                if (error instanceof Error) {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: `Unable to delete product due to: ${error.message}`,
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An unknown error occurred while deleting vendor post",
                     });
                 }
             }

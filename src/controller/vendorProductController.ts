@@ -1,5 +1,9 @@
 import { Response } from "express";
-import { vendorProductInputs, updateVendorProductInputs } from "../schema";
+import {
+	vendorProductInputs,
+	updateVendorProductInputs,
+	deleteVendorProductInputs,
+} from "../schema";
 import {
 	CustomRequest,
 	findUserById,
@@ -8,6 +12,8 @@ import {
 	updateVendorProduct,
 	findVendorProductById,
 	getVendorProductsByUserId,
+	deleteVendorProduct,
+	deleteVendorProductReview,
 } from "../services";
 import { log, paymentInitializationFunction } from "../utils";
 import { StatusCodes } from "http-status-codes";
@@ -198,12 +204,12 @@ export class VendorProductController {
 			if (error instanceof Error) {
 				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 					success: false,
-					message: `Unable to create vendor post due to: ${error.message}`,
+					message: `Unable to get all vendor product due to: ${error.message}`,
 				});
 			} else {
 				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 					success: false,
-					message: "An unknown error occurred while creating vendor post",
+					message: "An unknown error occurred while getting vendor product",
 				});
 			}
 		}
@@ -262,6 +268,58 @@ export class VendorProductController {
 					success: false,
 					message:
 						"An unknown error occurred while creating the product payment link",
+				});
+			}
+		}
+	}
+
+	public async deleteProduct(req: CustomRequest, res: Response) {
+		try {
+			const { productId } = req.params as deleteVendorProductInputs;
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			//find logged in user
+			const user = await findUserById(userId);
+			//check if user exist
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found" });
+			}
+			const product = await findVendorProductById(productId);
+			if (!product) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "product not found" });
+			}
+			//check if product belongs to user
+			if (product.vendor?.toString() !== userId.toString()) {
+				return res.status(StatusCodes.UNAUTHORIZED).json({
+					message: "Oops! It looks like you can't delete this product.",
+				});
+			}
+			//delete reviews
+			await deleteVendorProductReview(productId);
+			//delete product
+			await deleteVendorProduct(productId);
+			res
+				.status(StatusCodes.OK)
+				.json({ success: true, message: "Product successfully deleted" });
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `Unable to delete product due to: ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An unknown error occurred while deleting vendor post",
 				});
 			}
 		}

@@ -2,7 +2,11 @@ import { Router } from "express";
 import { VendorProductController } from "../controller/vendorProductController";
 import { profiles } from "../controller/profileController";
 import { validateInputs, authorizeUser } from "../middleware";
-import { vendorProductSchema, updateVendorProductSchema } from "../schema";
+import {
+	vendorProductSchema,
+	updateVendorProductSchema,
+	deleteVendorProductSchema,
+} from "../schema";
 
 export class VendorRouter {
 	private router: Router;
@@ -52,6 +56,15 @@ export class VendorRouter {
 			authorizeUser,
 			validateInputs(updateVendorProductSchema),
 			this.vendorProductController.updateProduct.bind(
+				this.vendorProductController,
+			),
+		);
+		//delete product
+		this.router.delete(
+			"/delete-product/:productId",
+			authorizeUser,
+			validateInputs(deleteVendorProductSchema),
+			this.vendorProductController.deleteProduct.bind(
 				this.vendorProductController,
 			),
 		);

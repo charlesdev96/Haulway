@@ -23,6 +23,8 @@ class VendorRouter {
         this.router.post("/buy-product/:productId", middleware_1.authorizeUser, this.vendorProductController.buyProduct.bind(this.vendorProductController));
         //update product
         this.router.patch("/update-product/:productId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.updateVendorProductSchema), this.vendorProductController.updateProduct.bind(this.vendorProductController));
+        //delete product
+        this.router.delete("/delete-product/:productId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.deleteVendorProductSchema), this.vendorProductController.deleteProduct.bind(this.vendorProductController));
     }
     getVendorRouter() {
         return this.router;
