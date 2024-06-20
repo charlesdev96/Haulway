@@ -131,7 +131,7 @@ const getUserProfile = (userId) => __awaiter(void 0, void 0, void 0, function* (
         populate: [
             {
                 path: "postedBy",
-                select: "_id fullName profilePic userName numOfFollowings numOfFollowers followers",
+                select: "_id fullName profilePic userName numOfFollowings numOfFollowers",
             },
             {
                 path: "tagPeople",

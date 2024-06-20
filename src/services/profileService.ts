@@ -134,7 +134,7 @@ export const getUserProfile = async (userId: string) => {
 				{
 					path: "postedBy",
 					select:
-						"_id fullName profilePic userName numOfFollowings numOfFollowers followers",
+						"_id fullName profilePic userName numOfFollowings numOfFollowers",
 				},
 				{
 					path: "tagPeople",
