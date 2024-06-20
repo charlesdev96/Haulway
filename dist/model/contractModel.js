@@ -17,9 +17,10 @@ const ContractSchema = new mongoose_1.default.Schema({
     },
     contractStatus: {
         type: String,
-        enum: ["completed", "active", "pending"],
-        default: "pending",
+        enum: ["completed", "active", "in-active"],
+        default: "in-active",
     },
+    completionDate: { type: Date, default: null },
     products: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "VendorProduct" }],
 }, { timestamps: true });
 exports.ContractModel = mongoose_1.default.model("Contract", ContractSchema);

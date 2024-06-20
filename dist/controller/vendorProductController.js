@@ -274,7 +274,7 @@ class VendorProductController {
     }
     deleteProduct(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
+            var _a, _b, _c;
             try {
                 const { productId } = req.params;
                 const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
@@ -307,6 +307,9 @@ class VendorProductController {
                 yield (0, services_1.deleteVendorProductReview)(productId);
                 //delete product
                 yield (0, services_1.deleteVendorProduct)(productId);
+                //remove product id from user product
+                user.products = (_c = user.products) === null || _c === void 0 ? void 0 : _c.filter((product) => product.toString() !== productId.toString());
+                yield user.save();
                 res
                     .status(http_status_codes_1.StatusCodes.OK)
                     .json({ success: true, message: "Product successfully deleted" });

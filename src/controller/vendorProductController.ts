@@ -306,6 +306,11 @@ export class VendorProductController {
 			await deleteVendorProductReview(productId);
 			//delete product
 			await deleteVendorProduct(productId);
+			//remove product id from user product
+			user.products = user.products?.filter(
+				(product) => product.toString() !== productId.toString(),
+			);
+			await user.save();
 			res
 				.status(StatusCodes.OK)
 				.json({ success: true, message: "Product successfully deleted" });

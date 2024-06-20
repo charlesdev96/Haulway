@@ -12,6 +12,7 @@ import { InfluencerRouter } from "./influencerRoute";
 import { StripeRouter } from "./stripeRoutes";
 import { CartRouter } from "./cartRoute";
 import { ReviewProductRouter } from "./reviewProductRoute";
+import { ContractRouter } from "./contractRoute";
 
 class RouterConfig {
 	private router: Router;
@@ -77,6 +78,11 @@ class RouterConfig {
 		this.router.use(
 			`${baseUrl}/review`,
 			new ReviewProductRouter().getReviewProductRouter(),
+		);
+		//contract router
+		this.router.use(
+			`${baseUrl}/contract`,
+			new ContractRouter().getContractRouter(),
 		);
 	}
 

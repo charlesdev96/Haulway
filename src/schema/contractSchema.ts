@@ -9,7 +9,7 @@ export const createContractSchema = z.object({
 			required_error: "Please provide time frame of contract",
 		}),
 		vendor: z.string().optional(),
-		influencer: z.string().optional(),
+		influencer: z.string({ required_error: "please provide the influencer" }),
 		products: z.array(z.string({ required_error: "please contract products" })),
 	}),
 });

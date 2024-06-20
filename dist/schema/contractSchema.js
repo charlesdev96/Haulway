@@ -11,7 +11,7 @@ exports.createContractSchema = zod_1.z.object({
             required_error: "Please provide time frame of contract",
         }),
         vendor: zod_1.z.string().optional(),
-        influencer: zod_1.z.string().optional(),
+        influencer: zod_1.z.string({ required_error: "please provide the influencer" }),
         products: zod_1.z.array(zod_1.z.string({ required_error: "please contract products" })),
     }),
 });

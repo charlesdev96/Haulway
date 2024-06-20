@@ -6,7 +6,7 @@ export interface ContractInputs {
 	vendor?: string;
 	influencer?: string;
 	status?: "accepted" | "negotiating" | "declined" | "pending";
-	contractStatus?: "completed" | "active" | "pending";
+	contractStatus?: "completed" | "active" | "in-active";
 	products?: string[];
 }
 
@@ -14,7 +14,7 @@ export interface ContractDocument extends ContractInputs, mongoose.Document {
 	_id?: string;
 	createdAt?: Date;
 	updatedAt?: Date;
-	completionDate?: Date;
+	completionDate?: Date | null;
 }
 
 const ContractSchema = new mongoose.Schema(
@@ -30,9 +30,10 @@ const ContractSchema = new mongoose.Schema(
 		},
 		contractStatus: {
 			type: String,
-			enum: ["completed", "active", "pending"],
-			default: "pending",
+			enum: ["completed", "active", "in-active"],
+			default: "in-active",
 		},
+		completionDate: { type: Date, default: null },
 		products: [{ type: mongoose.Schema.Types.ObjectId, ref: "VendorProduct" }],
 	},
 	{ timestamps: true },
