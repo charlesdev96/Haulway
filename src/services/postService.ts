@@ -24,7 +24,7 @@ export const deleteReplyByPost = async (postId: string) => {
 export const timeLinePost = async (userId: string) => {
 	const posts = await PostModel.find({})
 		.select(
-			"_id content caption views numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares",
+			"_id content caption thumbNail views numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares",
 		)
 		.populate({
 			path: "postedBy",
@@ -63,7 +63,7 @@ export const timeLinePost = async (userId: string) => {
 export const getTrendingPosts = async (userId: string) => {
 	const posts = await PostModel.find({})
 		.select(
-			"_id content caption views numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares",
+			"_id content caption views thumbNail numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares",
 		)
 		.populate({
 			path: "postedBy",
@@ -105,7 +105,7 @@ export const singlePost = async (postId: string) => {
 	await PostModel.updateOne({ _id: postId }, { $inc: { views: 1 } });
 	return await PostModel.findOne({ _id: postId })
 		.select(
-			"_id content caption postedBy numOfShares views numOfLikes numOfComments options products numOfProducts numOfPeopleTag addCategory",
+			"_id content caption postedBy thumbNail numOfShares views numOfLikes numOfComments options products numOfProducts numOfPeopleTag addCategory",
 		)
 		.populate({
 			path: "postedBy",
@@ -135,7 +135,7 @@ export const singlePost = async (postId: string) => {
 export const getPostByOption = async (options: string, userId: string) => {
 	const posts = await PostModel.find({ options: options })
 		.select(
-			"_id content caption views numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares",
+			"_id content caption views thumbNail numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares",
 		)
 		.populate({
 			path: "postedBy",

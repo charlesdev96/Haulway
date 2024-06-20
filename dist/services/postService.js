@@ -44,7 +44,7 @@ const deleteReplyByPost = (postId) => __awaiter(void 0, void 0, void 0, function
 exports.deleteReplyByPost = deleteReplyByPost;
 const timeLinePost = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const posts = yield model_1.PostModel.find({})
-        .select("_id content caption views numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares")
+        .select("_id content caption thumbNail views numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares")
         .populate({
         path: "postedBy",
         select: "_id fullName profilePic userName numOfFollowings numOfFollowers followers",
@@ -78,7 +78,7 @@ const timeLinePost = (userId) => __awaiter(void 0, void 0, void 0, function* () 
 exports.timeLinePost = timeLinePost;
 const getTrendingPosts = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const posts = yield model_1.PostModel.find({})
-        .select("_id content caption views numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares")
+        .select("_id content caption views thumbNail numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares")
         .populate({
         path: "postedBy",
         select: "_id fullName profilePic userName numOfFollowings numOfFollowers followers",
@@ -114,7 +114,7 @@ const singlePost = (postId) => __awaiter(void 0, void 0, void 0, function* () {
     // Increment the views by 1
     yield model_1.PostModel.updateOne({ _id: postId }, { $inc: { views: 1 } });
     return yield model_1.PostModel.findOne({ _id: postId })
-        .select("_id content caption postedBy numOfShares views numOfLikes numOfComments options products numOfProducts numOfPeopleTag addCategory")
+        .select("_id content caption postedBy thumbNail numOfShares views numOfLikes numOfComments options products numOfProducts numOfPeopleTag addCategory")
         .populate({
         path: "postedBy",
         select: "_id fullName profilePic userName numOfFollowings numOfFollowers followers",
@@ -141,7 +141,7 @@ const singlePost = (postId) => __awaiter(void 0, void 0, void 0, function* () {
 exports.singlePost = singlePost;
 const getPostByOption = (options, userId) => __awaiter(void 0, void 0, void 0, function* () {
     const posts = yield model_1.PostModel.find({ options: options })
-        .select("_id content caption views numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares")
+        .select("_id content caption views thumbNail numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares")
         .populate({
         path: "postedBy",
         select: "_id fullName profilePic userName numOfFollowings numOfFollowers followers",

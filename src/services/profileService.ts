@@ -8,7 +8,7 @@ export const getVendorProfile = async (userId: string) => {
 		.populate({
 			path: "posts",
 			select:
-				"_id content caption postedBy views numOfLikes numOfComments comments options tagPeople products",
+				"_id content caption postedBy thumbNail views numOfLikes numOfComments comments options tagPeople products",
 			populate: [
 				{
 					path: "postedBy",
@@ -74,7 +74,7 @@ export const getVendorProfile = async (userId: string) => {
 		.populate({
 			path: "savedPosts",
 			select:
-				"_id content caption postedBy views numOfLikes numOfComments comments options tagPeople products",
+				"_id content caption postedBy thumbNail views numOfLikes numOfComments comments options tagPeople products",
 			populate: [
 				{
 					path: "postedBy",
@@ -129,7 +129,7 @@ export const getUserProfile = async (userId: string) => {
 		.populate({
 			path: "posts",
 			select:
-				"_id content caption postedBy views numOfLikes numOfComments comments options tagPeople",
+				"_id content caption postedBy thumbNail views numOfLikes numOfComments comments options tagPeople",
 			populate: [
 				{
 					path: "postedBy",

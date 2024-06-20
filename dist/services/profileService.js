@@ -16,7 +16,7 @@ const getVendorProfile = (userId) => __awaiter(void 0, void 0, void 0, function*
         .select("_id profilePic fullName userName role numOfFollowers numOfFollowings numOfPosts posts savedPosts products requests contracts")
         .populate({
         path: "posts",
-        select: "_id content caption postedBy views numOfLikes numOfComments comments options tagPeople products",
+        select: "_id content caption postedBy thumbNail views numOfLikes numOfComments comments options tagPeople products",
         populate: [
             {
                 path: "postedBy",
@@ -78,7 +78,7 @@ const getVendorProfile = (userId) => __awaiter(void 0, void 0, void 0, function*
     })
         .populate({
         path: "savedPosts",
-        select: "_id content caption postedBy views numOfLikes numOfComments comments options tagPeople products",
+        select: "_id content caption postedBy thumbNail views numOfLikes numOfComments comments options tagPeople products",
         populate: [
             {
                 path: "postedBy",
@@ -127,7 +127,7 @@ const getUserProfile = (userId) => __awaiter(void 0, void 0, void 0, function* (
         .select("_id profilePic fullName userName role numOfFollowers numOfFollowings numOfPosts posts savedPosts")
         .populate({
         path: "posts",
-        select: "_id content caption postedBy views numOfLikes numOfComments comments options tagPeople",
+        select: "_id content caption postedBy thumbNail views numOfLikes numOfComments comments options tagPeople",
         populate: [
             {
                 path: "postedBy",

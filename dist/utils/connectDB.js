@@ -18,6 +18,7 @@ const dotenv_1 = require("dotenv");
 const mongoose_1 = __importDefault(require("mongoose"));
 const http_status_codes_1 = require("http-status-codes");
 const utils_1 = require("../utils");
+// import { PostModel } from "../model";
 const connectDB = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const MONGO_URL = process.env.MONGO_URL;
@@ -34,3 +35,24 @@ const connectDB = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.connectDB = connectDB;
+// const defaultThumbnailUrl =
+// 	"https://res.cloudinary.com/dvrg4hiwx/image/upload/v1718886492/haulway/guoiliffqahxrx5aya9l.png";
+// export const populateThumbNails = async () => {
+// 	const postsToUpdate = await PostModel.find({ thumbNail: { $exists: false } });
+// 	for (const post of postsToUpdate) {
+// 		const numImages = post?.content?.length; // Assuming content is an array of strings
+// 		const defaultThumbNail = []; // Array to store default thumbnails
+// 		// Generating default thumbnail URLs based on the provided default URL
+// 		for (let i = 0; i < numImages; i++) {
+// 			defaultThumbNail.push(defaultThumbnailUrl);
+// 		}
+// 		// Update the post with the default thumbnail URLs
+// 		post.thumbNail = defaultThumbNail;
+// 		await post.save();
+// 		console.log(
+// 			`Updated post ${post._id} with ${numImages} default thumbnails.`,
+// 		);
+// 	}
+// 	console.log("All posts updated successfully.");
+// 	mongoose.connection.close();
+// };
