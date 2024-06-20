@@ -20,6 +20,7 @@ const PostSchema = new mongoose_1.default.Schema({
         type: Number,
         default: 0,
     },
+    thumbNail: [{ type: String }],
     numOfLikes: {
         type: Number,
         default: 0,

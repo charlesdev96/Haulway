@@ -4,6 +4,7 @@ export interface PostInputs {
 	content?: string[];
 	caption?: string;
 	postedBy?: string;
+	thumbNail?: string[];
 	numOfShares?: number;
 	views?: number;
 	numOfLikes?: number;
@@ -40,6 +41,7 @@ const PostSchema = new mongoose.Schema(
 			type: Number,
 			default: 0,
 		},
+		thumbNail: [{ type: String }],
 		numOfLikes: {
 			type: Number,
 			default: 0,

@@ -34,6 +34,7 @@ class FilesUpload {
                         message: "No files were uploaded.",
                     });
                 }
+                // const results = [];
                 const results = [];
                 //check if req.files.files is an array or single file
                 const filesArray = Array.isArray(req.files.files)
@@ -45,6 +46,15 @@ class FilesUpload {
                     const result = yield cloudinary_1.v2.uploader.upload(file.tempFilePath, {
                         resource_type: "auto", //Automatically detect the file type
                         folder: "haulway",
+                        eager: [
+                            {
+                                width: 300,
+                                height: 300,
+                                crop: "pad",
+                                format: "jpg",
+                                resource_type: "video",
+                            },
+                        ],
                     });
                     //Remove the temporary file
                     fs_1.default.unlink(file.tempFilePath, (unlinkError) => {
@@ -55,7 +65,15 @@ class FilesUpload {
                             utils_1.log.info(`Temporary file deleted: ${file.tempFilePath}`);
                         }
                     });
-                    results.push({ src: result.secure_url });
+                    // results.push({ src: result.secure_url });
+                    // Prepare the file data including the thumbnail if it is a video
+                    const fileData = { src: result.secure_url };
+                    if (result.resource_type === "video" &&
+                        result.eager &&
+                        result.eager.length > 0) {
+                        fileData.thumbNail = result.eager[0].secure_url;
+                    }
+                    results.push(fileData);
                 }
                 return res.status(http_status_codes_1.StatusCodes.OK).json({
                     success: true,

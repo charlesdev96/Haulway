@@ -11,6 +11,11 @@ cloudinary.config({
 	api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+interface FileData {
+	src: string;
+	thumbNail?: string;
+}
+
 export class FilesUpload {
 	public async uploadDocuments(req: Request, res: Response) {
 		try {
@@ -22,7 +27,9 @@ export class FilesUpload {
 				});
 			}
 
-			const results = [];
+			// const results = [];
+			const results: FileData[] = [];
+
 			//check if req.files.files is an array or single file
 			const filesArray = Array.isArray(req.files.files)
 				? req.files.files
@@ -33,6 +40,15 @@ export class FilesUpload {
 				const result = await cloudinary.uploader.upload(file.tempFilePath, {
 					resource_type: "auto", //Automatically detect the file type
 					folder: "haulway",
+					eager: [
+						{
+							width: 300,
+							height: 300,
+							crop: "pad",
+							format: "jpg",
+							resource_type: "video",
+						},
+					],
 				});
 
 				//Remove the temporary file
@@ -43,7 +59,18 @@ export class FilesUpload {
 						log.info(`Temporary file deleted: ${file.tempFilePath}`);
 					}
 				});
-				results.push({ src: result.secure_url });
+				// results.push({ src: result.secure_url });
+				// Prepare the file data including the thumbnail if it is a video
+				const fileData: FileData = { src: result.secure_url };
+				if (
+					result.resource_type === "video" &&
+					result.eager &&
+					result.eager.length > 0
+				) {
+					fileData.thumbNail = result.eager[0].secure_url;
+				}
+
+				results.push(fileData);
 			}
 			return res.status(StatusCodes.OK).json({
 				success: true,
