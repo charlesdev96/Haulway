@@ -82,7 +82,39 @@ const singleUser = (searchedUserId) => __awaiter(void 0, void 0, void 0, functio
         .select("_id profilePic fullName userName numOfFollowers numOfFollowings numOfPosts followers posts products")
         .populate({
         path: "posts",
-        select: "_id caption",
+        select: "_id content caption views numOfLikes numOfComments postedBy products createdAt updatedAt numOfPeopleTag addCategory numOfShares",
+        populate: [
+            {
+                path: "postedBy",
+                select: "_id fullName profilePic userName numOfFollowings numOfFollowers followers",
+            },
+            {
+                path: "products",
+                select: "_id genInfo productPrice productReview store",
+                populate: {
+                    path: "store",
+                    select: "_id storeName storeLogo",
+                },
+            },
+        ],
+    })
+        .populate({
+        path: "products",
+        select: "-__v -shippingAndDelivery -inventory -vendor -buyers -reviewers",
+        populate: [
+            {
+                path: "store",
+                select: "_id storeName storeLogo",
+            },
+            {
+                path: "reviews",
+                select: "_id comment rating reviewer",
+                populate: {
+                    path: "reviewer",
+                    select: "_id fullName profilePic userName",
+                },
+            },
+        ],
     });
 });
 exports.singleUser = singleUser;
