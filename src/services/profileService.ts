@@ -160,5 +160,40 @@ export const getUserProfile = async (userId: string) => {
 					],
 				},
 			],
+		})
+		.populate({
+			path: "savedPosts",
+			select:
+				"_id content caption postedBy thumbNail views numOfLikes numOfComments comments options tagPeople",
+			populate: [
+				{
+					path: "postedBy",
+					select:
+						"_id fullName profilePic userName numOfFollowings numOfFollowers followers",
+				},
+				{
+					path: "tagPeople",
+					select: "_id fullName userName profilePic",
+				},
+				{
+					path: "comments",
+					select:
+						"_id comment numOfReplies replies createdAt updatedAt commentedBy",
+					populate: [
+						{
+							path: "replies",
+							select: "_id reply replier createdAt updatedAt",
+							populate: {
+								path: "replier",
+								select: "_id fullName userName profilePic",
+							},
+						},
+						{
+							path: "commentedBy",
+							select: "_id fullName userName profilePic",
+						},
+					],
+				},
+			],
 		});
 };
