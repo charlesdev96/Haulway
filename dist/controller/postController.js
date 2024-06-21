@@ -300,7 +300,7 @@ class PostController {
     }
     updatePost(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
+            var _a;
             try {
                 const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
                 const { postId } = req.params;
@@ -318,11 +318,12 @@ class PostController {
                         .json({ message: "Post not found" });
                 }
                 //check if post belongs to user
-                if (userId.toString() !== ((_b = post.postedBy) === null || _b === void 0 ? void 0 : _b.toString())) {
-                    return res.status(http_status_codes_1.StatusCodes.UNAUTHORIZED).json({
-                        message: "Oops! It looks like you can't edit this post. Only the author can make changes.",
-                    });
-                }
+                // if (userId.toString() !== post.postedBy?.toString()) {
+                // 	return res.status(StatusCodes.UNAUTHORIZED).json({
+                // 		message:
+                // 			"Oops! It looks like you can't edit this post. Only the author can make changes.",
+                // 	});
+                // }
                 //then procceds to update the post
                 if (body.content)
                     post.content = body.content;

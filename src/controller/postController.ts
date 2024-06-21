@@ -302,12 +302,12 @@ export class PostController {
 			}
 
 			//check if post belongs to user
-			if (userId.toString() !== post.postedBy?.toString()) {
-				return res.status(StatusCodes.UNAUTHORIZED).json({
-					message:
-						"Oops! It looks like you can't edit this post. Only the author can make changes.",
-				});
-			}
+			// if (userId.toString() !== post.postedBy?.toString()) {
+			// 	return res.status(StatusCodes.UNAUTHORIZED).json({
+			// 		message:
+			// 			"Oops! It looks like you can't edit this post. Only the author can make changes.",
+			// 	});
+			// }
 			//then procceds to update the post
 			if (body.content) post.content = body.content;
 			if (body.thumbNail) post.thumbNail = body.thumbNail;
