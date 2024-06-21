@@ -2,9 +2,11 @@ import { z } from "zod";
 
 export const createContractSchema = z.object({
 	body: z.object({
-		percentage: z.number({
-			required_error: "please provide the contract percentage",
-		}),
+		percentage: z
+			.number({
+				required_error: "please provide the contract percentage",
+			})
+			.max(1, { message: "percentage cannot be more than 100%" }),
 		timeFrame: z.string({
 			required_error: "Please provide time frame of contract",
 		}),
@@ -16,9 +18,11 @@ export const createContractSchema = z.object({
 
 export const createInfluencerContractSchema = z.object({
 	body: z.object({
-		percentage: z.number({
-			required_error: "please provide the contract percentage",
-		}),
+		percentage: z
+			.number({
+				required_error: "please provide the contract percentage",
+			})
+			.max(1, { message: "percentage cannot be more than 100%" }),
 		timeFrame: z.string({
 			required_error: "Please provide time frame of contract",
 		}),
@@ -33,8 +37,12 @@ export const replyRequestSchema = z.object({
 		actionType: z.enum(["accepted", "negotiate", "declined", "pending"], {
 			required_error: "please provide a reply",
 		}),
-		percentage: z.number().optional(),
+		percentage: z
+			.number()
+			.max(1, { message: "percentage cannot be more than 100%" })
+			.optional(),
 		timeFrame: z.string().optional(),
+		products: z.array(z.string()).optional(),
 	}),
 	params: z.object({
 		contractId: z.string({ required_error: "please provide the request id" }),
@@ -46,8 +54,12 @@ export const influencerReplyRequestSchema = z.object({
 		actionType: z.enum(["accepted", "negotiate", "declined", "pending"], {
 			required_error: "please provide a reply",
 		}),
-		percentage: z.number().optional(),
+		percentage: z
+			.number()
+			.max(1, { message: "percentage cannot be more than 100%" })
+			.optional(),
 		timeFrame: z.string().optional(),
+		products: z.array(z.string()).optional(),
 	}),
 	params: z.object({
 		contractId: z.string({ required_error: "please provide the request id" }),

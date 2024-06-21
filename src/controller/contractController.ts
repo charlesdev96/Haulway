@@ -124,6 +124,7 @@ export class ContractController {
 			if (body.percentage) contract.percentage = body.percentage;
 			if (body.actionType) contract.actionType = body.actionType;
 			if (body.timeFrame) contract.timeFrame = body.timeFrame;
+			if (body.products) contract.products = body.products;
 			if (body.actionType === "accepted") {
 				const days = Number(contract.timeFrame);
 				const contractExpirationDate: Date = addDays(new Date(), days);
@@ -282,6 +283,7 @@ export class ContractController {
 			if (body.percentage) contract.percentage = body.percentage;
 			if (body.actionType) contract.actionType = body.actionType;
 			if (body.timeFrame) contract.timeFrame = body.timeFrame;
+			if (body.products) contract.products = body.products;
 			if (body.actionType === "accepted") {
 				const days = Number(contract.timeFrame);
 				const contractExpirationDate: Date = addDays(new Date(), days);

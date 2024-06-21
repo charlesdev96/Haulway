@@ -130,6 +130,8 @@ class ContractController {
                     contract.actionType = body.actionType;
                 if (body.timeFrame)
                     contract.timeFrame = body.timeFrame;
+                if (body.products)
+                    contract.products = body.products;
                 if (body.actionType === "accepted") {
                     const days = Number(contract.timeFrame);
                     const contractExpirationDate = (0, date_fns_1.addDays)(new Date(), days);
@@ -291,6 +293,8 @@ class ContractController {
                     contract.actionType = body.actionType;
                 if (body.timeFrame)
                     contract.timeFrame = body.timeFrame;
+                if (body.products)
+                    contract.products = body.products;
                 if (body.actionType === "accepted") {
                     const days = Number(contract.timeFrame);
                     const contractExpirationDate = (0, date_fns_1.addDays)(new Date(), days);
