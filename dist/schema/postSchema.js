@@ -53,6 +53,7 @@ exports.updatePostSchema = zod_1.z.object({
         addCategory: zod_1.z.array(zod_1.z.string()).optional(),
         products: zod_1.z.array(zod_1.z.string()).optional(),
         numOfProducts: zod_1.z.number().optional(),
+        thumbNail: zod_1.z.array(zod_1.z.string()).optional(),
     }),
     params: zod_1.z.object({
         postId: zod_1.z.string({

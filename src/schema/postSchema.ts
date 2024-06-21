@@ -54,6 +54,7 @@ export const updatePostSchema = z.object({
 		addCategory: z.array(z.string()).optional(),
 		products: z.array(z.string()).optional(),
 		numOfProducts: z.number().optional(),
+		thumbNail: z.array(z.string()).optional(),
 	}),
 	params: z.object({
 		postId: z.string({

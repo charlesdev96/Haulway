@@ -326,6 +326,8 @@ class PostController {
                 //then procceds to update the post
                 if (body.content)
                     post.content = body.content;
+                if (body.thumbNail)
+                    post.thumbNail = body.thumbNail;
                 if (body.caption)
                     post.caption = body.caption;
                 if (body.options)
