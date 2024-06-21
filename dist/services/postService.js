@@ -44,10 +44,10 @@ const deleteReplyByPost = (postId) => __awaiter(void 0, void 0, void 0, function
 exports.deleteReplyByPost = deleteReplyByPost;
 const timeLinePost = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const posts = yield model_1.PostModel.find({})
-        .select("_id content caption thumbNail views numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares")
+        .select("_id content caption thumbNail views numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares likes")
         .populate({
         path: "postedBy",
-        select: "_id fullName profilePic userName numOfFollowings numOfFollowers followers",
+        select: "_id fullName profilePic userName numOfFollowings numOfFollowers followers savedPosts",
     })
         .populate({
         path: "products",
@@ -60,6 +60,8 @@ const timeLinePost = (userId) => __awaiter(void 0, void 0, void 0, function* () 
         .sort({ updatedAt: -1 });
     const postsData = (posts || []).map((post) => {
         let status = "follow";
+        let liked = false;
+        let savedBeore = false;
         // Check if userId is the owner of the post
         if (post.postedBy._id.toString() === userId.toString()) {
             status = "owner";
@@ -68,20 +70,31 @@ const timeLinePost = (userId) => __awaiter(void 0, void 0, void 0, function* () 
         if (post.postedBy.followers.includes(userId.toString())) {
             status = "following";
         }
+        //check if user have already liked a post
+        if (post.likes.includes(userId.toString())) {
+            liked = true;
+        }
+        //check if user have already saved the post
+        if (post.postedBy.savedPosts.includes(post._id.toString())) {
+            savedBeore = true;
+        }
         // Remove the followers field from postedBy
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const _a = post.postedBy._doc, { followers } = _a, postedBy = __rest(_a, ["followers"]);
-        return Object.assign(Object.assign({ status: status }, post._doc), { postedBy });
+        const _a = post.postedBy._doc, { followers, savedPosts } = _a, postedBy = __rest(_a, ["followers", "savedPosts"]);
+        //remove likes field
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const _b = post.toObject(), { likes } = _b, postData = __rest(_b, ["likes"]);
+        return Object.assign(Object.assign({ status: status, liked: liked, savedBeore: savedBeore }, postData), { postedBy });
     });
     return postsData;
 });
 exports.timeLinePost = timeLinePost;
 const getTrendingPosts = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const posts = yield model_1.PostModel.find({})
-        .select("_id content caption views thumbNail numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares")
+        .select("_id content caption views thumbNail numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares likes")
         .populate({
         path: "postedBy",
-        select: "_id fullName profilePic userName numOfFollowings numOfFollowers followers",
+        select: "_id fullName profilePic userName numOfFollowings numOfFollowers followers savedPosts",
     })
         .populate({
         path: "products",
@@ -94,6 +107,8 @@ const getTrendingPosts = (userId) => __awaiter(void 0, void 0, void 0, function*
         .sort({ views: -1, numOfLikes: -1, numOfComments: -1, numOfShares: -1 });
     const postsData = (posts || []).map((post) => {
         let status = "follow";
+        let liked = false;
+        let savedBeore = false;
         // Check if userId is the owner of the post
         if (post.postedBy._id.toString() === userId.toString()) {
             status = "owner";
@@ -102,10 +117,21 @@ const getTrendingPosts = (userId) => __awaiter(void 0, void 0, void 0, function*
         if (post.postedBy.followers.includes(userId.toString())) {
             status = "following";
         }
+        //check if user have already liked a post
+        if (post.likes.includes(userId.toString())) {
+            liked = true;
+        }
+        //check if user have already saved the post
+        if (post.postedBy.savedPosts.includes(post._id.toString())) {
+            savedBeore = true;
+        }
         // Remove the followers field from postedBy
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const _a = post.postedBy._doc, { followers } = _a, postedBy = __rest(_a, ["followers"]);
-        return Object.assign(Object.assign({ status: status }, post._doc), { postedBy });
+        const _a = post.postedBy._doc, { followers, savedPosts } = _a, postedBy = __rest(_a, ["followers", "savedPosts"]);
+        //remove likes field
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const _b = post.toObject(), { likes } = _b, postData = __rest(_b, ["likes"]);
+        return Object.assign(Object.assign({ status: status, liked: liked, savedBeore: savedBeore }, postData), { postedBy });
     });
     return postsData;
 });
