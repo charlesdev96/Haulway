@@ -10,12 +10,12 @@ const ContractSchema = new mongoose_1.default.Schema({
     timeFrame: { type: String, required: true },
     vendor: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" },
     influencer: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" },
-    status: {
+    actionType: {
         type: String,
-        enum: ["accepted", "negotiating", "declined", "pending"],
+        enum: ["accepted", "negotiate", "declined", "pending"],
         default: "pending",
     },
-    contractStatus: {
+    status: {
         type: String,
         enum: ["completed", "active", "in-active"],
         default: "in-active",

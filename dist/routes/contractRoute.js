@@ -12,8 +12,14 @@ class ContractRouter {
         this.initializeRouter();
     }
     initializeRouter() {
-        //vendor send influencer contract
+        //vendor send influencer request
         this.router.post("/vendor-send-request", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.createContractSchema), this.contractController.vendorSendContractRequest.bind(this.contractController));
+        //influencer send vendor request
+        this.router.post("/influencer-send-request", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.createInfluencerContractSchema), this.contractController.influencerSendContractRequest.bind(this.contractController));
+        //vendor reply request
+        this.router.patch("/vendor-reply-request/:contractId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.replyRequestSchema), this.contractController.vendorReplyRequest.bind(this.contractController));
+        //influencer reply request
+        this.router.patch("/influencer-reply-request/:contractId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.influencerReplyRequestSchema), this.contractController.influencerReplyRequest.bind(this.contractController));
     }
     getContractRouter() {
         return this.router;

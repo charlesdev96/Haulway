@@ -1,6 +1,13 @@
 import { UserModel } from "../model";
+import { chnageVendorContractStatus } from "../services";
 
 export const getVendorProfile = async (userId: string) => {
+	const contracts = await chnageVendorContractStatus(userId);
+	// Update the status of the found contracts to 'completed'
+	for (const contract of contracts) {
+		contract.status = "completed";
+		await contract.save();
+	}
 	return await UserModel.findById(userId)
 		.select(
 			"_id profilePic fullName userName role numOfFollowers numOfFollowings numOfPosts posts savedPosts products requests contracts",
@@ -55,7 +62,7 @@ export const getVendorProfile = async (userId: string) => {
 		})
 		.populate({
 			path: "products",
-			select: "-__v -reviewers",
+			select: "-__v -reviewers -buyers -shippingAndDelivery -store -vendor",
 			populate: [
 				{
 					path: "reviews",
@@ -103,6 +110,60 @@ export const getVendorProfile = async (userId: string) => {
 							select: "_id fullName userName profilePic",
 						},
 					],
+				},
+				{
+					path: "products",
+					select:
+						"_id genInfo productPrice productReview numOfProReviews reviews",
+					populate: {
+						path: "reviews",
+						select: "_id comment rating reviewer",
+						populate: {
+							path: "reviewer",
+							select: "_id fullName profilePic userName",
+						},
+					},
+				},
+			],
+		})
+		.populate({
+			path: "contracts",
+			select: "-__v",
+			populate: [
+				{
+					path: "influencer",
+					select: "_id fullName profilePic userName role influencerStore",
+					populate: {
+						path: "influencerStore",
+						select: "_id storeName storeLogo",
+					},
+				},
+				{
+					path: "products",
+					select:
+						"_id genInfo productPrice productReview numOfProReviews reviews",
+					populate: {
+						path: "reviews",
+						select: "_id comment rating reviewer",
+						populate: {
+							path: "reviewer",
+							select: "_id fullName profilePic userName",
+						},
+					},
+				},
+			],
+		})
+		.populate({
+			path: "requests",
+			select: "-__v",
+			populate: [
+				{
+					path: "influencer",
+					select: "_id fullName profilePic userName role influencerStore",
+					populate: {
+						path: "influencerStore",
+						select: "_id storeName storeLogo",
+					},
 				},
 				{
 					path: "products",

@@ -9,9 +9,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createContract = void 0;
+exports.chnageVendorContractStatus = exports.findContractors = exports.findContractById = exports.createContract = void 0;
 const model_1 = require("../model");
 const createContract = (input) => __awaiter(void 0, void 0, void 0, function* () {
     return yield model_1.ContractModel.create(input);
 });
 exports.createContract = createContract;
+const findContractById = (contractId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield model_1.ContractModel.findById(contractId);
+});
+exports.findContractById = findContractById;
+const findContractors = (contractorId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield model_1.UserModel.findOne({ _id: contractorId });
+});
+exports.findContractors = findContractors;
+const chnageVendorContractStatus = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const now = new Date();
+    return yield model_1.ContractModel.find({
+        vendor: userId,
+        completionDate: { $lte: now },
+        status: { $ne: "completed" },
+    });
+});
+exports.chnageVendorContractStatus = chnageVendorContractStatus;

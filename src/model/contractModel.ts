@@ -5,8 +5,8 @@ export interface ContractInputs {
 	timeFrame?: string;
 	vendor?: string;
 	influencer?: string;
-	status?: "accepted" | "negotiating" | "declined" | "pending";
-	contractStatus?: "completed" | "active" | "in-active";
+	actionType?: "accepted" | "negotiate" | "declined" | "pending";
+	status?: "completed" | "active" | "in-active";
 	products?: string[];
 }
 
@@ -23,12 +23,12 @@ const ContractSchema = new mongoose.Schema(
 		timeFrame: { type: String, required: true },
 		vendor: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 		influencer: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-		status: {
+		actionType: {
 			type: String,
-			enum: ["accepted", "negotiating", "declined", "pending"],
+			enum: ["accepted", "negotiate", "declined", "pending"],
 			default: "pending",
 		},
-		contractStatus: {
+		status: {
 			type: String,
 			enum: ["completed", "active", "in-active"],
 			default: "in-active",

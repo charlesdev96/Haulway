@@ -1,7 +1,12 @@
 import { Router } from "express";
 import { ContractController } from "../controller/contractController";
 import { authorizeUser, validateInputs } from "../middleware";
-import { createContractSchema } from "../schema";
+import {
+	createContractSchema,
+	replyRequestSchema,
+	createInfluencerContractSchema,
+	influencerReplyRequestSchema,
+} from "../schema";
 
 export class ContractRouter {
 	private router: Router;
@@ -13,12 +18,37 @@ export class ContractRouter {
 	}
 
 	private initializeRouter() {
-		//vendor send influencer contract
+		//vendor send influencer request
 		this.router.post(
 			"/vendor-send-request",
 			authorizeUser,
 			validateInputs(createContractSchema),
 			this.contractController.vendorSendContractRequest.bind(
+				this.contractController,
+			),
+		);
+		//influencer send vendor request
+		this.router.post(
+			"/influencer-send-request",
+			authorizeUser,
+			validateInputs(createInfluencerContractSchema),
+			this.contractController.influencerSendContractRequest.bind(
+				this.contractController,
+			),
+		);
+		//vendor reply request
+		this.router.patch(
+			"/vendor-reply-request/:contractId",
+			authorizeUser,
+			validateInputs(replyRequestSchema),
+			this.contractController.vendorReplyRequest.bind(this.contractController),
+		);
+		//influencer reply request
+		this.router.patch(
+			"/influencer-reply-request/:contractId",
+			authorizeUser,
+			validateInputs(influencerReplyRequestSchema),
+			this.contractController.influencerReplyRequest.bind(
 				this.contractController,
 			),
 		);

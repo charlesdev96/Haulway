@@ -60,6 +60,7 @@ export const timeLinePost = async (userId: string) => {
 
 	return postsData;
 };
+
 export const getTrendingPosts = async (userId: string) => {
 	const posts = await PostModel.find({})
 		.select(
