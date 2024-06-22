@@ -175,12 +175,12 @@ export const singlePost = async (postId: string) => {
 export const getPostByOption = async (options: string, userId: string) => {
 	const posts = await PostModel.find({ options: options })
 		.select(
-			"_id content caption views thumbNail numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares",
+			"_id content caption views thumbNail numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares likes",
 		)
 		.populate({
 			path: "postedBy",
 			select:
-				"_id fullName profilePic userName numOfFollowings numOfFollowers followers",
+				"_id fullName profilePic userName numOfFollowings numOfFollowers followers savedPosts",
 		})
 		.populate({
 			path: "products",
@@ -193,6 +193,8 @@ export const getPostByOption = async (options: string, userId: string) => {
 		.sort({ updatedAt: -1 });
 	const postsData: Post[] = (posts || []).map((post: any) => {
 		let status = "follow";
+		let liked = false;
+		let savedBeore = false;
 
 		// Check if userId is the owner of the post
 		if (post.postedBy._id.toString() === userId.toString()) {
@@ -203,10 +205,28 @@ export const getPostByOption = async (options: string, userId: string) => {
 		if (post.postedBy.followers.includes(userId.toString())) {
 			status = "following";
 		}
+		//check if user have already liked a post
+		if (post.likes.includes(userId.toString())) {
+			liked = true;
+		}
+		//check if user have already saved the post
+		if (post.postedBy.savedPosts.includes(post._id.toString())) {
+			savedBeore = true;
+		}
 		// Remove the followers field from postedBy
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const { followers, ...postedBy } = post.postedBy._doc;
-		return { status: status, ...post._doc, postedBy };
+		const { followers, savedPosts, ...postedBy } = post.postedBy._doc;
+		//remove likes field
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const { likes, ...postData } = post.toObject();
+
+		return {
+			status: status,
+			liked: liked,
+			savedBeore: savedBeore,
+			...postData,
+			postedBy,
+		};
 	});
 
 	return postsData;

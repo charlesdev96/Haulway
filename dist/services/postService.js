@@ -167,10 +167,10 @@ const singlePost = (postId) => __awaiter(void 0, void 0, void 0, function* () {
 exports.singlePost = singlePost;
 const getPostByOption = (options, userId) => __awaiter(void 0, void 0, void 0, function* () {
     const posts = yield model_1.PostModel.find({ options: options })
-        .select("_id content caption views thumbNail numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares")
+        .select("_id content caption views thumbNail numOfLikes numOfComments products createdAt updatedAt numOfPeopleTag addCategory numOfShares likes")
         .populate({
         path: "postedBy",
-        select: "_id fullName profilePic userName numOfFollowings numOfFollowers followers",
+        select: "_id fullName profilePic userName numOfFollowings numOfFollowers followers savedPosts",
     })
         .populate({
         path: "products",
@@ -183,6 +183,8 @@ const getPostByOption = (options, userId) => __awaiter(void 0, void 0, void 0, f
         .sort({ updatedAt: -1 });
     const postsData = (posts || []).map((post) => {
         let status = "follow";
+        let liked = false;
+        let savedBeore = false;
         // Check if userId is the owner of the post
         if (post.postedBy._id.toString() === userId.toString()) {
             status = "owner";
@@ -191,10 +193,21 @@ const getPostByOption = (options, userId) => __awaiter(void 0, void 0, void 0, f
         if (post.postedBy.followers.includes(userId.toString())) {
             status = "following";
         }
+        //check if user have already liked a post
+        if (post.likes.includes(userId.toString())) {
+            liked = true;
+        }
+        //check if user have already saved the post
+        if (post.postedBy.savedPosts.includes(post._id.toString())) {
+            savedBeore = true;
+        }
         // Remove the followers field from postedBy
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const _a = post.postedBy._doc, { followers } = _a, postedBy = __rest(_a, ["followers"]);
-        return Object.assign(Object.assign({ status: status }, post._doc), { postedBy });
+        const _a = post.postedBy._doc, { followers, savedPosts } = _a, postedBy = __rest(_a, ["followers", "savedPosts"]);
+        //remove likes field
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const _b = post.toObject(), { likes } = _b, postData = __rest(_b, ["likes"]);
+        return Object.assign(Object.assign({ status: status, liked: liked, savedBeore: savedBeore }, postData), { postedBy });
     });
     return postsData;
 });
