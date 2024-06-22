@@ -12,13 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletePostsByUser = exports.connectDB = void 0;
+exports.connectDB = void 0;
 const dotenv_1 = require("dotenv");
 (0, dotenv_1.config)();
 const mongoose_1 = __importDefault(require("mongoose"));
 const http_status_codes_1 = require("http-status-codes");
 const utils_1 = require("../utils");
-const model_1 = require("../model");
+// import { StoreModel } from "../model";
 const connectDB = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const MONGO_URL = process.env.MONGO_URL;
@@ -35,22 +35,20 @@ const connectDB = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.connectDB = connectDB;
-const deletePostsByUser = () => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        // Delete posts where postedBy is the specified userId
-        const result = yield model_1.StoreModel.deleteMany({
-            owner: "666accb5498e380670ab398c",
-        });
-        console.log(`${result.deletedCount} posts deleted`);
-        // Close the database connection
-        yield mongoose_1.default.disconnect();
-        console.log("Disconnected from the database");
-    }
-    catch (error) {
-        console.error("Error deleting posts:", error);
-    }
-});
-exports.deletePostsByUser = deletePostsByUser;
+// export const deletePostsByUser = async () => {
+// 	try {
+// 		// Delete posts where postedBy is the specified userId
+// 		const result = await StoreModel.deleteMany({
+// 			owner: "666accb5498e380670ab398c",
+// 		});
+// 		console.log(`${result.deletedCount} posts deleted`);
+// 		// Close the database connection
+// 		await mongoose.disconnect();
+// 		console.log("Disconnected from the database");
+// 	} catch (error) {
+// 		console.error("Error deleting posts:", error);
+// 	}
+// };
 // const defaultThumbnailUrl =
 // 	"https://res.cloudinary.com/dvrg4hiwx/image/upload/v1718886492/haulway/guoiliffqahxrx5aya9l.png";
 // export const populateThumbNails = async () => {

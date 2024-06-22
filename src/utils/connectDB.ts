@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import { StatusCodes } from "http-status-codes";
 import { log } from "../utils";
 import { Request, Response } from "express";
-import { StoreModel } from "../model";
+// import { StoreModel } from "../model";
 
 export const connectDB = async (req: Request, res: Response) => {
 	try {
@@ -22,21 +22,21 @@ export const connectDB = async (req: Request, res: Response) => {
 	}
 };
 
-export const deletePostsByUser = async () => {
-	try {
-		// Delete posts where postedBy is the specified userId
-		const result = await StoreModel.deleteMany({
-			owner: "666accb5498e380670ab398c",
-		});
-		console.log(`${result.deletedCount} posts deleted`);
+// export const deletePostsByUser = async () => {
+// 	try {
+// 		// Delete posts where postedBy is the specified userId
+// 		const result = await StoreModel.deleteMany({
+// 			owner: "666accb5498e380670ab398c",
+// 		});
+// 		console.log(`${result.deletedCount} posts deleted`);
 
-		// Close the database connection
-		await mongoose.disconnect();
-		console.log("Disconnected from the database");
-	} catch (error) {
-		console.error("Error deleting posts:", error);
-	}
-};
+// 		// Close the database connection
+// 		await mongoose.disconnect();
+// 		console.log("Disconnected from the database");
+// 	} catch (error) {
+// 		console.error("Error deleting posts:", error);
+// 	}
+// };
 
 // const defaultThumbnailUrl =
 // 	"https://res.cloudinary.com/dvrg4hiwx/image/upload/v1718886492/haulway/guoiliffqahxrx5aya9l.png";
