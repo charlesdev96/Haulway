@@ -24,6 +24,7 @@ exports.profiles = void 0;
 const services_1 = require("../services");
 const http_status_codes_1 = require("http-status-codes");
 const utils_1 = require("../utils");
+const model_1 = require("../model");
 class profiles {
     userProfile(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -359,10 +360,49 @@ class profiles {
                         .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
                         .json({ message: "User not found" });
                 }
-                yield user.deleteOne();
-                res
-                    .status(http_status_codes_1.StatusCodes.OK)
-                    .json({ success: true, message: "User account successfully deleted" });
+                const userId = user._id;
+                //delete user posts
+                yield model_1.PostModel.deleteMany({ postedBy: userId.toString() });
+                //delete all user comments
+                yield model_1.CommentModel.deleteMany({ commentedBy: userId.toString() });
+                //delete product reviews
+                yield model_1.ProductReviewModel.deleteMany({ reviewer: userId.toString() });
+                //delete users reply
+                yield model_1.ReplyModel.deleteMany({ replier: userId.toString() });
+                if (user.role === "user") {
+                    yield user.deleteOne();
+                    return res.status(http_status_codes_1.StatusCodes.OK).json({
+                        success: true,
+                        message: "User account successfully deleted",
+                    });
+                }
+                else if (user.role === "vendor") {
+                    yield model_1.StoreModel.deleteMany({ owner: userId.toString() });
+                    yield model_1.VendorProductModel.deleteMany({ vendor: userId.toString() });
+                    yield user.deleteOne();
+                    return res.status(http_status_codes_1.StatusCodes.OK).json({
+                        success: true,
+                        message: "User account successfully deleted",
+                    });
+                }
+                else if (user.role === "influencer") {
+                    yield model_1.InfluencerStoreModel.deleteMany({ owner: userId.toString() });
+                    yield model_1.InfluencerProductModel.deleteMany({
+                        influencer: userId.toString(),
+                    });
+                    yield user.deleteOne();
+                    return res.status(http_status_codes_1.StatusCodes.OK).json({
+                        success: true,
+                        message: "User account successfully deleted",
+                    });
+                }
+                else {
+                    yield user.deleteOne();
+                    return res.status(http_status_codes_1.StatusCodes.OK).json({
+                        success: true,
+                        message: "User account successfully deleted",
+                    });
+                }
             }
             catch (error) {
                 utils_1.log.info(error.message);

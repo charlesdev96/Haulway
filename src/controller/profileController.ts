@@ -23,7 +23,17 @@ import {
 } from "../schema";
 import { StatusCodes } from "http-status-codes";
 import { log } from "../utils";
-import { UserDocument } from "../model";
+import {
+	UserDocument,
+	StoreModel,
+	PostModel,
+	VendorProductModel,
+	InfluencerStoreModel,
+	InfluencerProductModel,
+	CommentModel,
+	ProductReviewModel,
+	ReplyModel,
+} from "../model";
 
 export class profiles {
 	public async userProfile(req: CustomRequest, res: Response) {
@@ -350,10 +360,46 @@ export class profiles {
 					.status(StatusCodes.BAD_REQUEST)
 					.json({ message: "User not found" });
 			}
-			await user.deleteOne();
-			res
-				.status(StatusCodes.OK)
-				.json({ success: true, message: "User account successfully deleted" });
+			const userId: string = user._id;
+			//delete user posts
+			await PostModel.deleteMany({ postedBy: userId.toString() });
+			//delete all user comments
+			await CommentModel.deleteMany({ commentedBy: userId.toString() });
+			//delete product reviews
+			await ProductReviewModel.deleteMany({ reviewer: userId.toString() });
+			//delete users reply
+			await ReplyModel.deleteMany({ replier: userId.toString() });
+			if (user.role === "user") {
+				await user.deleteOne();
+				return res.status(StatusCodes.OK).json({
+					success: true,
+					message: "User account successfully deleted",
+				});
+			} else if (user.role === "vendor") {
+				await StoreModel.deleteMany({ owner: userId.toString() });
+				await VendorProductModel.deleteMany({ vendor: userId.toString() });
+				await user.deleteOne();
+				return res.status(StatusCodes.OK).json({
+					success: true,
+					message: "User account successfully deleted",
+				});
+			} else if (user.role === "influencer") {
+				await InfluencerStoreModel.deleteMany({ owner: userId.toString() });
+				await InfluencerProductModel.deleteMany({
+					influencer: userId.toString(),
+				});
+				await user.deleteOne();
+				return res.status(StatusCodes.OK).json({
+					success: true,
+					message: "User account successfully deleted",
+				});
+			} else {
+				await user.deleteOne();
+				return res.status(StatusCodes.OK).json({
+					success: true,
+					message: "User account successfully deleted",
+				});
+			}
 		} catch (error: any) {
 			log.info(error.message);
 			res

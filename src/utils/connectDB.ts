@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import { StatusCodes } from "http-status-codes";
 import { log } from "../utils";
 import { Request, Response } from "express";
-// import { PostModel } from "../model";
+import { StoreModel } from "../model";
 
 export const connectDB = async (req: Request, res: Response) => {
 	try {
@@ -19,6 +19,22 @@ export const connectDB = async (req: Request, res: Response) => {
 		log.info("MongoDB connected successfully!");
 	} catch (error: any) {
 		log.info(error);
+	}
+};
+
+export const deletePostsByUser = async () => {
+	try {
+		// Delete posts where postedBy is the specified userId
+		const result = await StoreModel.deleteMany({
+			owner: "666accb5498e380670ab398c",
+		});
+		console.log(`${result.deletedCount} posts deleted`);
+
+		// Close the database connection
+		await mongoose.disconnect();
+		console.log("Disconnected from the database");
+	} catch (error) {
+		console.error("Error deleting posts:", error);
 	}
 };
 
