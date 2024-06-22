@@ -70,7 +70,7 @@ export const singleUser = async (searchedUserId: string) => {
 		.populate({
 			path: "posts",
 			select:
-				"_id content caption views numOfLikes numOfComments postedBy products createdAt updatedAt numOfPeopleTag addCategory numOfShares",
+				"_id content caption views thumbNail numOfLikes numOfComments postedBy products createdAt updatedAt numOfPeopleTag addCategory numOfShares",
 			populate: [
 				{
 					path: "postedBy",
