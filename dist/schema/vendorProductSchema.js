@@ -19,8 +19,12 @@ const generalInformationSchema = zod_1.z.object({
     category: zod_1.z.string({ required_error: "product category is required" }),
     size: zod_1.z.array(zod_1.z.enum(validSizes), {
         required_error: "product size is required",
+        invalid_type_error: "value provided not among those permitted",
     }),
-    gender: zod_1.z.enum(["male", "female", "unisex"]),
+    gender: zod_1.z.enum(["male", "female", "unisex"], {
+        invalid_type_error: "value provided not among those permitted",
+        required_error: "please provide gender",
+    }),
     productVar: prodVarSchema,
 });
 const priceSchema = zod_1.z.object({

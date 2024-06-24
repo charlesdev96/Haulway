@@ -19,8 +19,12 @@ const generalInformationSchema = z.object({
 	category: z.string({ required_error: "product category is required" }),
 	size: z.array(z.enum(validSizes), {
 		required_error: "product size is required",
+		invalid_type_error: "value provided not among those permitted",
 	}),
-	gender: z.enum(["male", "female", "unisex"]),
+	gender: z.enum(["male", "female", "unisex"], {
+		invalid_type_error: "value provided not among those permitted",
+		required_error: "please provide gender",
+	}),
 	productVar: prodVarSchema,
 });
 
