@@ -43,7 +43,7 @@ export interface Post {
 	_id?: string | null;
 	status: string;
 	content?: string[] | null;
-	desc?: string | null;
+	caption?: string | null;
 	postedBy?: User;
 	numOfShares?: number;
 	views?: number;
@@ -54,7 +54,6 @@ export interface Post {
 	numOfPeopleTag?: number;
 	addLocation?: ManualLocation | GoogleLocation | null;
 	addCategory?: string[] | null;
-	addMusic?: string | "";
 	products?: string[] | [];
 	createdAt?: string | null;
 	updatedAt?: string | null;

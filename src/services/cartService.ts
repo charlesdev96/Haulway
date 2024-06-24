@@ -7,6 +7,10 @@ import {
 	CartItemModel,
 } from "../model";
 
+import { Store, CartItem, Product } from "../types";
+
+import { Document } from "mongoose";
+
 export const createCartFirstTime = async (
 	inputs: CartInputs,
 ): Promise<CartDocuments> => {
@@ -35,8 +39,9 @@ export const findCartItemById = async (cartItemId: string) => {
 };
 
 export const getUserCartItems = async (userId: string) => {
-	return await CartModel.findOne({ user: userId })
-		.select("_id cartItems")
+	// Fetch the cart items
+	const cart: Document | null = await CartModel.findOne({ user: userId })
+		.select("cartItems")
 		.populate({
 			path: "cartItems",
 			select: "store product quantity",
@@ -50,5 +55,71 @@ export const getUserCartItems = async (userId: string) => {
 					select: "genInfo productPrice productReview",
 				},
 			],
+		})
+		.lean();
+
+	if (!cart) return [];
+
+	// Type assertion to help TypeScript understand the structure
+	const cartItems = (cart as any).cartItems as CartItem[];
+
+	const SHIPPING_FEE = 25;
+
+	// Group items by store
+	const storeGroups: Record<
+		string,
+		{
+			store: Store;
+			items: { product: Product; quantity: number }[];
+			subtotal: number;
+			shipping: number;
+			total: number;
+		}
+	> = {};
+
+	cartItems.forEach((item: CartItem) => {
+		const storeId = item.store._id;
+		if (!storeGroups[storeId]) {
+			storeGroups[storeId] = {
+				store: item.store,
+				items: [],
+				subtotal: 0,
+				shipping: SHIPPING_FEE,
+				total: 0,
+			};
+		}
+		storeGroups[storeId].items.push({
+			product: item.product,
+			quantity: item.quantity,
 		});
+		storeGroups[storeId].subtotal +=
+			item.product.productPrice.price * item.quantity;
+	});
+
+	// Calculate totals for each store and the grand total
+	let grandTotal = 0;
+	Object.keys(storeGroups).forEach((storeId) => {
+		const storeGroup = storeGroups[storeId];
+		storeGroup.total = storeGroup.subtotal + storeGroup.shipping;
+		grandTotal += storeGroup.total;
+	});
+
+	grandTotal = Number(parseFloat(grandTotal.toFixed(2)));
+
+	// Extract the store group objects into an array with only the items
+	const storeGroupsArray = Object.values(storeGroups).map((storeGroup) => ({
+		store: storeGroup.store,
+		items: storeGroup.items.map((item) => ({
+			product: item.product,
+			quantity: item.quantity,
+		})),
+		subtotal: Number(storeGroup.subtotal.toFixed(2)),
+		shipping: Number(storeGroup.shipping.toFixed(2)),
+		total: storeGroup.total,
+	}));
+
+	return {
+		storeGroups: storeGroupsArray,
+		grandTotal,
+	};
 };
