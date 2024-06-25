@@ -67,12 +67,52 @@ const getAllUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getAllUser = getAllUser;
 const getAllUsersByRole = (role, userId) => __awaiter(void 0, void 0, void 0, function* () {
     //exclude the user from the list returned
-    return yield model_1.UserModel.find({ role: role, _id: { $ne: userId } })
-        .select("_id profilePic role userName fullName store")
-        .populate({
-        path: "store",
-        select: "_id storeLogo storeName",
-    });
+    if (role === "vendor") {
+        const topAccount = yield model_1.UserModel.find({
+            role: role,
+            _id: { $ne: userId },
+        })
+            .select("_id profilePic role userName fullName store")
+            .populate({
+            path: "store",
+            select: "_id storeLogo storeName",
+        })
+            .sort({ numOfFollowers: -1 });
+        const recentAccount = yield model_1.UserModel.find({
+            role: role,
+            _id: { $ne: userId },
+        })
+            .select("_id profilePic role userName fullName store")
+            .populate({
+            path: "store",
+            select: "_id storeLogo storeName",
+        })
+            .sort({ createdAt: -1 });
+        return { topAccount, recentAccount };
+    }
+    else {
+        const topAccount = yield model_1.UserModel.find({
+            role: role,
+            _id: { $ne: userId },
+        })
+            .select("_id profilePic role userName fullName influencerStore")
+            .populate({
+            path: "influencerStore",
+            select: "_id storeLogo storeName",
+        })
+            .sort({ numOfFollowers: -1 });
+        const recentAccount = yield model_1.UserModel.find({
+            role: role,
+            _id: { $ne: userId },
+        })
+            .select("_id profilePic role userName fullName influencerStore")
+            .populate({
+            path: "influencerStore",
+            select: "_id storeLogo storeName",
+        })
+            .sort({ createdAt: -1 });
+        return { topAccount, recentAccount };
+    }
 });
 exports.getAllUsersByRole = getAllUsersByRole;
 const singleUser = (searchedUserId) => __awaiter(void 0, void 0, void 0, function* () {

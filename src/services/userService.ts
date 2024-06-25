@@ -49,12 +49,51 @@ export const getAllUser = async (userId: string) => {
 
 export const getAllUsersByRole = async (role: string, userId: string) => {
 	//exclude the user from the list returned
-	return await UserModel.find({ role: role, _id: { $ne: userId } })
-		.select("_id profilePic role userName fullName store")
-		.populate({
-			path: "store",
-			select: "_id storeLogo storeName",
-		});
+	if (role === "vendor") {
+		const topAccount = await UserModel.find({
+			role: role,
+			_id: { $ne: userId },
+		})
+			.select("_id profilePic role userName fullName store")
+			.populate({
+				path: "store",
+				select: "_id storeLogo storeName",
+			})
+			.sort({ numOfFollowers: -1 });
+		const recentAccount = await UserModel.find({
+			role: role,
+			_id: { $ne: userId },
+		})
+			.select("_id profilePic role userName fullName store")
+			.populate({
+				path: "store",
+				select: "_id storeLogo storeName",
+			})
+			.sort({ createdAt: -1 });
+		return { topAccount, recentAccount };
+	} else {
+		const topAccount = await UserModel.find({
+			role: role,
+			_id: { $ne: userId },
+		})
+			.select("_id profilePic role userName fullName influencerStore")
+			.populate({
+				path: "influencerStore",
+				select: "_id storeLogo storeName",
+			})
+			.sort({ numOfFollowers: -1 });
+		const recentAccount = await UserModel.find({
+			role: role,
+			_id: { $ne: userId },
+		})
+			.select("_id profilePic role userName fullName influencerStore")
+			.populate({
+				path: "influencerStore",
+				select: "_id storeLogo storeName",
+			})
+			.sort({ createdAt: -1 });
+		return { topAccount, recentAccount };
+	}
 };
 
 export const singleUser = async (searchedUserId: string) => {
