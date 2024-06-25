@@ -16,7 +16,7 @@ const http_status_codes_1 = require("http-status-codes");
 class InfluencerProductController {
     createProduct(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d;
+            var _a, _b, _c, _d, _e;
             try {
                 const body = req.body;
                 const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
@@ -63,7 +63,8 @@ class InfluencerProductController {
                 user.numOfProducts = (_c = user.influencerPro) === null || _c === void 0 ? void 0 : _c.length;
                 yield user.save();
                 //find user store and push product to it
-                (_d = store.influencerProducts) === null || _d === void 0 ? void 0 : _d.push(product._id);
+                yield ((_d = store.influencerProducts) === null || _d === void 0 ? void 0 : _d.push(product._id));
+                store.numOfProducts = (_e = store.influencerProducts) === null || _e === void 0 ? void 0 : _e.length;
                 yield store.save();
                 res.status(http_status_codes_1.StatusCodes.CREATED).json({
                     success: true,

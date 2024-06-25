@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getVendorStore = exports.findInfluencerStoreById = exports.findInfluencerStoreByUserId = exports.findInfluencerStoreByName = exports.createInfluencerStore = exports.findStoreById = exports.findStoreByUserId = exports.findStoreByName = exports.createStore = void 0;
+exports.getInfluencerStore = exports.getVendorStore = exports.findInfluencerStoreById = exports.findInfluencerStoreByUserId = exports.findInfluencerStoreByName = exports.createInfluencerStore = exports.findStoreById = exports.findStoreByUserId = exports.findStoreByName = exports.createStore = void 0;
 const model_1 = require("../model");
 const createStore = (input) => __awaiter(void 0, void 0, void 0, function* () {
     return yield model_1.StoreModel.create(input);
@@ -64,3 +64,16 @@ const getVendorStore = (storeId) => __awaiter(void 0, void 0, void 0, function* 
     });
 });
 exports.getVendorStore = getVendorStore;
+const getInfluencerStore = (storeId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield model_1.InfluencerStoreModel.findById(storeId)
+        .select("-__v")
+        .populate({
+        path: "owner",
+        select: "_id profilePic fullName userName",
+    })
+        .populate({
+        path: "influencerProducts",
+        select: "-reviewers -buyers -influencer -store",
+    });
+});
+exports.getInfluencerStore = getInfluencerStore;

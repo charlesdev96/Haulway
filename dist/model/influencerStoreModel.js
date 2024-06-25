@@ -28,6 +28,12 @@ const InfluencerStoreSchema = new mongoose_1.default.Schema({
     influencerProducts: [
         { type: mongoose_1.default.Schema.Types.ObjectId, ref: "InfluencerProduct" },
     ],
+    numOfProducts: { type: Number, default: 0 },
+    accountReached: { type: Number, default: 0 },
+    accountEngaged: { type: Number, default: 0 },
+    numOfOrders: { type: Number, default: 0 },
+    revenue: { type: Number, default: 0 },
+    orders: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "Order" }],
 }, {
     timestamps: true,
     toJSON: { virtuals: true },

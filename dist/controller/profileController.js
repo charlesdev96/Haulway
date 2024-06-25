@@ -514,5 +514,107 @@ class profiles {
             }
         });
     }
+    influencerProfile(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                const user = yield (0, services_1.findUserById)(userId);
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found." });
+                }
+                if (user.role !== "influencer") {
+                    return res.status(http_status_codes_1.StatusCodes.FORBIDDEN).json({
+                        message: "Only influencers are allowed to access this route",
+                    });
+                }
+                const profile = yield (0, services_1.getInfluencerProfile)(userId);
+                res
+                    .status(http_status_codes_1.StatusCodes.OK)
+                    .json({ success: true, message: "Influencer profile", data: profile });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                if (error instanceof Error) {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An error occured while trying to get influencer profile",
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        error: error,
+                        message: "Unable to get influencer profile.",
+                    });
+                }
+            }
+        });
+    }
+    influencerStore(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                const user = yield (0, services_1.findUserById)(userId);
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found." });
+                }
+                if (!user.influencerStore) {
+                    return res.status(http_status_codes_1.StatusCodes.FORBIDDEN).json({
+                        message: "Only influencers are allowed to access this route",
+                    });
+                }
+                const store = yield (0, services_1.getInfluencerStore)(user.influencerStore);
+                if (!store) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "Store not found" });
+                }
+                const _b = store.toObject(), { accountReached, accountEngaged } = _b, remainingData = __rest(_b, ["accountReached", "accountEngaged"]);
+                const stats = {
+                    accountReached,
+                    accountEngaged,
+                    totalFollowers: user.numOfFollowers,
+                };
+                const influencerStore = Object.assign({ stats }, remainingData);
+                res.status(http_status_codes_1.StatusCodes.OK).json({
+                    success: true,
+                    message: "Influencer store successfully retrieved",
+                    data: influencerStore,
+                });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                if (error instanceof Error) {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An error occured while trying to get influencer store",
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        error: error,
+                        message: "Unable to get influencer store.",
+                    });
+                }
+            }
+        });
+    }
 }
 exports.profiles = profiles;

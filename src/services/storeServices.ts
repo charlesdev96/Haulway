@@ -57,3 +57,16 @@ export const getVendorStore = async (storeId: string) => {
 			},
 		});
 };
+
+export const getInfluencerStore = async (storeId: string) => {
+	return await InfluencerStoreModel.findById(storeId)
+		.select("-__v")
+		.populate({
+			path: "owner",
+			select: "_id profilePic fullName userName",
+		})
+		.populate({
+			path: "influencerProducts",
+			select: "-reviewers -buyers -influencer -store",
+		});
+};

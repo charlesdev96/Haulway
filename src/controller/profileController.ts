@@ -14,6 +14,8 @@ import {
 	getVendorProfile,
 	getUserProfile,
 	getVendorStore,
+	getInfluencerProfile,
+	getInfluencerStore,
 } from "../services";
 import {
 	updateProfileInputs,
@@ -514,6 +516,111 @@ export class profiles {
 					success: false,
 					error: error,
 					message: "Unable to get vendor store.",
+				});
+			}
+		}
+	}
+
+	public async influencerProfile(req: CustomRequest, res: Response) {
+		try {
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+
+			const user = await findUserById(userId);
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found." });
+			}
+
+			if (user.role !== "influencer") {
+				return res.status(StatusCodes.FORBIDDEN).json({
+					message: "Only influencers are allowed to access this route",
+				});
+			}
+
+			const profile = await getInfluencerProfile(userId);
+			res
+				.status(StatusCodes.OK)
+				.json({ success: true, message: "Influencer profile", data: profile });
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An error occured while trying to get influencer profile",
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					error: error,
+					message: "Unable to get influencer profile.",
+				});
+			}
+		}
+	}
+
+	public async influencerStore(req: CustomRequest, res: Response) {
+		try {
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+
+			const user = await findUserById(userId);
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found." });
+			}
+
+			if (!user.influencerStore) {
+				return res.status(StatusCodes.FORBIDDEN).json({
+					message: "Only influencers are allowed to access this route",
+				});
+			}
+			const store = await getInfluencerStore(user.influencerStore);
+			if (!store) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "Store not found" });
+			}
+
+			const { accountReached, accountEngaged, ...remainingData } =
+				store.toObject();
+			const stats: object = {
+				accountReached,
+				accountEngaged,
+				totalFollowers: user.numOfFollowers,
+			};
+			const influencerStore: object = {
+				stats,
+				...remainingData,
+			};
+
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "Influencer store successfully retrieved",
+				data: influencerStore,
+			});
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An error occured while trying to get influencer store",
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					error: error,
+					message: "Unable to get influencer store.",
 				});
 			}
 		}

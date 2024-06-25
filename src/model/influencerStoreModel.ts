@@ -8,6 +8,12 @@ export interface InfluencerStoreInputs {
 	storeDesc?: string | "";
 	owner?: string;
 	role?: string;
+	numOfProducts?: number;
+	revenue?: number;
+	accountReached?: number;
+	accountEngaged?: number;
+	numOfOrders?: number;
+	orders?: string[];
 }
 
 export interface InfluencerStroreDocument
@@ -42,6 +48,12 @@ const InfluencerStoreSchema = new mongoose.Schema(
 		influencerProducts: [
 			{ type: mongoose.Schema.Types.ObjectId, ref: "InfluencerProduct" },
 		],
+		numOfProducts: { type: Number, default: 0 },
+		accountReached: { type: Number, default: 0 },
+		accountEngaged: { type: Number, default: 0 },
+		numOfOrders: { type: Number, default: 0 },
+		revenue: { type: Number, default: 0 },
+		orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
 	},
 	{
 		timestamps: true,
