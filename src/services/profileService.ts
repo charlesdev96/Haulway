@@ -128,7 +128,7 @@ export const getVendorProfile = async (userId: string) => {
 		})
 		.populate({
 			path: "contracts",
-			select: "-__v",
+			select: "-__v -vendor",
 			populate: [
 				{
 					path: "influencer",
@@ -155,7 +155,7 @@ export const getVendorProfile = async (userId: string) => {
 		})
 		.populate({
 			path: "requests",
-			select: "-__v",
+			select: "-__v -vendor",
 			populate: [
 				{
 					path: "influencer",
@@ -300,7 +300,7 @@ export const getInfluencerProfile = async (userId: string) => {
 		})
 		.populate({
 			path: "contracts",
-			select: "-__v",
+			select: "-__v -influencer",
 			populate: [
 				{
 					path: "vendor",
@@ -327,7 +327,7 @@ export const getInfluencerProfile = async (userId: string) => {
 		})
 		.populate({
 			path: "requests",
-			select: "-__v",
+			select: "-__v -influencer",
 			populate: [
 				{
 					path: "vendor",

@@ -129,7 +129,7 @@ const getVendorProfile = (userId) => __awaiter(void 0, void 0, void 0, function*
     })
         .populate({
         path: "contracts",
-        select: "-__v",
+        select: "-__v -vendor",
         populate: [
             {
                 path: "influencer",
@@ -155,7 +155,7 @@ const getVendorProfile = (userId) => __awaiter(void 0, void 0, void 0, function*
     })
         .populate({
         path: "requests",
-        select: "-__v",
+        select: "-__v -vendor",
         populate: [
             {
                 path: "influencer",
@@ -290,7 +290,7 @@ const getInfluencerProfile = (userId) => __awaiter(void 0, void 0, void 0, funct
     })
         .populate({
         path: "contracts",
-        select: "-__v",
+        select: "-__v -influencer",
         populate: [
             {
                 path: "vendor",
@@ -316,7 +316,7 @@ const getInfluencerProfile = (userId) => __awaiter(void 0, void 0, void 0, funct
     })
         .populate({
         path: "requests",
-        select: "-__v",
+        select: "-__v -influencer",
         populate: [
             {
                 path: "vendor",
