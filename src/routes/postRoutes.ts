@@ -53,6 +53,12 @@ export class PostRouter {
 			validateInputs(createVendorPostSchema),
 			this.postController.createVendorPost.bind(this.postController),
 		);
+		//get products for post
+		this.router.get(
+			"/get-post-product",
+			authorizeUser,
+			this.postController.getUserProductsForPost.bind(this.postController),
+		);
 		//save post
 		this.router.post(
 			"/save-post/:postId",

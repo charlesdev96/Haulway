@@ -8,9 +8,10 @@ import {
 	StoreModel,
 	ProductReviewModel,
 	UserModel,
+	ContractModel,
 } from "../model";
 
-import { VendorProductOutPut } from "../types";
+import { Vendor, Contract } from "../types";
 
 export const findVendorProductById = async (productId: string) => {
 	return await VendorProductModel.findById(productId);
@@ -53,24 +54,56 @@ export const updateInfluencerProduct = async (
 	);
 };
 
-export const getVendorProductsByUserId = async (userId: string) => {
-	const stores = await StoreModel.find({ owner: userId })
-		.select("products")
-		.populate({
-			path: "products",
-			select: "_id genInfo.name productPrice.price productReview",
-		});
-	const products: VendorProductOutPut[] = stores.flatMap(
-		(store) =>
-			store.products?.map((product: any) => ({
-				_id: product._id,
-				name: product.genInfo.name,
-				price: product.productPrice.price,
-				products: product.productReview.products,
-			})) || [],
-	);
+export const getProductsForPost = async (userId: string, role: string) => {
+	if (role === "vendor") {
+		return await StoreModel.findOne({ owner: userId })
+			.select("_id storeLogo storeName products")
+			.populate({
+				path: "products",
+				select: "_id genInfo productPrice productReview",
+			});
+	} else {
+		const contracts = await ContractModel.find({
+			status: "active",
+			influencer: userId,
+		})
+			.select("vendor products")
+			.populate({
+				path: "vendor",
+				select: "store",
+				populate: {
+					path: "store",
+					select: "_id storeLogo storeName",
+				},
+			})
+			.populate({
+				path: "products",
+				select: "_id genInfo productPrice productReview",
+			});
+		// Extract and format the stores and products
+		return contracts
+			.map((contract) => {
+				const { vendor, products } = contract as Contract;
+				const { store } = vendor as Vendor;
 
-	return products;
+				if (!store || !products) return [];
+
+				return {
+					store: {
+						_id: store._id,
+						storeName: store.storeName,
+						storeLogo: store.storeLogo,
+					},
+					products: products.map((product) => ({
+						_id: product._id,
+						genInfo: product.genInfo,
+						productPrice: product.productPrice,
+						productReview: product.productReview,
+					})),
+				};
+			})
+			.filter(Boolean); // Remove null values if any
+	}
 };
 
 export const deleteVendorProduct = async (productId: string) => {

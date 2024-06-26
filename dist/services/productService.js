@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.myVendorProducts = exports.getVendorsWithProducts = exports.getVendorProduct = exports.deleteVendorProductReview = exports.deleteVendorProduct = exports.getVendorProductsByUserId = exports.updateInfluencerProduct = exports.updateVendorProduct = exports.createNewInfluencerProduct = exports.createNewVendorProduct = exports.findInfluencerProductById = exports.findVendorProductById = void 0;
+exports.myVendorProducts = exports.getVendorsWithProducts = exports.getVendorProduct = exports.deleteVendorProductReview = exports.deleteVendorProduct = exports.getProductsForPost = exports.updateInfluencerProduct = exports.updateVendorProduct = exports.createNewInfluencerProduct = exports.createNewVendorProduct = exports.findInfluencerProductById = exports.findVendorProductById = void 0;
 const model_1 = require("../model");
 const findVendorProductById = (productId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield model_1.VendorProductModel.findById(productId);
@@ -35,25 +35,58 @@ const updateInfluencerProduct = (productId, updates) => __awaiter(void 0, void 0
     return yield model_1.InfluencerProductModel.updateOne({ _id: productId }, { $set: updates });
 });
 exports.updateInfluencerProduct = updateInfluencerProduct;
-const getVendorProductsByUserId = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const stores = yield model_1.StoreModel.find({ owner: userId })
-        .select("products")
-        .populate({
-        path: "products",
-        select: "_id genInfo.name productPrice.price productReview",
-    });
-    const products = stores.flatMap((store) => {
-        var _a;
-        return ((_a = store.products) === null || _a === void 0 ? void 0 : _a.map((product) => ({
-            _id: product._id,
-            name: product.genInfo.name,
-            price: product.productPrice.price,
-            products: product.productReview.products,
-        }))) || [];
-    });
-    return products;
+const getProductsForPost = (userId, role) => __awaiter(void 0, void 0, void 0, function* () {
+    if (role === "vendor") {
+        return yield model_1.StoreModel.findOne({ owner: userId })
+            .select("_id storeLogo storeName products")
+            .populate({
+            path: "products",
+            select: "_id genInfo productPrice productReview",
+        });
+    }
+    else {
+        const contracts = yield model_1.ContractModel.find({
+            status: "active",
+            influencer: userId,
+        })
+            .select("vendor products")
+            .populate({
+            path: "vendor",
+            select: "store",
+            populate: {
+                path: "store",
+                select: "_id storeLogo storeName",
+            },
+        })
+            .populate({
+            path: "products",
+            select: "_id genInfo productPrice productReview",
+        });
+        // Extract and format the stores and products
+        return contracts
+            .map((contract) => {
+            const { vendor, products } = contract;
+            const { store } = vendor;
+            if (!store || !products)
+                return [];
+            return {
+                store: {
+                    _id: store._id,
+                    storeName: store.storeName,
+                    storeLogo: store.storeLogo,
+                },
+                products: products.map((product) => ({
+                    _id: product._id,
+                    genInfo: product.genInfo,
+                    productPrice: product.productPrice,
+                    productReview: product.productReview,
+                })),
+            };
+        })
+            .filter(Boolean); // Remove null values if any
+    }
 });
-exports.getVendorProductsByUserId = getVendorProductsByUserId;
+exports.getProductsForPost = getProductsForPost;
 const deleteVendorProduct = (productId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield model_1.VendorProductModel.deleteOne({ _id: productId });
 });

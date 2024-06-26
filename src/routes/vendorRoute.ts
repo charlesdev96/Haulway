@@ -32,14 +32,6 @@ export class VendorRouter {
 				this.vendorProductController,
 			),
 		);
-		//get all products
-		this.router.get(
-			"/get-vendor-products",
-			authorizeUser,
-			this.vendorProductController.getAllVendorProducts.bind(
-				this.vendorProductController,
-			),
-		);
 		//vendor store
 		this.router.get(
 			"/vendor-store",

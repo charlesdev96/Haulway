@@ -17,8 +17,6 @@ class VendorRouter {
     }
     initializeRoute() {
         this.router.post("/create-product", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.vendorProductSchema), this.vendorProductController.createProduct.bind(this.vendorProductController));
-        //get all products
-        this.router.get("/get-vendor-products", middleware_1.authorizeUser, this.vendorProductController.getAllVendorProducts.bind(this.vendorProductController));
         //vendor store
         this.router.get("/vendor-store", middleware_1.authorizeUser, this.profile.vendorStore.bind(this.profile));
         //get vendors with products

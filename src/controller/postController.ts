@@ -19,6 +19,7 @@ import {
 	deleteReplyByPost,
 	getTrendingPosts,
 	getPostByOption,
+	getProductsForPost,
 } from "../services";
 import { Post } from "../types";
 import { log } from "../utils";
@@ -441,6 +442,45 @@ export class PostController {
 				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 					success: false,
 					message: "An unknown error occurred while getting posts by options",
+				});
+			}
+		}
+	}
+
+	public async getUserProductsForPost(req: CustomRequest, res: Response) {
+		try {
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			//find logged in user
+			const user = await findUserById(userId);
+			//check if user exist
+			if (!user || !user.role) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found" });
+			}
+
+			const products = await getProductsForPost(userId, user.role);
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "List of all products",
+				data: products,
+			});
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `Unable to get all vendor product due to: ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An unknown error occurred while getting vendor product",
 				});
 			}
 		}

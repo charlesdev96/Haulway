@@ -44,22 +44,34 @@ export interface Inventory {
 	productTags?: string[] | [];
 }
 
-export interface VendorProductOutPut {
-	_id?: string;
-	genInfo?: {
-		name?: string;
-	};
-	productPrice?: {
-		price?: number;
-	};
-	productReview?: {
-		products?: string[];
-	};
-}
-
 export interface ProductReviewInputs {
 	reviewer?: string;
 	product?: string;
 	rating?: number;
 	comment?: string;
+}
+
+interface Product {
+	_id?: string;
+	genInfo?: VenProductGeneralInfo;
+	productPrice?: Price;
+	productReview?: ProductReview;
+}
+
+export interface ProductStore {
+	_id?: string;
+	storeName?: string;
+	storeLogo?: string;
+	products?: Product[];
+}
+
+export interface Vendor {
+	_id?: string;
+	store?: ProductStore;
+}
+
+export interface Contract {
+	_id?: string;
+	vendor?: Vendor;
+	products?: Product[];
 }

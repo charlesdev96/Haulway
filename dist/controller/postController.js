@@ -471,5 +471,47 @@ class PostController {
             }
         });
     }
+    getUserProductsForPost(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                //find logged in user
+                const user = yield (0, services_1.findUserById)(userId);
+                //check if user exist
+                if (!user || !user.role) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found" });
+                }
+                const products = yield (0, services_1.getProductsForPost)(userId, user.role);
+                res.status(http_status_codes_1.StatusCodes.OK).json({
+                    success: true,
+                    message: "List of all products",
+                    data: products,
+                });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                if (error instanceof Error) {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: `Unable to get all vendor product due to: ${error.message}`,
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An unknown error occurred while getting vendor product",
+                    });
+                }
+            }
+        });
+    }
 }
 exports.PostController = PostController;
