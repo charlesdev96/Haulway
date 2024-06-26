@@ -20,7 +20,11 @@ const getVendorProfile = (userId) => __awaiter(void 0, void 0, void 0, function*
         yield contract.save();
     }
     return yield model_1.UserModel.findById(userId)
-        .select("_id profilePic fullName userName role numOfFollowers numOfFollowings numOfPosts posts savedPosts products requests contracts")
+        .select("_id profilePic fullName userName role numOfFollowers numOfFollowings numOfPosts posts savedPosts store products requests contracts")
+        .populate({
+        path: "store",
+        select: "_id storeLogo storeName",
+    })
         .populate({
         path: "posts",
         select: "_id content caption postedBy thumbNail views numOfLikes numOfComments comments options tagPeople products",

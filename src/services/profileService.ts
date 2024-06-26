@@ -10,8 +10,12 @@ export const getVendorProfile = async (userId: string) => {
 	}
 	return await UserModel.findById(userId)
 		.select(
-			"_id profilePic fullName userName role numOfFollowers numOfFollowings numOfPosts posts savedPosts products requests contracts",
+			"_id profilePic fullName userName role numOfFollowers numOfFollowings numOfPosts posts savedPosts store products requests contracts",
 		)
+		.populate({
+			path: "store",
+			select: "_id storeLogo storeName",
+		})
 		.populate({
 			path: "posts",
 			select:
