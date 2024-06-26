@@ -427,6 +427,11 @@ export class profiles {
 					.status(StatusCodes.NOT_FOUND)
 					.json({ message: "User not found." });
 			}
+			if (user.role !== "vendor") {
+				return res
+					.status(StatusCodes.FORBIDDEN)
+					.json({ message: "only vendors are allowed to access this route" });
+			}
 			const profile = await getVendorProfile(userId);
 			res
 				.status(StatusCodes.OK)

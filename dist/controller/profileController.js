@@ -430,6 +430,11 @@ class profiles {
                         .status(http_status_codes_1.StatusCodes.NOT_FOUND)
                         .json({ message: "User not found." });
                 }
+                if (user.role !== "vendor") {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.FORBIDDEN)
+                        .json({ message: "only vendors are allowed to access this route" });
+                }
                 const profile = yield (0, services_1.getVendorProfile)(userId);
                 res
                     .status(http_status_codes_1.StatusCodes.OK)
