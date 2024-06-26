@@ -43,10 +43,12 @@ class profiles {
                         .json({ message: "Unauthorized: Missing authentication token." });
                 }
                 const user = yield (0, services_1.getUserProfile)(userId);
+                const postTaged = yield (0, services_1.getAllPostTaged)(userId);
+                const output = Object.assign(Object.assign({}, user === null || user === void 0 ? void 0 : user.toObject()), { postTaged });
                 res.status(http_status_codes_1.StatusCodes.OK).json({
                     success: true,
                     message: "User profile retrieved successfully.",
-                    data: user,
+                    data: output,
                 });
             }
             catch (error) {

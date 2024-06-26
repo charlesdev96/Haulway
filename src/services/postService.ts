@@ -231,3 +231,37 @@ export const getPostByOption = async (options: string, userId: string) => {
 
 	return postsData;
 };
+
+export const getAllPostTaged = async (userId: string) => {
+	return await PostModel.find({ tagPeople: { $in: [userId] } })
+		.select(
+			"_id content caption postedBy thumbNail views numOfLikes numOfComments comments options tagPeople",
+		)
+		.populate({
+			path: "postedBy",
+			select: "_id fullName profilePic userName numOfFollowings numOfFollowers",
+		})
+		.populate({
+			path: "tagPeople",
+			select: "_id fullName userName profilePic",
+		})
+		.populate({
+			path: "comments",
+			select:
+				"_id comment numOfReplies replies createdAt updatedAt commentedBy",
+			populate: [
+				{
+					path: "replies",
+					select: "_id reply replier createdAt updatedAt",
+					populate: {
+						path: "replier",
+						select: "_id fullName userName profilePic",
+					},
+				},
+				{
+					path: "commentedBy",
+					select: "_id fullName userName profilePic",
+				},
+			],
+		});
+};

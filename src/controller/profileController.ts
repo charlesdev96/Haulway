@@ -16,6 +16,7 @@ import {
 	getVendorStore,
 	getInfluencerProfile,
 	getInfluencerStore,
+	getAllPostTaged,
 } from "../services";
 import {
 	updateProfileInputs,
@@ -53,10 +54,12 @@ export class profiles {
 					.json({ message: "Unauthorized: Missing authentication token." });
 			}
 			const user = await getUserProfile(userId);
+			const postTaged = await getAllPostTaged(userId);
+			const output: object = { ...user?.toObject(), postTaged };
 			res.status(StatusCodes.OK).json({
 				success: true,
 				message: "User profile retrieved successfully.",
-				data: user,
+				data: output,
 			});
 		} catch (error: any) {
 			log.info(error);

@@ -20,7 +20,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPostByOption = exports.singlePost = exports.getTrendingPosts = exports.timeLinePost = exports.deleteReplyByPost = exports.deleteCommentByPost = exports.findPostByUser = exports.findPostById = exports.createPosts = void 0;
+exports.getAllPostTaged = exports.getPostByOption = exports.singlePost = exports.getTrendingPosts = exports.timeLinePost = exports.deleteReplyByPost = exports.deleteCommentByPost = exports.findPostByUser = exports.findPostById = exports.createPosts = void 0;
 const model_1 = require("../model");
 const createPosts = (input) => __awaiter(void 0, void 0, void 0, function* () {
     return yield model_1.PostModel.create(input);
@@ -212,3 +212,34 @@ const getPostByOption = (options, userId) => __awaiter(void 0, void 0, void 0, f
     return postsData;
 });
 exports.getPostByOption = getPostByOption;
+const getAllPostTaged = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield model_1.PostModel.find({ tagPeople: { $in: [userId] } })
+        .select("_id content caption postedBy thumbNail views numOfLikes numOfComments comments options tagPeople")
+        .populate({
+        path: "postedBy",
+        select: "_id fullName profilePic userName numOfFollowings numOfFollowers",
+    })
+        .populate({
+        path: "tagPeople",
+        select: "_id fullName userName profilePic",
+    })
+        .populate({
+        path: "comments",
+        select: "_id comment numOfReplies replies createdAt updatedAt commentedBy",
+        populate: [
+            {
+                path: "replies",
+                select: "_id reply replier createdAt updatedAt",
+                populate: {
+                    path: "replier",
+                    select: "_id fullName userName profilePic",
+                },
+            },
+            {
+                path: "commentedBy",
+                select: "_id fullName userName profilePic",
+            },
+        ],
+    });
+});
+exports.getAllPostTaged = getAllPostTaged;

@@ -82,6 +82,7 @@ class UserController {
                         .json({ message: "User not found." });
                 }
                 //data returned should depend on the role of the user
+                const postTaged = yield (0, services_1.getAllPostTaged)(id);
                 const updatedData = [singleUserData];
                 const outputData = (updatedData || []).map((data) => {
                     var _a;
@@ -93,7 +94,7 @@ class UserController {
                     // Remove the followers field from postedBy
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     const _b = data._doc, { followers } = _b, userDetails = __rest(_b, ["followers"]);
-                    return Object.assign({ status: status }, userDetails);
+                    return Object.assign(Object.assign({ status: status }, userDetails), { postTaged });
                 });
                 res.status(http_status_codes_1.StatusCodes.OK).json({
                     success: true,

@@ -8,6 +8,7 @@ import {
 	searchForUsers,
 	searchUsersByRole,
 	getAllUsersByRoleForContract,
+	getAllPostTaged,
 } from "../services";
 import { getSingleUserInputs, searchUserInputs } from "../schema";
 import { UserData } from "../types";
@@ -67,6 +68,7 @@ export class UserController {
 					.json({ message: "User not found." });
 			}
 			//data returned should depend on the role of the user
+			const postTaged = await getAllPostTaged(id);
 			const updatedData = [singleUserData];
 			const outputData: UserData[] = (updatedData || []).map((data: any) => {
 				let status: "follow" | "following" = "follow";
@@ -77,7 +79,7 @@ export class UserController {
 				// Remove the followers field from postedBy
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				const { followers, ...userDetails } = data._doc;
-				return { status: status, ...userDetails };
+				return { status: status, ...userDetails, postTaged };
 			});
 			res.status(StatusCodes.OK).json({
 				success: true,
