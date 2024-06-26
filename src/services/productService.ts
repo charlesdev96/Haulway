@@ -53,8 +53,9 @@ export const updateInfluencerProduct = async (
 };
 
 export const getProductsForPost = async (userId: string, role: string) => {
+	let products: any = [];
 	if (role === "vendor") {
-		return await StoreModel.findOne({ owner: userId })
+		const store = await StoreModel.findOne({ owner: userId })
 			.select("products")
 			.populate({
 				path: "products",
@@ -64,6 +65,9 @@ export const getProductsForPost = async (userId: string, role: string) => {
 					select: "_id storeLogo storeName",
 				},
 			});
+		if (store && store.products) {
+			products = store.products;
+		}
 	} else {
 		const contracts = await ContractModel.find({
 			status: "active",
@@ -78,8 +82,13 @@ export const getProductsForPost = async (userId: string, role: string) => {
 					select: "_id storeLogo storeName",
 				},
 			});
-		return contracts;
+		contracts.forEach((contract) => {
+			if (contract.products) {
+				products.push(...contract.products);
+			}
+		});
 	}
+	return products;
 };
 
 export const deleteVendorProduct = async (productId: string) => {

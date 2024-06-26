@@ -36,8 +36,9 @@ const updateInfluencerProduct = (productId, updates) => __awaiter(void 0, void 0
 });
 exports.updateInfluencerProduct = updateInfluencerProduct;
 const getProductsForPost = (userId, role) => __awaiter(void 0, void 0, void 0, function* () {
+    let products = [];
     if (role === "vendor") {
-        return yield model_1.StoreModel.findOne({ owner: userId })
+        const store = yield model_1.StoreModel.findOne({ owner: userId })
             .select("products")
             .populate({
             path: "products",
@@ -47,6 +48,9 @@ const getProductsForPost = (userId, role) => __awaiter(void 0, void 0, void 0, f
                 select: "_id storeLogo storeName",
             },
         });
+        if (store && store.products) {
+            products = store.products;
+        }
     }
     else {
         const contracts = yield model_1.ContractModel.find({
@@ -62,8 +66,13 @@ const getProductsForPost = (userId, role) => __awaiter(void 0, void 0, void 0, f
                 select: "_id storeLogo storeName",
             },
         });
-        return contracts;
+        contracts.forEach((contract) => {
+            if (contract.products) {
+                products.push(...contract.products);
+            }
+        });
     }
+    return products;
 });
 exports.getProductsForPost = getProductsForPost;
 const deleteVendorProduct = (productId) => __awaiter(void 0, void 0, void 0, function* () {
