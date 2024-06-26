@@ -7,6 +7,7 @@ import {
 	InfluencerProductModel,
 	StoreModel,
 	ProductReviewModel,
+	UserModel,
 } from "../model";
 
 import { VendorProductOutPut } from "../types";
@@ -84,4 +85,16 @@ export const getVendorProduct = async (userId: string) => {
 	return await VendorProductModel.find({ vendor: userId }).select(
 		"_id genInfo productPrice productReview createdAt updatedAt",
 	);
+};
+
+export const getVendorsWithProducts = async () => {
+	return await UserModel.find({
+		role: "vendor",
+		numOfProducts: { $gt: 0 },
+	})
+		.select("_id profilePic userName fullName store")
+		.populate({
+			path: "store",
+			select: "_id storeLogo storeName numOfProducts",
+		});
 };

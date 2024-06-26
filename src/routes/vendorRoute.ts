@@ -43,6 +43,14 @@ export class VendorRouter {
 			authorizeUser,
 			this.profile.vendorStore.bind(this.profile),
 		);
+		//get vendors with products
+		this.router.get(
+			"/vendors-with-products",
+			authorizeUser,
+			this.vendorProductController.getAllVendorsWithProducts.bind(
+				this.vendorProductController,
+			),
+		);
 		//get vendor product
 		this.router.get(
 			"/vendor-product/:vendorId",

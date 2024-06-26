@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getVendorProduct = exports.deleteVendorProductReview = exports.deleteVendorProduct = exports.getVendorProductsByUserId = exports.updateInfluencerProduct = exports.updateVendorProduct = exports.createNewInfluencerProduct = exports.createNewVendorProduct = exports.findInfluencerProductById = exports.findVendorProductById = void 0;
+exports.getVendorsWithProducts = exports.getVendorProduct = exports.deleteVendorProductReview = exports.deleteVendorProduct = exports.getVendorProductsByUserId = exports.updateInfluencerProduct = exports.updateVendorProduct = exports.createNewInfluencerProduct = exports.createNewVendorProduct = exports.findInfluencerProductById = exports.findVendorProductById = void 0;
 const model_1 = require("../model");
 const findVendorProductById = (productId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield model_1.VendorProductModel.findById(productId);
@@ -66,3 +66,15 @@ const getVendorProduct = (userId) => __awaiter(void 0, void 0, void 0, function*
     return yield model_1.VendorProductModel.find({ vendor: userId }).select("_id genInfo productPrice productReview createdAt updatedAt");
 });
 exports.getVendorProduct = getVendorProduct;
+const getVendorsWithProducts = () => __awaiter(void 0, void 0, void 0, function* () {
+    return yield model_1.UserModel.find({
+        role: "vendor",
+        numOfProducts: { $gt: 0 },
+    })
+        .select("_id profilePic userName fullName store")
+        .populate({
+        path: "store",
+        select: "_id storeLogo storeName numOfProducts",
+    });
+});
+exports.getVendorsWithProducts = getVendorsWithProducts;

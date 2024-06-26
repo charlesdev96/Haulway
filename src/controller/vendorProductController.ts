@@ -16,6 +16,7 @@ import {
 	deleteVendorProduct,
 	deleteVendorProductReview,
 	getVendorProduct,
+	getVendorsWithProducts,
 } from "../services";
 import { log } from "../utils";
 import { StatusCodes } from "http-status-codes";
@@ -311,6 +312,44 @@ export class VendorProductController {
 						.status(StatusCodes.INTERNAL_SERVER_ERROR)
 						.json({ message: "Wrong Id format" });
 				}
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `Unable to selected vendor products due to: ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An unknown error occurred while getting vendor products",
+				});
+			}
+		}
+	}
+
+	public async getAllVendorsWithProducts(req: CustomRequest, res: Response) {
+		try {
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			//find logged in user
+			const user = await findUserById(userId);
+			//check if user exist
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found" });
+			}
+			const vendorsWithProducts = await getVendorsWithProducts();
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "list of vendors with products",
+				data: vendorsWithProducts,
+			});
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
 				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 					success: false,
 					message: `Unable to selected vendor products due to: ${error.message}`,
