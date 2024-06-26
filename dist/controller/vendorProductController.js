@@ -217,61 +217,6 @@ class VendorProductController {
             }
         });
     }
-    buyProduct(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d, _e;
-            try {
-                const { productId } = req.params;
-                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
-                if (!userId) {
-                    return res
-                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
-                        .json({ message: "Unauthorized: Missing authentication token." });
-                }
-                //find logged in user
-                const user = yield (0, services_1.findUserById)(userId);
-                //check if user exist
-                if (!user || !user.role) {
-                    return res
-                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
-                        .json({ message: "User not found" });
-                }
-                //find product
-                const product = yield (0, services_1.findVendorProductById)(productId);
-                if (!product || !((_b = product.productPrice) === null || _b === void 0 ? void 0 : _b.price) || !((_c = product.genInfo) === null || _c === void 0 ? void 0 : _c.name)) {
-                    return res
-                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
-                        .json({ message: "Product not found" });
-                }
-                const paymentUrl = yield (0, utils_1.paymentInitializationFunction)((_d = product.productPrice) === null || _d === void 0 ? void 0 : _d.price, 1, (_e = product.genInfo) === null || _e === void 0 ? void 0 : _e.name);
-                res.status(http_status_codes_1.StatusCodes.OK).json({
-                    success: true,
-                    message: "Please use the link for your payment",
-                    data: paymentUrl,
-                });
-            }
-            catch (error) {
-                utils_1.log.info(error);
-                if (error instanceof Error) {
-                    if (error.message.indexOf("Cast to ObjectId failed") !== -1) {
-                        return res
-                            .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
-                            .json({ message: "Wrong Id format" });
-                    }
-                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
-                        success: false,
-                        message: `Unable to create product payment link due to: ${error.message}`,
-                    });
-                }
-                else {
-                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
-                        success: false,
-                        message: "An unknown error occurred while creating the product payment link",
-                    });
-                }
-            }
-        });
-    }
     deleteProduct(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a, _b, _c;
@@ -326,6 +271,60 @@ class VendorProductController {
                     res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
                         success: false,
                         message: "An unknown error occurred while deleting vendor post",
+                    });
+                }
+            }
+        });
+    }
+    getSingleVendorProduct(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const { vendorId } = req.params;
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                //find logged in user
+                const user = yield (0, services_1.findUserById)(userId);
+                //check if user exist
+                if (!user) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found" });
+                }
+                const vendor = yield (0, services_1.findUserById)(vendorId);
+                if (!vendor) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "Vendor not found" });
+                }
+                const products = yield (0, services_1.getVendorProduct)(vendorId);
+                res.status(http_status_codes_1.StatusCodes.OK).json({
+                    success: true,
+                    message: "list of the selected vendor products",
+                    data: products,
+                });
+            }
+            catch (error) {
+                utils_1.log.info(error);
+                if (error instanceof Error) {
+                    if (error.message.indexOf("Cast to ObjectId failed") !== -1) {
+                        return res
+                            .status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR)
+                            .json({ message: "Wrong Id format" });
+                    }
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: `Unable to selected vendor products due to: ${error.message}`,
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An unknown error occurred while getting vendor products",
                     });
                 }
             }

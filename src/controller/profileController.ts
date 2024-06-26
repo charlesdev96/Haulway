@@ -592,6 +592,11 @@ export class profiles {
 					.json({ message: "Store not found" });
 			}
 
+			store.accountEngaged = user.contracts?.length;
+			store.accountReached =
+				(user.contracts?.length || 0) + (user.requests?.length || 0);
+			await store.save();
+
 			const { accountReached, accountEngaged, ...remainingData } =
 				store.toObject();
 			const stats: object = {

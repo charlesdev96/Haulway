@@ -79,3 +79,9 @@ export const deleteVendorProduct = async (productId: string) => {
 export const deleteVendorProductReview = async (productId: string) => {
 	return await ProductReviewModel.deleteMany({ product: productId });
 };
+
+export const getVendorProduct = async (userId: string) => {
+	return await VendorProductModel.find({ vendor: userId }).select(
+		"_id genInfo productPrice productReview createdAt updatedAt",
+	);
+};

@@ -6,6 +6,7 @@ import {
 	vendorProductSchema,
 	updateVendorProductSchema,
 	deleteVendorProductSchema,
+	getVendorProductSchema,
 } from "../schema";
 
 export class VendorRouter {
@@ -42,11 +43,12 @@ export class VendorRouter {
 			authorizeUser,
 			this.profile.vendorStore.bind(this.profile),
 		);
-		//buy product
-		this.router.post(
-			"/buy-product/:productId",
+		//get vendor product
+		this.router.get(
+			"/vendor-product/:vendorId",
 			authorizeUser,
-			this.vendorProductController.buyProduct.bind(
+			validateInputs(getVendorProductSchema),
+			this.vendorProductController.getSingleVendorProduct.bind(
 				this.vendorProductController,
 			),
 		);

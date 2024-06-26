@@ -3,6 +3,7 @@ import {
 	vendorProductInputs,
 	updateVendorProductInputs,
 	deleteVendorProductInputs,
+	getVendorProductInputs,
 } from "../schema";
 import {
 	CustomRequest,
@@ -14,8 +15,9 @@ import {
 	getVendorProductsByUserId,
 	deleteVendorProduct,
 	deleteVendorProductReview,
+	getVendorProduct,
 } from "../services";
-import { log, paymentInitializationFunction } from "../utils";
+import { log } from "../utils";
 import { StatusCodes } from "http-status-codes";
 
 export class VendorProductController {
@@ -215,64 +217,6 @@ export class VendorProductController {
 		}
 	}
 
-	public async buyProduct(req: CustomRequest, res: Response) {
-		try {
-			const { productId } = req.params;
-			const userId = req.user?.userId;
-			if (!userId) {
-				return res
-					.status(StatusCodes.UNAUTHORIZED)
-					.json({ message: "Unauthorized: Missing authentication token." });
-			}
-			//find logged in user
-			const user = await findUserById(userId);
-			//check if user exist
-			if (!user || !user.role) {
-				return res
-					.status(StatusCodes.NOT_FOUND)
-					.json({ message: "User not found" });
-			}
-
-			//find product
-			const product = await findVendorProductById(productId);
-			if (!product || !product.productPrice?.price || !product.genInfo?.name) {
-				return res
-					.status(StatusCodes.NOT_FOUND)
-					.json({ message: "Product not found" });
-			}
-
-			const paymentUrl = await paymentInitializationFunction(
-				product.productPrice?.price,
-				1,
-				product.genInfo?.name,
-			);
-			res.status(StatusCodes.OK).json({
-				success: true,
-				message: "Please use the link for your payment",
-				data: paymentUrl,
-			});
-		} catch (error: unknown) {
-			log.info(error);
-			if (error instanceof Error) {
-				if (error.message.indexOf("Cast to ObjectId failed") !== -1) {
-					return res
-						.status(StatusCodes.INTERNAL_SERVER_ERROR)
-						.json({ message: "Wrong Id format" });
-				}
-				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-					success: false,
-					message: `Unable to create product payment link due to: ${error.message}`,
-				});
-			} else {
-				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-					success: false,
-					message:
-						"An unknown error occurred while creating the product payment link",
-				});
-			}
-		}
-	}
-
 	public async deleteProduct(req: CustomRequest, res: Response) {
 		try {
 			const { productId } = req.params as deleteVendorProductInputs;
@@ -325,6 +269,56 @@ export class VendorProductController {
 				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 					success: false,
 					message: "An unknown error occurred while deleting vendor post",
+				});
+			}
+		}
+	}
+
+	public async getSingleVendorProduct(req: CustomRequest, res: Response) {
+		try {
+			const { vendorId } = req.params as getVendorProductInputs;
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			//find logged in user
+			const user = await findUserById(userId);
+			//check if user exist
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found" });
+			}
+			const vendor = await findUserById(vendorId);
+			if (!vendor) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "Vendor not found" });
+			}
+			const products = await getVendorProduct(vendorId);
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "list of the selected vendor products",
+				data: products,
+			});
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				if (error.message.indexOf("Cast to ObjectId failed") !== -1) {
+					return res
+						.status(StatusCodes.INTERNAL_SERVER_ERROR)
+						.json({ message: "Wrong Id format" });
+				}
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `Unable to selected vendor products due to: ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An unknown error occurred while getting vendor products",
 				});
 			}
 		}

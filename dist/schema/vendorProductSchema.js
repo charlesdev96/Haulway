@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteVendorProductSchema = exports.updateVendorProductSchema = exports.vendorProductSchema = void 0;
+exports.getVendorProductSchema = exports.deleteVendorProductSchema = exports.updateVendorProductSchema = exports.vendorProductSchema = void 0;
 const zod_1 = require("zod");
 const validSizes = ["xs", "s", "m", "l", "xl", "xxl"];
 const prodVarSchema = zod_1.z.object({
@@ -107,5 +107,10 @@ exports.updateVendorProductSchema = zod_1.z.object({
 exports.deleteVendorProductSchema = zod_1.z.object({
     params: zod_1.z.object({
         productId: zod_1.z.string({ required_error: "product id is required" }),
+    }),
+});
+exports.getVendorProductSchema = zod_1.z.object({
+    params: zod_1.z.object({
+        vendorId: zod_1.z.string({ required_error: "please provide vendor id" }),
     }),
 });

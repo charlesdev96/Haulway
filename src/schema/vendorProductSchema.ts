@@ -117,6 +117,12 @@ export const deleteVendorProductSchema = z.object({
 	}),
 });
 
+export const getVendorProductSchema = z.object({
+	params: z.object({
+		vendorId: z.string({ required_error: "please provide vendor id" }),
+	}),
+});
+
 export type vendorProductInputs = z.infer<typeof vendorProductSchema>["body"];
 
 export type updateVendorProductInputs = z.infer<
@@ -125,4 +131,8 @@ export type updateVendorProductInputs = z.infer<
 
 export type deleteVendorProductInputs = z.infer<
 	typeof deleteVendorProductSchema
+>["params"];
+
+export type getVendorProductInputs = z.infer<
+	typeof getVendorProductSchema
 >["params"];

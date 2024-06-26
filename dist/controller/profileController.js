@@ -560,7 +560,7 @@ class profiles {
     }
     influencerStore(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
+            var _a, _b, _c, _d;
             try {
                 const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
                 if (!userId) {
@@ -585,7 +585,11 @@ class profiles {
                         .status(http_status_codes_1.StatusCodes.NOT_FOUND)
                         .json({ message: "Store not found" });
                 }
-                const _b = store.toObject(), { accountReached, accountEngaged } = _b, remainingData = __rest(_b, ["accountReached", "accountEngaged"]);
+                store.accountEngaged = (_b = user.contracts) === null || _b === void 0 ? void 0 : _b.length;
+                store.accountReached =
+                    (((_c = user.contracts) === null || _c === void 0 ? void 0 : _c.length) || 0) + (((_d = user.requests) === null || _d === void 0 ? void 0 : _d.length) || 0);
+                yield store.save();
+                const _e = store.toObject(), { accountReached, accountEngaged } = _e, remainingData = __rest(_e, ["accountReached", "accountEngaged"]);
                 const stats = {
                     accountReached,
                     accountEngaged,
