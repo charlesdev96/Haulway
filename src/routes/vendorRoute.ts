@@ -51,6 +51,14 @@ export class VendorRouter {
 				this.vendorProductController,
 			),
 		);
+		//get logged in vendor products
+		this.router.get(
+			"/my-products",
+			authorizeUser,
+			this.vendorProductController.loggedInVendorProducts.bind(
+				this.vendorProductController,
+			),
+		);
 		//get vendor product
 		this.router.get(
 			"/vendor-product/:vendorId",

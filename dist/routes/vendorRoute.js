@@ -21,6 +21,8 @@ class VendorRouter {
         this.router.get("/vendor-store", middleware_1.authorizeUser, this.profile.vendorStore.bind(this.profile));
         //get vendors with products
         this.router.get("/vendors-with-products", middleware_1.authorizeUser, this.vendorProductController.getAllVendorsWithProducts.bind(this.vendorProductController));
+        //get logged in vendor products
+        this.router.get("/my-products", middleware_1.authorizeUser, this.vendorProductController.loggedInVendorProducts.bind(this.vendorProductController));
         //get vendor product
         this.router.get("/vendor-product/:vendorId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.getVendorProductSchema), this.vendorProductController.getSingleVendorProduct.bind(this.vendorProductController));
         //update product

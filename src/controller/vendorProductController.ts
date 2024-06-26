@@ -17,6 +17,7 @@ import {
 	deleteVendorProductReview,
 	getVendorProduct,
 	getVendorsWithProducts,
+	myVendorProducts,
 } from "../services";
 import { log } from "../utils";
 import { StatusCodes } from "http-status-codes";
@@ -358,6 +359,51 @@ export class VendorProductController {
 				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 					success: false,
 					message: "An unknown error occurred while getting vendor products",
+				});
+			}
+		}
+	}
+
+	public async loggedInVendorProducts(req: CustomRequest, res: Response) {
+		try {
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			//find logged in user
+			const user = await findUserById(userId);
+			//check if user exist
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found" });
+			}
+			//check if user is a vendor
+			if (user.role !== "vendor") {
+				return res
+					.status(StatusCodes.FORBIDDEN)
+					.json({ message: "Only vendors are allowed to access this route" });
+			}
+			const products = await myVendorProducts(userId);
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "List of your products",
+				data: products,
+			});
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `Unable to get logged in vendor products due to: ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message:
+						"An unknown error occurred while getting logged in vendor products",
 				});
 			}
 		}

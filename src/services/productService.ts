@@ -98,3 +98,9 @@ export const getVendorsWithProducts = async () => {
 			select: "_id storeLogo storeName numOfProducts",
 		});
 };
+
+export const myVendorProducts = async (userId: string) => {
+	return await VendorProductModel.find({ vendor: userId }).select(
+		"_id genInfo productPrice productReview",
+	);
+};

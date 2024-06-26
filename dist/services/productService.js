@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getVendorsWithProducts = exports.getVendorProduct = exports.deleteVendorProductReview = exports.deleteVendorProduct = exports.getVendorProductsByUserId = exports.updateInfluencerProduct = exports.updateVendorProduct = exports.createNewInfluencerProduct = exports.createNewVendorProduct = exports.findInfluencerProductById = exports.findVendorProductById = void 0;
+exports.myVendorProducts = exports.getVendorsWithProducts = exports.getVendorProduct = exports.deleteVendorProductReview = exports.deleteVendorProduct = exports.getVendorProductsByUserId = exports.updateInfluencerProduct = exports.updateVendorProduct = exports.createNewInfluencerProduct = exports.createNewVendorProduct = exports.findInfluencerProductById = exports.findVendorProductById = void 0;
 const model_1 = require("../model");
 const findVendorProductById = (productId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield model_1.VendorProductModel.findById(productId);
@@ -78,3 +78,7 @@ const getVendorsWithProducts = () => __awaiter(void 0, void 0, void 0, function*
     });
 });
 exports.getVendorsWithProducts = getVendorsWithProducts;
+const myVendorProducts = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield model_1.VendorProductModel.find({ vendor: userId }).select("_id genInfo productPrice productReview");
+});
+exports.myVendorProducts = myVendorProducts;
