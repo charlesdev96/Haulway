@@ -4,6 +4,7 @@ exports.VendorRouter = void 0;
 const express_1 = require("express");
 const vendorProductController_1 = require("../controller/vendorProductController");
 const profileController_1 = require("../controller/profileController");
+const userController_1 = require("../controller/userController");
 const middleware_1 = require("../middleware");
 const schema_1 = require("../schema");
 class VendorRouter {
@@ -11,6 +12,7 @@ class VendorRouter {
         this.router = (0, express_1.Router)();
         this.vendorProductController = new vendorProductController_1.VendorProductController();
         this.profile = new profileController_1.profiles();
+        this.userController = new userController_1.UserController();
         this.initializeRoute();
     }
     initializeRoute() {
@@ -23,6 +25,8 @@ class VendorRouter {
         this.router.get("/vendors-with-products", middleware_1.authorizeUser, this.vendorProductController.getAllVendorsWithProducts.bind(this.vendorProductController));
         //get logged in vendor products
         this.router.get("/my-products", middleware_1.authorizeUser, this.vendorProductController.loggedInVendorProducts.bind(this.vendorProductController));
+        //get all influencers for product
+        this.router.get("/get-all-vendors", middleware_1.authorizeUser, this.userController.getAllVendorsForContract.bind(this.userController));
         //get vendor product
         this.router.get("/vendor-product/:vendorId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.getVendorProductSchema), this.vendorProductController.getSingleVendorProduct.bind(this.vendorProductController));
         //update product

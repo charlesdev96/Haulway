@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { VendorProductController } from "../controller/vendorProductController";
 import { profiles } from "../controller/profileController";
+import { UserController } from "../controller/userController";
 import { validateInputs, authorizeUser } from "../middleware";
 import {
 	vendorProductSchema,
@@ -13,10 +14,12 @@ export class VendorRouter {
 	private router: Router;
 	private vendorProductController: VendorProductController;
 	private profile: profiles;
+	private userController: UserController;
 	constructor() {
 		this.router = Router();
 		this.vendorProductController = new VendorProductController();
 		this.profile = new profiles();
+		this.userController = new UserController();
 		this.initializeRoute();
 	}
 
@@ -58,6 +61,12 @@ export class VendorRouter {
 			this.vendorProductController.loggedInVendorProducts.bind(
 				this.vendorProductController,
 			),
+		);
+		//get all influencers for product
+		this.router.get(
+			"/get-all-vendors",
+			authorizeUser,
+			this.userController.getAllVendorsForContract.bind(this.userController),
 		);
 		//get vendor product
 		this.router.get(

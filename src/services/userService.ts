@@ -96,6 +96,36 @@ export const getAllUsersByRole = async (role: string, userId: string) => {
 	}
 };
 
+export const getAllUsersByRoleForContract = async (
+	role: string,
+	userId: string,
+) => {
+	//exclude the user from the list returned
+	if (role === "vendor") {
+		return await UserModel.find({
+			role: role,
+			_id: { $ne: userId },
+		})
+			.select("_id profilePic role userName fullName store")
+			.populate({
+				path: "store",
+				select: "_id storeLogo storeName",
+			})
+			.sort({ numOfFollowers: -1 });
+	} else {
+		return await UserModel.find({
+			role: role,
+			_id: { $ne: userId },
+		})
+			.select("_id profilePic role userName fullName influencerStore")
+			.populate({
+				path: "influencerStore",
+				select: "_id storeLogo storeName",
+			})
+			.sort({ numOfFollowers: -1 });
+	}
+};
+
 export const singleUser = async (searchedUserId: string) => {
 	// Increment the profileViews by 1
 	await UserModel.updateOne(

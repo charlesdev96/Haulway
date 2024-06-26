@@ -7,6 +7,7 @@ import {
 	getAllUsersByRole,
 	searchForUsers,
 	searchUsersByRole,
+	getAllUsersByRoleForContract,
 } from "../services";
 import { getSingleUserInputs, searchUserInputs } from "../schema";
 import { UserData } from "../types";
@@ -126,6 +127,40 @@ export class UserController {
 		}
 	}
 
+	public async getAllVendorsForContract(req: CustomRequest, res: Response) {
+		try {
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const user = await findUserById(userId);
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found." });
+			}
+			const vendors = await getAllUsersByRoleForContract("vendor", userId);
+			res
+				.status(StatusCodes.OK)
+				.json({ success: true, message: "List of all vendors", data: vendors });
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `An error occured while getting all vendors due to ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An unknown error occurred while getting all vendors",
+				});
+			}
+		}
+	}
+
 	public async getAllInfluencers(req: CustomRequest, res: Response) {
 		try {
 			const userId = req.user?.userId;
@@ -141,6 +176,48 @@ export class UserController {
 					.json({ message: "User not found." });
 			}
 			const influencers = await getAllUsersByRole("influencer", userId);
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "List of all influencers",
+				data: influencers,
+			});
+		} catch (error: unknown) {
+			log.info(error);
+			if (error instanceof Error) {
+				return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `An error occured while getting all influencers due to ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An unknown error occurred while getting all influencers",
+				});
+			}
+		}
+	}
+
+	public async getAllInfluencersForContracts(
+		req: CustomRequest,
+		res: Response,
+	) {
+		try {
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const user = await findUserById(userId);
+			if (!user) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found." });
+			}
+			const influencers = await getAllUsersByRoleForContract(
+				"influencer",
+				userId,
+			);
 			res.status(StatusCodes.OK).json({
 				success: true,
 				message: "List of all influencers",
