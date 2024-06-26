@@ -106,7 +106,7 @@ export const getAllUsersByRoleForContract = async (
 			role: role,
 			_id: { $ne: userId },
 		})
-			.select("_id profilePic role userName fullName store")
+			.select("_id profilePic role userName fullName numOfFollowers store")
 			.populate({
 				path: "store",
 				select: "_id storeLogo storeName",
@@ -117,7 +117,9 @@ export const getAllUsersByRoleForContract = async (
 			role: role,
 			_id: { $ne: userId },
 		})
-			.select("_id profilePic role userName fullName influencerStore")
+			.select(
+				"_id profilePic role userName fullName numOfFollowers influencerStore",
+			)
 			.populate({
 				path: "influencerStore",
 				select: "_id storeLogo storeName",

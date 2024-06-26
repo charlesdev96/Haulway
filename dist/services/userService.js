@@ -122,7 +122,7 @@ const getAllUsersByRoleForContract = (role, userId) => __awaiter(void 0, void 0,
             role: role,
             _id: { $ne: userId },
         })
-            .select("_id profilePic role userName fullName store")
+            .select("_id profilePic role userName fullName numOfFollowers store")
             .populate({
             path: "store",
             select: "_id storeLogo storeName",
@@ -134,7 +134,7 @@ const getAllUsersByRoleForContract = (role, userId) => __awaiter(void 0, void 0,
             role: role,
             _id: { $ne: userId },
         })
-            .select("_id profilePic role userName fullName influencerStore")
+            .select("_id profilePic role userName fullName numOfFollowers influencerStore")
             .populate({
             path: "influencerStore",
             select: "_id storeLogo storeName",
