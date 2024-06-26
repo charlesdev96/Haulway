@@ -38,10 +38,14 @@ exports.updateInfluencerProduct = updateInfluencerProduct;
 const getProductsForPost = (userId, role) => __awaiter(void 0, void 0, void 0, function* () {
     if (role === "vendor") {
         return yield model_1.StoreModel.findOne({ owner: userId })
-            .select("_id storeLogo storeName products")
+            .select("products")
             .populate({
             path: "products",
-            select: "_id genInfo productPrice productReview",
+            select: "_id genInfo productPrice productReview store",
+            populate: {
+                path: "store",
+                select: "_id storeLogo storeName",
+            },
         });
     }
     else {
@@ -49,41 +53,16 @@ const getProductsForPost = (userId, role) => __awaiter(void 0, void 0, void 0, f
             status: "active",
             influencer: userId,
         })
-            .select("vendor products")
+            .select("products")
             .populate({
-            path: "vendor",
-            select: "store",
+            path: "products",
+            select: "_id genInfo productPrice productReview store",
             populate: {
                 path: "store",
                 select: "_id storeLogo storeName",
             },
-        })
-            .populate({
-            path: "products",
-            select: "_id genInfo productPrice productReview",
         });
-        // Extract and format the stores and products
-        return contracts
-            .map((contract) => {
-            const { vendor, products } = contract;
-            const { store } = vendor;
-            if (!store || !products)
-                return [];
-            return {
-                store: {
-                    _id: store._id,
-                    storeName: store.storeName,
-                    storeLogo: store.storeLogo,
-                },
-                products: products.map((product) => ({
-                    _id: product._id,
-                    genInfo: product.genInfo,
-                    productPrice: product.productPrice,
-                    productReview: product.productReview,
-                })),
-            };
-        })
-            .filter(Boolean); // Remove null values if any
+        return contracts;
     }
 });
 exports.getProductsForPost = getProductsForPost;

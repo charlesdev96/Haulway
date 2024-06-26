@@ -11,8 +11,6 @@ import {
 	ContractModel,
 } from "../model";
 
-import { Vendor, Contract } from "../types";
-
 export const findVendorProductById = async (productId: string) => {
 	return await VendorProductModel.findById(productId);
 };
@@ -57,52 +55,30 @@ export const updateInfluencerProduct = async (
 export const getProductsForPost = async (userId: string, role: string) => {
 	if (role === "vendor") {
 		return await StoreModel.findOne({ owner: userId })
-			.select("_id storeLogo storeName products")
+			.select("products")
 			.populate({
 				path: "products",
-				select: "_id genInfo productPrice productReview",
+				select: "_id genInfo productPrice productReview store",
+				populate: {
+					path: "store",
+					select: "_id storeLogo storeName",
+				},
 			});
 	} else {
 		const contracts = await ContractModel.find({
 			status: "active",
 			influencer: userId,
 		})
-			.select("vendor products")
+			.select("products")
 			.populate({
-				path: "vendor",
-				select: "store",
+				path: "products",
+				select: "_id genInfo productPrice productReview store",
 				populate: {
 					path: "store",
 					select: "_id storeLogo storeName",
 				},
-			})
-			.populate({
-				path: "products",
-				select: "_id genInfo productPrice productReview",
 			});
-		// Extract and format the stores and products
-		return contracts
-			.map((contract) => {
-				const { vendor, products } = contract as Contract;
-				const { store } = vendor as Vendor;
-
-				if (!store || !products) return [];
-
-				return {
-					store: {
-						_id: store._id,
-						storeName: store.storeName,
-						storeLogo: store.storeLogo,
-					},
-					products: products.map((product) => ({
-						_id: product._id,
-						genInfo: product.genInfo,
-						productPrice: product.productPrice,
-						productReview: product.productReview,
-					})),
-				};
-			})
-			.filter(Boolean); // Remove null values if any
+		return contracts;
 	}
 };
 
