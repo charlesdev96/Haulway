@@ -21,6 +21,7 @@ const ContractSchema = new mongoose_1.default.Schema({
         default: "in-active",
     },
     completionDate: { type: Date, default: null },
+    sentBy: { type: String },
     products: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: "VendorProduct" }],
 }, { timestamps: true });
 exports.ContractModel = mongoose_1.default.model("Contract", ContractSchema);

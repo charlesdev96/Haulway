@@ -2,6 +2,9 @@ import mongoose from "mongoose";
 
 export interface StoreInputs {
 	products?: string[];
+	walletId?: string;
+	profileId?: string;
+	accountId?: string;
 	storeName?: string;
 	currency?: string;
 	storeLogo?: string;
@@ -42,6 +45,18 @@ const StoreSchema = new mongoose.Schema(
 		},
 		storeLogo: {
 			type: String,
+		},
+		walletId: {
+			type: String,
+			default: null,
+		},
+		profileId: {
+			type: String,
+			default: null,
+		},
+		accountId: {
+			type: String,
+			default: null,
 		},
 		storeDesc: {
 			type: String,

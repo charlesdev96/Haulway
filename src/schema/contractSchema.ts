@@ -13,6 +13,7 @@ export const createContractSchema = z.object({
 		vendor: z.string().optional(),
 		influencer: z.string({ required_error: "please provide the influencer" }),
 		products: z.array(z.string({ required_error: "please contract products" })),
+		sentBy: z.string().optional(),
 	}),
 });
 
@@ -29,6 +30,7 @@ export const createInfluencerContractSchema = z.object({
 		influencer: z.string().optional(),
 		vendor: z.string({ required_error: "please provide the vendor" }),
 		products: z.array(z.string({ required_error: "please contract products" })),
+		sentBy: z.string().optional(),
 	}),
 });
 

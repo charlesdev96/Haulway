@@ -15,6 +15,7 @@ exports.createContractSchema = zod_1.z.object({
         vendor: zod_1.z.string().optional(),
         influencer: zod_1.z.string({ required_error: "please provide the influencer" }),
         products: zod_1.z.array(zod_1.z.string({ required_error: "please contract products" })),
+        sentBy: zod_1.z.string().optional(),
     }),
 });
 exports.createInfluencerContractSchema = zod_1.z.object({
@@ -30,6 +31,7 @@ exports.createInfluencerContractSchema = zod_1.z.object({
         influencer: zod_1.z.string().optional(),
         vendor: zod_1.z.string({ required_error: "please provide the vendor" }),
         products: zod_1.z.array(zod_1.z.string({ required_error: "please contract products" })),
+        sentBy: zod_1.z.string().optional(),
     }),
 });
 exports.replyRequestSchema = zod_1.z.object({

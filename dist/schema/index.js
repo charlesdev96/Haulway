@@ -27,3 +27,4 @@ __exportStar(require("./stripeSchema"), exports);
 __exportStar(require("./cartSchema"), exports);
 __exportStar(require("./reviewProductSchema"), exports);
 __exportStar(require("./contractSchema"), exports);
+__exportStar(require("./wiseSchema"), exports);

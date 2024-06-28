@@ -8,6 +8,7 @@ export interface ContractInputs {
 	actionType?: "accepted" | "negotiate" | "declined" | "pending";
 	status?: "completed" | "active" | "in-active";
 	products?: string[];
+	sentBy?: string;
 }
 
 export interface ContractDocument extends ContractInputs, mongoose.Document {
@@ -34,6 +35,7 @@ const ContractSchema = new mongoose.Schema(
 			default: "in-active",
 		},
 		completionDate: { type: Date, default: null },
+		sentBy: { type: String },
 		products: [{ type: mongoose.Schema.Types.ObjectId, ref: "VendorProduct" }],
 	},
 	{ timestamps: true },

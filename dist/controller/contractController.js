@@ -40,6 +40,7 @@ class ContractController {
                 }
                 //send request to influencer
                 body.vendor = userId;
+                body.sentBy = "vendor";
                 const influencer = yield (0, services_1.findUserById)(body.influencer);
                 if (!influencer) {
                     return res
@@ -203,6 +204,7 @@ class ContractController {
                 }
                 //send request to vendor
                 body.influencer = userId;
+                body.sentBy = "influencer";
                 const vendor = yield (0, services_1.findUserById)(body.vendor);
                 if (!vendor) {
                     return res

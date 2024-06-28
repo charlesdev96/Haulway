@@ -13,6 +13,7 @@ import { StripeRouter } from "./stripeRoutes";
 import { CartRouter } from "./cartRoute";
 import { ReviewProductRouter } from "./reviewProductRoute";
 import { ContractRouter } from "./contractRoute";
+import { WiseRouter } from "./wiseRoute";
 
 class RouterConfig {
 	private router: Router;
@@ -84,6 +85,8 @@ class RouterConfig {
 			`${baseUrl}/contract`,
 			new ContractRouter().getContractRouter(),
 		);
+		//wise router
+		this.router.use(`${baseUrl}/wise`, new WiseRouter().getWiseRouter());
 	}
 
 	public getRouter(): Router {

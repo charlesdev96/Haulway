@@ -35,31 +35,33 @@ class StripeController {
                         .json({ message: "User not found" });
                 }
                 //check user already have a stripe id
-                if (user.stripe_id) {
-                    const checkStatus = yield (0, utils_1.checkAccountStatus)(user.stripe_id);
-                    if (checkStatus) {
-                        const link = yield (0, utils_1.generateStripeDashboardLink)(user.stripe_id);
-                        user.stripe_url = link;
-                        yield user.save();
-                        return res.status(http_status_codes_1.StatusCodes.OK).json({
-                            message: "User already has a Stripe account and fully onboarded, visit your Stripe profile using the provided link",
-                            data: link,
-                        });
-                    }
-                    const link = yield (0, utils_1.generateStripeAccountLink)(user.stripe_id);
-                    return res.status(http_status_codes_1.StatusCodes.OK).json({
-                        message: "User already have a stripe id, visit your stripe profile using the provided link and complete your registration",
-                        data: link,
-                    });
-                }
+                // if (user.stripe_id) {
+                // 	const checkStatus = await checkAccountStatus(user.stripe_id);
+                // 	if (checkStatus) {
+                // 		const link = await generateStripeDashboardLink(user.stripe_id);
+                // 		user.stripe_url = link;
+                // 		await user.save();
+                // 		return res.status(StatusCodes.OK).json({
+                // 			message:
+                // 				"User already has a Stripe account and fully onboarded, visit your Stripe profile using the provided link",
+                // 			data: link,
+                // 		});
+                // 	}
+                // 	const link = await generateStripeAccountLink(user.stripe_id);
+                // 	return res.status(StatusCodes.OK).json({
+                // 		message:
+                // 			"User already have a stripe id, visit your stripe profile using the provided link and complete your registration",
+                // 		data: link,
+                // 	});
+                // }
                 //generate stripe account for user
                 const stripeAccount = yield (0, utils_1.createStripeAccount)(user.email, body.country);
                 //return verification link if successful
                 if (stripeAccount) {
                     const link = yield (0, utils_1.generateStripeAccountLink)(stripeAccount.toString());
-                    user.stripe_url = link;
-                    user.stripe_id = stripeAccount.toString();
-                    yield user.save();
+                    // user.stripe_url = link;
+                    // user.stripe_id = stripeAccount.toString();
+                    // await user.save();
                     return res.status(http_status_codes_1.StatusCodes.OK).json({
                         success: true,
                         message: "Stripe account successfully generated",
@@ -101,8 +103,8 @@ class StripeController {
                 }
                 //proceed to delete stripe account
                 yield (0, utils_1.deleteStripeAccount)(stripeId.toString());
-                user.stripe_id = null;
-                user.stripe_url = null;
+                // user.stripe_id = null;
+                // user.stripe_url = null;
                 yield user.save();
                 res
                     .status(http_status_codes_1.StatusCodes.OK)

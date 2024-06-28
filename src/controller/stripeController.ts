@@ -5,7 +5,7 @@ import {
 	createStripeAccount,
 	generateStripeAccountLink,
 	deleteStripeAccount,
-	generateStripeDashboardLink,
+	// generateStripeDashboardLink,
 	checkAccountStatus,
 } from "../utils";
 import { onboardUserInputs } from "../schema";
@@ -32,34 +32,34 @@ export class StripeController {
 					.json({ message: "User not found" });
 			}
 			//check user already have a stripe id
-			if (user.stripe_id) {
-				const checkStatus = await checkAccountStatus(user.stripe_id);
-				if (checkStatus) {
-					const link = await generateStripeDashboardLink(user.stripe_id);
-					user.stripe_url = link;
-					await user.save();
-					return res.status(StatusCodes.OK).json({
-						message:
-							"User already has a Stripe account and fully onboarded, visit your Stripe profile using the provided link",
-						data: link,
-					});
-				}
-				const link = await generateStripeAccountLink(user.stripe_id);
+			// if (user.stripe_id) {
+			// 	const checkStatus = await checkAccountStatus(user.stripe_id);
+			// 	if (checkStatus) {
+			// 		const link = await generateStripeDashboardLink(user.stripe_id);
+			// 		user.stripe_url = link;
+			// 		await user.save();
+			// 		return res.status(StatusCodes.OK).json({
+			// 			message:
+			// 				"User already has a Stripe account and fully onboarded, visit your Stripe profile using the provided link",
+			// 			data: link,
+			// 		});
+			// 	}
+			// 	const link = await generateStripeAccountLink(user.stripe_id);
 
-				return res.status(StatusCodes.OK).json({
-					message:
-						"User already have a stripe id, visit your stripe profile using the provided link and complete your registration",
-					data: link,
-				});
-			}
+			// 	return res.status(StatusCodes.OK).json({
+			// 		message:
+			// 			"User already have a stripe id, visit your stripe profile using the provided link and complete your registration",
+			// 		data: link,
+			// 	});
+			// }
 			//generate stripe account for user
 			const stripeAccount = await createStripeAccount(user.email, body.country);
 			//return verification link if successful
 			if (stripeAccount) {
 				const link = await generateStripeAccountLink(stripeAccount.toString());
-				user.stripe_url = link;
-				user.stripe_id = stripeAccount.toString();
-				await user.save();
+				// user.stripe_url = link;
+				// user.stripe_id = stripeAccount.toString();
+				// await user.save();
 				return res.status(StatusCodes.OK).json({
 					success: true,
 					message: "Stripe account successfully generated",
@@ -97,8 +97,8 @@ export class StripeController {
 			}
 			//proceed to delete stripe account
 			await deleteStripeAccount(stripeId.toString());
-			user.stripe_id = null;
-			user.stripe_url = null;
+			// user.stripe_id = null;
+			// user.stripe_url = null;
 			await user.save();
 			res
 				.status(StatusCodes.OK)

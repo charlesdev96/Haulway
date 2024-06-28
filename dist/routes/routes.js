@@ -15,6 +15,7 @@ const stripeRoutes_1 = require("./stripeRoutes");
 const cartRoute_1 = require("./cartRoute");
 const reviewProductRoute_1 = require("./reviewProductRoute");
 const contractRoute_1 = require("./contractRoute");
+const wiseRoute_1 = require("./wiseRoute");
 class RouterConfig {
     constructor() {
         this.router = (0, express_1.Router)();
@@ -50,6 +51,8 @@ class RouterConfig {
         this.router.use(`${baseUrl}/review`, new reviewProductRoute_1.ReviewProductRouter().getReviewProductRouter());
         //contract router
         this.router.use(`${baseUrl}/contract`, new contractRoute_1.ContractRouter().getContractRouter());
+        //wise router
+        this.router.use(`${baseUrl}/wise`, new wiseRoute_1.WiseRouter().getWiseRouter());
     }
     getRouter() {
         return this.router;

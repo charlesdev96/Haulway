@@ -10,3 +10,4 @@ export * from "./cartModel";
 export * from "./productReviewModel";
 export * from "./influencerStoreModel";
 export * from "./contractModel";
+export * from "./orderModel";

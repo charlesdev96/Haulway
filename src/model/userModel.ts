@@ -2,8 +2,6 @@ import mongoose, { Date } from "mongoose";
 import { hashSync, genSalt } from "bcryptjs";
 
 export interface UserInputs {
-	stripe_id?: string | null;
-	stripe_url?: string | null;
 	fullName?: string;
 	userName?: string;
 	password?: string;
@@ -46,14 +44,6 @@ const UserSchema = new mongoose.Schema(
 			type: String,
 			default:
 				"https://res.cloudinary.com/dvrg4hiwx/image/upload/v1718703125/haulway/ddzlj729yaczckzznrws.png",
-		},
-		stripe_id: {
-			type: String,
-			default: null,
-		},
-		stripe_url: {
-			type: String,
-			default: null,
 		},
 		fullName: {
 			type: String,

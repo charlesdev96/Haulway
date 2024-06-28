@@ -19,6 +19,18 @@ const InfluencerStoreSchema = new mongoose_1.default.Schema({
     storeLogo: {
         type: String,
     },
+    walletId: {
+        type: String,
+        default: null,
+    },
+    profileId: {
+        type: String,
+        default: null,
+    },
+    accountId: {
+        type: String,
+        default: null,
+    },
     storeDesc: {
         type: String,
         default: "",

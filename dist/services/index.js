@@ -24,3 +24,4 @@ __exportStar(require("./profileService"), exports);
 __exportStar(require("./cartService"), exports);
 __exportStar(require("./reviewProductService"), exports);
 __exportStar(require("./contractService"), exports);
+__exportStar(require("./wiseService"), exports);
