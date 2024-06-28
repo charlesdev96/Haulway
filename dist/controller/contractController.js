@@ -343,5 +343,107 @@ class ContractController {
             }
         });
     }
+    getSingleContract(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const { contractId } = req.params;
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                const user = yield (0, services_1.findUserById)(userId);
+                if (!user || !user.role) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found." });
+                }
+                if (user.role !== "vendor" && user.role !== "influencer") {
+                    return res.status(http_status_codes_1.StatusCodes.FORBIDDEN).json({
+                        message: "only vendors and influencers are allowed to access this route",
+                    });
+                }
+                //check if contract exist
+                const contract = yield (0, services_1.getSingleContractByRole)(user.role, contractId);
+                if (!contract) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "contract not found." });
+                }
+                res.status(http_status_codes_1.StatusCodes.OK).json({
+                    success: true,
+                    message: "Contract successfulyy retreived",
+                    data: contract,
+                });
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    return res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: `An error occured while getting single contract ${error.message}`,
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An unknown error occurred while getting single contract",
+                    });
+                }
+            }
+        });
+    }
+    getSingleRequest(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const { contractId } = req.params;
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
+                if (!userId) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
+                        .json({ message: "Unauthorized: Missing authentication token." });
+                }
+                const user = yield (0, services_1.findUserById)(userId);
+                if (!user || !user.role) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "User not found." });
+                }
+                if (user.role !== "vendor" && user.role !== "influencer") {
+                    return res.status(http_status_codes_1.StatusCodes.FORBIDDEN).json({
+                        message: "only vendors and influencers are allowed to access this route",
+                    });
+                }
+                //check if contract exist
+                const request = yield (0, services_1.getSingleRequestByRole)(user.role, contractId);
+                if (!request) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "contract not found." });
+                }
+                res.status(http_status_codes_1.StatusCodes.OK).json({
+                    success: true,
+                    message: "Request successfulyy retreived",
+                    data: request,
+                });
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    return res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: `An error occured while getting single contract ${error.message}`,
+                    });
+                }
+                else {
+                    res.status(http_status_codes_1.StatusCodes.INTERNAL_SERVER_ERROR).json({
+                        success: false,
+                        message: "An unknown error occurred while getting single contract",
+                    });
+                }
+            }
+        });
+    }
 }
 exports.ContractController = ContractController;

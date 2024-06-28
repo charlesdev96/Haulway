@@ -5,12 +5,15 @@ import {
 	findUserById,
 	findContractById,
 	findContractors,
+	getSingleContractByRole,
+	getSingleRequestByRole,
 } from "../services";
 import {
 	createContractInputs,
 	replyRequestInputs,
 	createInfluencerContractInputs,
 	influencerReplyRequestInputs,
+	singleContractRequestInputs,
 } from "../schema";
 import { log } from "../utils";
 import { StatusCodes } from "http-status-codes";
@@ -328,6 +331,102 @@ export class ContractController {
 				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
 					success: false,
 					message: "An unknown error occurred while replying request to vendor",
+				});
+			}
+		}
+	}
+
+	public async getSingleContract(req: CustomRequest, res: Response) {
+		try {
+			const { contractId } = req.params as singleContractRequestInputs;
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const user = await findUserById(userId);
+			if (!user || !user.role) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found." });
+			}
+			if (user.role !== "vendor" && user.role !== "influencer") {
+				return res.status(StatusCodes.FORBIDDEN).json({
+					message:
+						"only vendors and influencers are allowed to access this route",
+				});
+			}
+			//check if contract exist
+			const contract = await getSingleContractByRole(user.role, contractId);
+			if (!contract) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "contract not found." });
+			}
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "Contract successfulyy retreived",
+				data: contract,
+			});
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `An error occured while getting single contract ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An unknown error occurred while getting single contract",
+				});
+			}
+		}
+	}
+
+	public async getSingleRequest(req: CustomRequest, res: Response) {
+		try {
+			const { contractId } = req.params as singleContractRequestInputs;
+			const userId = req.user?.userId;
+			if (!userId) {
+				return res
+					.status(StatusCodes.UNAUTHORIZED)
+					.json({ message: "Unauthorized: Missing authentication token." });
+			}
+			const user = await findUserById(userId);
+			if (!user || !user.role) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "User not found." });
+			}
+			if (user.role !== "vendor" && user.role !== "influencer") {
+				return res.status(StatusCodes.FORBIDDEN).json({
+					message:
+						"only vendors and influencers are allowed to access this route",
+				});
+			}
+			//check if contract exist
+			const request = await getSingleRequestByRole(user.role, contractId);
+			if (!request) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "contract not found." });
+			}
+			res.status(StatusCodes.OK).json({
+				success: true,
+				message: "Request successfulyy retreived",
+				data: request,
+			});
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: `An error occured while getting single contract ${error.message}`,
+				});
+			} else {
+				res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+					success: false,
+					message: "An unknown error occurred while getting single contract",
 				});
 			}
 		}

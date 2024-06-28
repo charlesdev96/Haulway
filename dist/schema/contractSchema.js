@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.influencerReplyRequestSchema = exports.replyRequestSchema = exports.createInfluencerContractSchema = exports.createContractSchema = void 0;
+exports.singleContractRequestSchema = exports.influencerReplyRequestSchema = exports.replyRequestSchema = exports.createInfluencerContractSchema = exports.createContractSchema = void 0;
 const zod_1 = require("zod");
 exports.createContractSchema = zod_1.z.object({
     body: zod_1.z.object({
@@ -64,5 +64,10 @@ exports.influencerReplyRequestSchema = zod_1.z.object({
     }),
     params: zod_1.z.object({
         contractId: zod_1.z.string({ required_error: "please provide the request id" }),
+    }),
+});
+exports.singleContractRequestSchema = zod_1.z.object({
+    params: zod_1.z.object({
+        contractId: zod_1.z.string({ required_error: "contract id is required" }),
     }),
 });

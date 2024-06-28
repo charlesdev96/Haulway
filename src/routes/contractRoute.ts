@@ -6,6 +6,7 @@ import {
 	replyRequestSchema,
 	createInfluencerContractSchema,
 	influencerReplyRequestSchema,
+	singleContractRequestSchema,
 } from "../schema";
 
 export class ContractRouter {
@@ -35,6 +36,20 @@ export class ContractRouter {
 			this.contractController.influencerSendContractRequest.bind(
 				this.contractController,
 			),
+		);
+		//get single contract
+		this.router.get(
+			"/get-single-contract/:contractId",
+			authorizeUser,
+			validateInputs(singleContractRequestSchema),
+			this.contractController.getSingleContract.bind(this.contractController),
+		);
+		//get single request
+		this.router.get(
+			"/get-single-request/:contractId",
+			authorizeUser,
+			validateInputs(singleContractRequestSchema),
+			this.contractController.getSingleRequest.bind(this.contractController),
 		);
 		//vendor reply request
 		this.router.patch(

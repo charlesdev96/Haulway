@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.chnageVendorContractStatus = exports.findContractors = exports.findContractById = exports.createContract = void 0;
+exports.getSingleRequestByRole = exports.getSingleContractByRole = exports.chnageVendorContractStatus = exports.findContractors = exports.findContractById = exports.createContract = void 0;
 const model_1 = require("../model");
 const createContract = (input) => __awaiter(void 0, void 0, void 0, function* () {
     return yield model_1.ContractModel.create(input);
@@ -32,3 +32,105 @@ const chnageVendorContractStatus = (userId) => __awaiter(void 0, void 0, void 0,
     });
 });
 exports.chnageVendorContractStatus = chnageVendorContractStatus;
+const getSingleContractByRole = (role, contractId) => __awaiter(void 0, void 0, void 0, function* () {
+    if (role === "vendor") {
+        return yield model_1.ContractModel.findById(contractId)
+            .select("-__v -vendor")
+            .populate({
+            path: "influencer",
+            select: "_id fullName profilePic userName numOfFollowers role influencerStore",
+            populate: {
+                path: "influencerStore",
+                select: "_id storeName storeLogo",
+            },
+        })
+            .populate({
+            path: "products",
+            select: "_id genInfo productPrice productReview numOfProReviews reviews",
+            populate: {
+                path: "reviews",
+                select: "_id comment rating reviewer",
+                populate: {
+                    path: "reviewer",
+                    select: "_id fullName profilePic userName",
+                },
+            },
+        });
+    }
+    else {
+        return yield model_1.ContractModel.findById(contractId)
+            .select("-__v -influencer")
+            .populate({
+            path: "vendor",
+            select: "_id fullName profilePic userName numOfFollowers role store",
+            populate: {
+                path: "store",
+                select: "_id storeName storeLogo",
+            },
+        })
+            .populate({
+            path: "products",
+            select: "_id genInfo productPrice productReview numOfProReviews reviews",
+            populate: {
+                path: "reviews",
+                select: "_id comment rating reviewer",
+                populate: {
+                    path: "reviewer",
+                    select: "_id fullName profilePic userName",
+                },
+            },
+        });
+    }
+});
+exports.getSingleContractByRole = getSingleContractByRole;
+const getSingleRequestByRole = (role, contractId) => __awaiter(void 0, void 0, void 0, function* () {
+    if (role === "vendor") {
+        return yield model_1.ContractModel.findById(contractId)
+            .select("-__v -vendor")
+            .populate({
+            path: "influencer",
+            select: "_id fullName profilePic userName numOfFollowers role influencerStore",
+            populate: {
+                path: "influencerStore",
+                select: "_id storeName storeLogo",
+            },
+        })
+            .populate({
+            path: "products",
+            select: "_id genInfo productPrice productReview numOfProReviews reviews",
+            populate: {
+                path: "reviews",
+                select: "_id comment rating reviewer",
+                populate: {
+                    path: "reviewer",
+                    select: "_id fullName profilePic userName",
+                },
+            },
+        });
+    }
+    else {
+        return yield model_1.ContractModel.findById(contractId)
+            .select("-__v -influencer")
+            .populate({
+            path: "vendor",
+            select: "_id fullName profilePic userName numOfFollowers role store",
+            populate: {
+                path: "store",
+                select: "_id storeName storeLogo",
+            },
+        })
+            .populate({
+            path: "products",
+            select: "_id genInfo productPrice productReview numOfProReviews reviews",
+            populate: {
+                path: "reviews",
+                select: "_id comment rating reviewer",
+                populate: {
+                    path: "reviewer",
+                    select: "_id fullName profilePic userName",
+                },
+            },
+        });
+    }
+});
+exports.getSingleRequestByRole = getSingleRequestByRole;

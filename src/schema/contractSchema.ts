@@ -68,6 +68,12 @@ export const influencerReplyRequestSchema = z.object({
 	}),
 });
 
+export const singleContractRequestSchema = z.object({
+	params: z.object({
+		contractId: z.string({ required_error: "contract id is required" }),
+	}),
+});
+
 export type createContractInputs = z.infer<typeof createContractSchema>["body"];
 
 export type replyRequestInputs = z.infer<typeof replyRequestSchema>;
@@ -79,3 +85,7 @@ export type createInfluencerContractInputs = z.infer<
 export type influencerReplyRequestInputs = z.infer<
 	typeof influencerReplyRequestSchema
 >;
+
+export type singleContractRequestInputs = z.infer<
+	typeof singleContractRequestSchema
+>["params"];

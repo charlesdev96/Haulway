@@ -72,7 +72,7 @@ const getAllUsersByRole = (role, userId) => __awaiter(void 0, void 0, void 0, fu
             role: role,
             _id: { $ne: userId },
         })
-            .select("_id profilePic role userName fullName store")
+            .select("_id profilePic role userName numOfFollowers fullName store")
             .populate({
             path: "store",
             select: "_id storeLogo storeName",
@@ -82,7 +82,7 @@ const getAllUsersByRole = (role, userId) => __awaiter(void 0, void 0, void 0, fu
             role: role,
             _id: { $ne: userId },
         })
-            .select("_id profilePic role userName fullName store")
+            .select("_id profilePic role userName numOfFollowers fullName store")
             .populate({
             path: "store",
             select: "_id storeLogo storeName",
@@ -95,7 +95,7 @@ const getAllUsersByRole = (role, userId) => __awaiter(void 0, void 0, void 0, fu
             role: role,
             _id: { $ne: userId },
         })
-            .select("_id profilePic role userName fullName influencerStore")
+            .select("_id profilePic role userName fullName numOfFollowers influencerStore")
             .populate({
             path: "influencerStore",
             select: "_id storeLogo storeName",
@@ -105,7 +105,7 @@ const getAllUsersByRole = (role, userId) => __awaiter(void 0, void 0, void 0, fu
             role: role,
             _id: { $ne: userId },
         })
-            .select("_id profilePic role userName fullName influencerStore")
+            .select("_id profilePic role userName fullName numOfFollowers influencerStore")
             .populate({
             path: "influencerStore",
             select: "_id storeLogo storeName",

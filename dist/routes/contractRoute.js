@@ -16,6 +16,10 @@ class ContractRouter {
         this.router.post("/vendor-send-request", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.createContractSchema), this.contractController.vendorSendContractRequest.bind(this.contractController));
         //influencer send vendor request
         this.router.post("/influencer-send-request", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.createInfluencerContractSchema), this.contractController.influencerSendContractRequest.bind(this.contractController));
+        //get single contract
+        this.router.get("/get-single-contract/:contractId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.singleContractRequestSchema), this.contractController.getSingleContract.bind(this.contractController));
+        //get single request
+        this.router.get("/get-single-request/:contractId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.singleContractRequestSchema), this.contractController.getSingleRequest.bind(this.contractController));
         //vendor reply request
         this.router.patch("/vendor-reply-request/:contractId", middleware_1.authorizeUser, (0, middleware_1.validateInputs)(schema_1.replyRequestSchema), this.contractController.vendorReplyRequest.bind(this.contractController));
         //influencer reply request
