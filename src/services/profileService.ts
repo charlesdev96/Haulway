@@ -136,7 +136,8 @@ export const getVendorProfile = async (userId: string) => {
 			populate: [
 				{
 					path: "influencer",
-					select: "_id fullName profilePic userName role influencerStore",
+					select:
+						"_id fullName profilePic userName numOfFollowers role influencerStore",
 					populate: {
 						path: "influencerStore",
 						select: "_id storeName storeLogo",
@@ -163,7 +164,8 @@ export const getVendorProfile = async (userId: string) => {
 			populate: [
 				{
 					path: "influencer",
-					select: "_id fullName profilePic userName role influencerStore",
+					select:
+						"_id fullName profilePic userName numOfFollowers role influencerStore",
 					populate: {
 						path: "influencerStore",
 						select: "_id storeName storeLogo",
@@ -308,7 +310,7 @@ export const getInfluencerProfile = async (userId: string) => {
 			populate: [
 				{
 					path: "vendor",
-					select: "_id fullName profilePic userName role store",
+					select: "_id fullName profilePic userName numOfFollowers role store",
 					populate: {
 						path: "store",
 						select: "_id storeName storeLogo",
@@ -335,7 +337,7 @@ export const getInfluencerProfile = async (userId: string) => {
 			populate: [
 				{
 					path: "vendor",
-					select: "_id fullName profilePic userName role store",
+					select: "_id fullName profilePic userName numOfFollowers role store",
 					populate: {
 						path: "store",
 						select: "_id storeName storeLogo",

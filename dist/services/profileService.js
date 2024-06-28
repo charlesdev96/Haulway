@@ -137,7 +137,7 @@ const getVendorProfile = (userId) => __awaiter(void 0, void 0, void 0, function*
         populate: [
             {
                 path: "influencer",
-                select: "_id fullName profilePic userName role influencerStore",
+                select: "_id fullName profilePic userName numOfFollowers role influencerStore",
                 populate: {
                     path: "influencerStore",
                     select: "_id storeName storeLogo",
@@ -163,7 +163,7 @@ const getVendorProfile = (userId) => __awaiter(void 0, void 0, void 0, function*
         populate: [
             {
                 path: "influencer",
-                select: "_id fullName profilePic userName role influencerStore",
+                select: "_id fullName profilePic userName numOfFollowers role influencerStore",
                 populate: {
                     path: "influencerStore",
                     select: "_id storeName storeLogo",
@@ -298,7 +298,7 @@ const getInfluencerProfile = (userId) => __awaiter(void 0, void 0, void 0, funct
         populate: [
             {
                 path: "vendor",
-                select: "_id fullName profilePic userName role store",
+                select: "_id fullName profilePic userName numOfFollowers role store",
                 populate: {
                     path: "store",
                     select: "_id storeName storeLogo",
@@ -324,7 +324,7 @@ const getInfluencerProfile = (userId) => __awaiter(void 0, void 0, void 0, funct
         populate: [
             {
                 path: "vendor",
-                select: "_id fullName profilePic userName role store",
+                select: "_id fullName profilePic userName numOfFollowers role store",
                 populate: {
                     path: "store",
                     select: "_id storeName storeLogo",
