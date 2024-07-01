@@ -57,9 +57,9 @@ const generateStripeAccountLink = (accountId) => __awaiter(void 0, void 0, void 
     try {
         const accountLink = yield stripe.accountLinks.create({
             account: accountId,
-            refresh_url: "https://your-app.com/reauth",
-            return_url: "https://your-app.com/dashboard",
             type: "account_onboarding",
+            // refresh_url: "https://your-app.com/reauth",
+            // return_url: "https://your-app.com/dashboard",
         });
         return accountLink.url; // Return the URL for the user to verify their account
     }

@@ -47,8 +47,8 @@ class WiseController {
                                 .status(http_status_codes_1.StatusCodes.NOT_FOUND)
                                 .json({ message: "influencer store not found" });
                         }
-                        influencerStore.profileId = body.profileId;
-                        influencerStore.walletId = body.walletId;
+                        // influencerStore.profileId = body.profileId;
+                        // influencerStore.walletId = body.walletId;
                         yield influencerStore.save();
                         return res.status(http_status_codes_1.StatusCodes.CREATED).json({
                             success: true,
@@ -62,8 +62,8 @@ class WiseController {
                                 .status(http_status_codes_1.StatusCodes.NOT_FOUND)
                                 .json({ message: "vendor store not found" });
                         }
-                        store.profileId = body.profileId;
-                        store.walletId = body.walletId;
+                        // store.profileId = body.profileId;
+                        // store.walletId = body.walletId;
                         yield store.save();
                         return res.status(http_status_codes_1.StatusCodes.CREATED).json({
                             success: true,
@@ -71,7 +71,7 @@ class WiseController {
                         });
                     }
                 }
-                const accessToken = yield (0, services_1.getAccessToken)();
+                const accessToken = yield (0, services_1.getToken)();
                 const profileId = yield (0, services_1.createProfile)(accessToken, body);
                 if (!profileId) {
                     return res
@@ -92,8 +92,8 @@ class WiseController {
                             .status(http_status_codes_1.StatusCodes.NOT_FOUND)
                             .json({ message: "influencer store not found" });
                     }
-                    influencerStore.profileId = profileId;
-                    influencerStore.walletId = walletId;
+                    // influencerStore.profileId = profileId;
+                    // influencerStore.walletId = walletId;
                     yield influencerStore.save();
                     utils_1.log.info(output);
                     return res.status(http_status_codes_1.StatusCodes.CREATED).json({
@@ -108,8 +108,8 @@ class WiseController {
                             .status(http_status_codes_1.StatusCodes.NOT_FOUND)
                             .json({ message: "vendor store not found" });
                     }
-                    store.profileId = profileId;
-                    store.walletId = walletId;
+                    // store.profileId = profileId;
+                    // store.walletId = walletId;
                     yield store.save();
                     utils_1.log.info(output);
                     return res.status(http_status_codes_1.StatusCodes.CREATED).json({

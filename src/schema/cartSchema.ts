@@ -5,10 +5,13 @@ export const addItemToCartSchema = z.object({
 		cart: z.string().optional(),
 		store: z.string().optional(),
 		product: z.string().optional(),
+		post: z.string().optional(),
+		influencer: z.string().nullable().optional(),
 		quantity: z.number({ required_error: "please provide item quantity" }),
 	}),
 	params: z.object({
 		productId: z.string({ required_error: "productId is required" }),
+		postId: z.string({ required_error: "postId is required" }),
 	}),
 });
 

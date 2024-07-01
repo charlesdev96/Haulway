@@ -8,6 +8,7 @@ import {
 	CustomRequest,
 	findVendorProductById,
 	getUserCartItems,
+	findPostById,
 } from "../services";
 import {
 	addItemToCartInputs,
@@ -21,7 +22,7 @@ export class CartController {
 	public async addProductToCart(req: CustomRequest, res: Response) {
 		try {
 			const body = req.body as addItemToCartInputs["body"];
-			const { productId } = req.params as addItemToCartInputs["params"];
+			const { productId, postId } = req.params as addItemToCartInputs["params"];
 			const userId = req.user?.userId;
 			if (!userId) {
 				return res
@@ -36,6 +37,20 @@ export class CartController {
 					.status(StatusCodes.NOT_FOUND)
 					.json({ message: "User not found" });
 			}
+			//find post
+			const post = await findPostById(postId);
+			if (!post || !post.postedBy) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "Post not found" });
+			}
+			//find owner of post
+			const poster = await findUserById(post.postedBy);
+			if (!poster || !poster.role) {
+				return res
+					.status(StatusCodes.NOT_FOUND)
+					.json({ message: "Post owner not found" });
+			}
 			//find product
 			const product = await findVendorProductById(productId);
 			if (!product) {
@@ -43,6 +58,7 @@ export class CartController {
 					.status(StatusCodes.NOT_FOUND)
 					.json({ message: "User not found" });
 			}
+
 			//check if user already has a cart model already
 			const userCartExist = await checkIfUserCartExist(userId);
 			//if user has cart, then check if product is already in cart and if not add it
@@ -58,39 +74,82 @@ export class CartController {
 						.json({ message: "Product already in your cart" });
 				} else {
 					//else add product to cart
-					body.cart = userCartExist._id;
+					if (poster.role === "influencer") {
+						body.cart = userCartExist._id;
+						body.product = product._id;
+						body.store = product.store;
+						body.influencer = poster._id;
+						body.post = postId;
+						const item = await addItemToCart(body);
+						if (item && item._id) {
+							userCartExist.cartItems?.push(item._id);
+							await userCartExist.save();
+						}
+						return res.status(StatusCodes.OK).json({
+							success: true,
+							message: "Item successfully added to cart",
+							data: item,
+						});
+					} else {
+						body.cart = userCartExist._id;
+						body.product = product._id;
+						body.store = product.store;
+						body.influencer = null;
+						body.post = postId;
+						const item = await addItemToCart(body);
+						if (item && item._id) {
+							userCartExist.cartItems?.push(item._id);
+							await userCartExist.save();
+						}
+						return res.status(StatusCodes.OK).json({
+							success: true,
+							message: "Item successfully added to cart",
+							data: item,
+						});
+					}
+				}
+			} else {
+				//create cart model and add item to cart
+				const cart = await createCartFirstTime({ user: userId });
+				if (poster.role === "influencer") {
+					//add item to cart
+					body.cart = cart._id;
 					body.product = product._id;
 					body.store = product.store;
+					body.post = postId;
+					body.influencer = poster._id;
 					const item = await addItemToCart(body);
 					if (item && item._id) {
-						userCartExist.cartItems?.push(item._id);
-						await userCartExist.save();
+						cart.cartItems?.push(item._id);
+						await cart.save();
 					}
+					user.carts = cart._id;
+					await user.save();
+					return res.status(StatusCodes.OK).json({
+						success: true,
+						message: "Item successfully added to cart",
+						data: item,
+					});
+				} else {
+					//add item to cart
+					body.cart = cart._id;
+					body.product = product._id;
+					body.store = product.store;
+					body.post = postId;
+					body.influencer = null;
+					const item = await addItemToCart(body);
+					if (item && item._id) {
+						cart.cartItems?.push(item._id);
+						await cart.save();
+					}
+					user.carts = cart._id;
+					await user.save();
 					return res.status(StatusCodes.OK).json({
 						success: true,
 						message: "Item successfully added to cart",
 						data: item,
 					});
 				}
-			} else {
-				//create cart model and add item to cart
-				const cart = await createCartFirstTime({ user: userId });
-				//add item to cart
-				body.cart = cart._id;
-				body.product = product._id;
-				body.store = product.store;
-				const item = await addItemToCart(body);
-				if (item && item._id) {
-					cart.cartItems?.push(item._id);
-					await cart.save();
-				}
-				user.carts = cart._id;
-				await user.save();
-				return res.status(StatusCodes.OK).json({
-					success: true,
-					message: "Item successfully added to cart",
-					data: item,
-				});
 			}
 		} catch (error: unknown) {
 			log.info(error);

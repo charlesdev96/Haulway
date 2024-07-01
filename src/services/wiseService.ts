@@ -2,6 +2,8 @@ import { config } from "dotenv";
 config();
 
 import axios from "axios";
+import * as qs from "qs";
+import { Buffer } from "buffer";
 
 interface RecipientDetails {
 	currency: "USD";
@@ -10,29 +12,29 @@ interface RecipientDetails {
 	email: string;
 }
 
-// const clientId = "YOUR_CLIENT_ID";
-// const clientSecret = "YOUR_CLIENT_SECRET";
+const clientId = "admin@grascope.com";
+const clientSecret = "123@GRAScope.com";
 const apiKey: string | undefined = process.env.WISE_API_TOKEN;
 const tokenUrl: string = "https://api.sandbox.transferwise.tech/oauth/token";
-const profileUrl: string = "https://api.sandbox.transferwise.tech/v1/profiles";
+const profileUrl: string = "https://api.sandbox.transferwise.tech/v2/profiles";
 const walletUrl: string =
-	"https://api.sandbox.transferwise.tech/v1/borderless-accounts";
+	"https://api.sandbox.transferwise.tech/v2/borderless-accounts";
 
 // Function to authenticate and get access token using API key
 export const getAccessToken = async (): Promise<string> => {
 	try {
-		const encodedApiKey = Buffer.from(`${apiKey}:`).toString("base64");
+		// const encodedApiKey = Buffer.from(`${apiKey}:`).toString("base64");
 		const response = await axios.post(
 			tokenUrl,
 			{
 				grant_type: "client_credentials",
-				// client_id: clientId,
-				// client_secret: clientSecret,
+				client_id: clientId,
+				client_secret: clientSecret,
 				// api_key: apiKey,
 			},
 			{
 				headers: {
-					Authorization: `Bearer ${encodedApiKey}`,
+					Authorization: `Bearer ${apiKey}`,
 					"Content-Type": "application/json",
 				},
 			},
@@ -152,4 +154,30 @@ export const getRecipientAccountId = async (
 		throw new Error("Recipient not found");
 	}
 	return recipient.id; // This is the accountId
+};
+
+export const getToken = async () => {
+	try {
+		const response = await axios.post(
+			tokenUrl,
+			qs.stringify({
+				grant_type: "client_credentials",
+			}),
+			{
+				auth: {
+					username: clientId,
+					password: clientSecret,
+				},
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded",
+					Authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString("base64")}`,
+				},
+			},
+		);
+
+		console.log("Access Token:", response.data.access_token);
+		return response.data.access_token;
+	} catch (error) {
+		console.error("Error fetching token:", error);
+	}
 };

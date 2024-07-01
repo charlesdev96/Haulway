@@ -37,7 +37,7 @@ const getUserCartItems = (userId) => __awaiter(void 0, void 0, void 0, function*
         .select("cartItems")
         .populate({
         path: "cartItems",
-        select: "store product quantity",
+        select: "_id store product quantity",
         populate: [
             {
                 path: "store",
@@ -69,6 +69,7 @@ const getUserCartItems = (userId) => __awaiter(void 0, void 0, void 0, function*
             };
         }
         storeGroups[storeId].items.push({
+            cartItemId: item._id,
             product: item.product,
             quantity: item.quantity,
         });
@@ -87,6 +88,7 @@ const getUserCartItems = (userId) => __awaiter(void 0, void 0, void 0, function*
     const storeGroupsArray = Object.values(storeGroups).map((storeGroup) => ({
         store: storeGroup.store,
         items: storeGroup.items.map((item) => ({
+            cartItemId: item.cartItemId,
             product: item.product,
             quantity: item.quantity,
         })),

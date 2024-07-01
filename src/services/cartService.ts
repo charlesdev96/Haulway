@@ -44,7 +44,7 @@ export const getUserCartItems = async (userId: string) => {
 		.select("cartItems")
 		.populate({
 			path: "cartItems",
-			select: "store product quantity",
+			select: "_id store product quantity",
 			populate: [
 				{
 					path: "store",
@@ -70,7 +70,7 @@ export const getUserCartItems = async (userId: string) => {
 		string,
 		{
 			store: Store;
-			items: { product: Product; quantity: number }[];
+			items: { cartItemId: string; product: Product; quantity: number }[];
 			subtotal: number;
 			shipping: number;
 			total: number;
@@ -89,6 +89,7 @@ export const getUserCartItems = async (userId: string) => {
 			};
 		}
 		storeGroups[storeId].items.push({
+			cartItemId: item._id,
 			product: item.product,
 			quantity: item.quantity,
 		});
@@ -110,6 +111,7 @@ export const getUserCartItems = async (userId: string) => {
 	const storeGroupsArray = Object.values(storeGroups).map((storeGroup) => ({
 		store: storeGroup.store,
 		items: storeGroup.items.map((item) => ({
+			cartItemId: item.cartItemId,
 			product: item.product,
 			quantity: item.quantity,
 		})),

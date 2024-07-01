@@ -1,12 +1,14 @@
 import { Response, Request } from "express";
-import { CustomRequest } from "../services";
 import {
-	log,
+	CustomRequest,
 	createStripeAccount,
 	generateStripeAccountLink,
 	deleteStripeAccount,
-	// generateStripeDashboardLink,
 	checkAccountStatus,
+} from "../services";
+import {
+	log,
+	// generateStripeDashboardLink,
 } from "../utils";
 import { onboardUserInputs } from "../schema";
 import { findUserById } from "../services";

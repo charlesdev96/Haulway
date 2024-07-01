@@ -8,6 +8,8 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const CartItemSchema = new mongoose_1.default.Schema({
     cart: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "Cart" },
     store: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "Store" },
+    post: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "Post" },
+    influencer: { type: mongoose_1.default.Schema.Types.ObjectId, ref: "User" },
     product: {
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "VendorProduct",

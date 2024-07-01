@@ -25,7 +25,7 @@ export class CartRouter {
 		);
 		//add item to cart
 		this.router.post(
-			"/add-item/:productId",
+			"/add-item/:postId/:productId",
 			authorizeUser,
 			validateInputs(addItemToCartSchema),
 			this.cartController.addProductToCart.bind(this.cartController),

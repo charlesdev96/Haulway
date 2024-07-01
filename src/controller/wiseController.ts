@@ -2,7 +2,8 @@ import { Response } from "express";
 import {
 	createProfile,
 	createWallet,
-	getAccessToken,
+	// getAccessToken,
+	getToken,
 	CustomRequest,
 	findUserById,
 	findStoreByUserId,
@@ -45,8 +46,8 @@ export class WiseController {
 							.status(StatusCodes.NOT_FOUND)
 							.json({ message: "influencer store not found" });
 					}
-					influencerStore.profileId = body.profileId;
-					influencerStore.walletId = body.walletId;
+					// influencerStore.profileId = body.profileId;
+					// influencerStore.walletId = body.walletId;
 					await influencerStore.save();
 					return res.status(StatusCodes.CREATED).json({
 						success: true,
@@ -59,8 +60,8 @@ export class WiseController {
 							.status(StatusCodes.NOT_FOUND)
 							.json({ message: "vendor store not found" });
 					}
-					store.profileId = body.profileId;
-					store.walletId = body.walletId;
+					// store.profileId = body.profileId;
+					// store.walletId = body.walletId;
 					await store.save();
 					return res.status(StatusCodes.CREATED).json({
 						success: true,
@@ -68,7 +69,7 @@ export class WiseController {
 					});
 				}
 			}
-			const accessToken: string = await getAccessToken();
+			const accessToken: string = await getToken();
 			const profileId: string = await createProfile(accessToken, body);
 			if (!profileId) {
 				return res
@@ -89,8 +90,8 @@ export class WiseController {
 						.status(StatusCodes.NOT_FOUND)
 						.json({ message: "influencer store not found" });
 				}
-				influencerStore.profileId = profileId;
-				influencerStore.walletId = walletId;
+				// influencerStore.profileId = profileId;
+				// influencerStore.walletId = walletId;
 				await influencerStore.save();
 				log.info(output);
 				return res.status(StatusCodes.CREATED).json({
@@ -104,8 +105,8 @@ export class WiseController {
 						.status(StatusCodes.NOT_FOUND)
 						.json({ message: "vendor store not found" });
 				}
-				store.profileId = profileId;
-				store.walletId = walletId;
+				// store.profileId = profileId;
+				// store.walletId = walletId;
 				await store.save();
 				log.info(output);
 				return res.status(StatusCodes.CREATED).json({

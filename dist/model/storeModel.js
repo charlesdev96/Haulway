@@ -19,15 +19,11 @@ const StoreSchema = new mongoose_1.default.Schema({
     storeLogo: {
         type: String,
     },
-    walletId: {
+    stripeId: {
         type: String,
         default: null,
     },
-    profileId: {
-        type: String,
-        default: null,
-    },
-    accountId: {
+    stripeUrl: {
         type: String,
         default: null,
     },

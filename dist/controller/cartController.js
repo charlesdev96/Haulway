@@ -16,10 +16,10 @@ const utils_1 = require("../utils");
 class CartController {
     addProductToCart(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c;
+            var _a, _b, _c, _d, _e;
             try {
                 const body = req.body;
-                const { productId } = req.params;
+                const { productId, postId } = req.params;
                 const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.userId;
                 if (!userId) {
                     return res
@@ -33,6 +33,20 @@ class CartController {
                     return res
                         .status(http_status_codes_1.StatusCodes.NOT_FOUND)
                         .json({ message: "User not found" });
+                }
+                //find post
+                const post = yield (0, services_1.findPostById)(postId);
+                if (!post || !post.postedBy) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "Post not found" });
+                }
+                //find owner of post
+                const poster = yield (0, services_1.findUserById)(post.postedBy);
+                if (!poster || !poster.role) {
+                    return res
+                        .status(http_status_codes_1.StatusCodes.NOT_FOUND)
+                        .json({ message: "Post owner not found" });
                 }
                 //find product
                 const product = yield (0, services_1.findVendorProductById)(productId);
@@ -54,40 +68,85 @@ class CartController {
                     }
                     else {
                         //else add product to cart
-                        body.cart = userCartExist._id;
+                        if (poster.role === "influencer") {
+                            body.cart = userCartExist._id;
+                            body.product = product._id;
+                            body.store = product.store;
+                            body.influencer = poster._id;
+                            body.post = postId;
+                            const item = yield (0, services_1.addItemToCart)(body);
+                            if (item && item._id) {
+                                (_b = userCartExist.cartItems) === null || _b === void 0 ? void 0 : _b.push(item._id);
+                                yield userCartExist.save();
+                            }
+                            return res.status(http_status_codes_1.StatusCodes.OK).json({
+                                success: true,
+                                message: "Item successfully added to cart",
+                                data: item,
+                            });
+                        }
+                        else {
+                            body.cart = userCartExist._id;
+                            body.product = product._id;
+                            body.store = product.store;
+                            body.influencer = null;
+                            body.post = postId;
+                            const item = yield (0, services_1.addItemToCart)(body);
+                            if (item && item._id) {
+                                (_c = userCartExist.cartItems) === null || _c === void 0 ? void 0 : _c.push(item._id);
+                                yield userCartExist.save();
+                            }
+                            return res.status(http_status_codes_1.StatusCodes.OK).json({
+                                success: true,
+                                message: "Item successfully added to cart",
+                                data: item,
+                            });
+                        }
+                    }
+                }
+                else {
+                    //create cart model and add item to cart
+                    const cart = yield (0, services_1.createCartFirstTime)({ user: userId });
+                    if (poster.role === "influencer") {
+                        //add item to cart
+                        body.cart = cart._id;
                         body.product = product._id;
                         body.store = product.store;
+                        body.post = postId;
+                        body.influencer = poster._id;
                         const item = yield (0, services_1.addItemToCart)(body);
                         if (item && item._id) {
-                            (_b = userCartExist.cartItems) === null || _b === void 0 ? void 0 : _b.push(item._id);
-                            yield userCartExist.save();
+                            (_d = cart.cartItems) === null || _d === void 0 ? void 0 : _d.push(item._id);
+                            yield cart.save();
                         }
+                        user.carts = cart._id;
+                        yield user.save();
                         return res.status(http_status_codes_1.StatusCodes.OK).json({
                             success: true,
                             message: "Item successfully added to cart",
                             data: item,
                         });
                     }
-                }
-                else {
-                    //create cart model and add item to cart
-                    const cart = yield (0, services_1.createCartFirstTime)({ user: userId });
-                    //add item to cart
-                    body.cart = cart._id;
-                    body.product = product._id;
-                    body.store = product.store;
-                    const item = yield (0, services_1.addItemToCart)(body);
-                    if (item && item._id) {
-                        (_c = cart.cartItems) === null || _c === void 0 ? void 0 : _c.push(item._id);
-                        yield cart.save();
+                    else {
+                        //add item to cart
+                        body.cart = cart._id;
+                        body.product = product._id;
+                        body.store = product.store;
+                        body.post = postId;
+                        body.influencer = null;
+                        const item = yield (0, services_1.addItemToCart)(body);
+                        if (item && item._id) {
+                            (_e = cart.cartItems) === null || _e === void 0 ? void 0 : _e.push(item._id);
+                            yield cart.save();
+                        }
+                        user.carts = cart._id;
+                        yield user.save();
+                        return res.status(http_status_codes_1.StatusCodes.OK).json({
+                            success: true,
+                            message: "Item successfully added to cart",
+                            data: item,
+                        });
                     }
-                    user.carts = cart._id;
-                    yield user.save();
-                    return res.status(http_status_codes_1.StatusCodes.OK).json({
-                        success: true,
-                        message: "Item successfully added to cart",
-                        data: item,
-                    });
                 }
             }
             catch (error) {

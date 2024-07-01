@@ -10,8 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StripeController = void 0;
-const utils_1 = require("../utils");
 const services_1 = require("../services");
+const utils_1 = require("../utils");
+const services_2 = require("../services");
 const http_status_codes_1 = require("http-status-codes");
 const model_1 = require("../model");
 class StripeController {
@@ -27,7 +28,7 @@ class StripeController {
                         .json({ message: "Unauthorized: Missing authentication token." });
                 }
                 //find logged in user
-                const user = yield (0, services_1.findUserById)(userId);
+                const user = yield (0, services_2.findUserById)(userId);
                 //check if user exist
                 if (!user || !user.email) {
                     return res
@@ -55,10 +56,10 @@ class StripeController {
                 // 	});
                 // }
                 //generate stripe account for user
-                const stripeAccount = yield (0, utils_1.createStripeAccount)(user.email, body.country);
+                const stripeAccount = yield (0, services_1.createStripeAccount)(user.email, body.country);
                 //return verification link if successful
                 if (stripeAccount) {
-                    const link = yield (0, utils_1.generateStripeAccountLink)(stripeAccount.toString());
+                    const link = yield (0, services_1.generateStripeAccountLink)(stripeAccount.toString());
                     // user.stripe_url = link;
                     // user.stripe_id = stripeAccount.toString();
                     // await user.save();
@@ -102,7 +103,7 @@ class StripeController {
                         .json({ message: "User not found" });
                 }
                 //proceed to delete stripe account
-                yield (0, utils_1.deleteStripeAccount)(stripeId.toString());
+                yield (0, services_1.deleteStripeAccount)(stripeId.toString());
                 // user.stripe_id = null;
                 // user.stripe_url = null;
                 yield user.save();
@@ -137,7 +138,7 @@ class StripeController {
                         .status(http_status_codes_1.StatusCodes.NOT_FOUND)
                         .json({ message: "User not found" });
                 }
-                const status = yield (0, utils_1.checkAccountStatus)(stripeId);
+                const status = yield (0, services_1.checkAccountStatus)(stripeId);
                 res.status(http_status_codes_1.StatusCodes.OK).json({ data: status });
             }
             catch (error) {

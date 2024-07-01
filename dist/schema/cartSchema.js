@@ -7,10 +7,13 @@ exports.addItemToCartSchema = zod_1.z.object({
         cart: zod_1.z.string().optional(),
         store: zod_1.z.string().optional(),
         product: zod_1.z.string().optional(),
+        post: zod_1.z.string().optional(),
+        influencer: zod_1.z.string().nullable().optional(),
         quantity: zod_1.z.number({ required_error: "please provide item quantity" }),
     }),
     params: zod_1.z.object({
         productId: zod_1.z.string({ required_error: "productId is required" }),
+        postId: zod_1.z.string({ required_error: "postId is required" }),
     }),
 });
 exports.updateCartSchema = zod_1.z.object({

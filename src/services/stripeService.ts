@@ -43,9 +43,9 @@ export const generateStripeAccountLink = async (accountId: string) => {
 	try {
 		const accountLink = await stripe.accountLinks.create({
 			account: accountId,
-			refresh_url: "https://your-app.com/reauth",
-			return_url: "https://your-app.com/dashboard",
 			type: "account_onboarding",
+			// refresh_url: "https://your-app.com/reauth",
+			// return_url: "https://your-app.com/dashboard",
 		});
 		return accountLink.url; // Return the URL for the user to verify their account
 	} catch (error) {
